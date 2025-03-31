@@ -1,4 +1,4 @@
-## Targets for creating virtual environments
+## Targets for virtual environments
 
 # Sets up a virtual environment and activates it
 create-venv:
@@ -15,4 +15,4 @@ activate-venv:
 ## Targets for running benchmarks
 
 run:
-	echo "Run"
+	python scripts/run_benchmarks.py
