@@ -1,11 +1,14 @@
 import datetime
-import warnings
 import json
 import platform
 import subprocess
-
-from typing import Dict, Union
 from pathlib import Path
+from typing import Dict, Union
+
+import pandas as pd
+from tqdm import tqdm
+
+from mlx_transformers_benchmark.platform_info import get_mac_hardware_info
 
 
 def create_benchmark_output_dir(
@@ -55,33 +58,41 @@ def create_benchmark_output_dir(
 
     with (output_dir / "settings.json").open("w") as f:
         json.dump(configuration, f, indent=2)
+
     return output_dir
 
 
-def get_mac_hardware_info() -> Dict:
-    """Get info for this machine, assuming it is a Mac."""
-    info = dict(
-        model_name=None,
-        chip=None,
-        total_cores=None,
-        memory=None,
+def aggregate_measurements(
+    measurements_folder: Union[str, Path],
+):
+    """Collect measurements for the given folder."""
+    measurements_folder = Path(measurements_folder)
+    measurements_files = measurements_folder.glob("./*/benchmark_results.csv")
+    iterator = tqdm(measurements_files, desc="Aggregating measurements..")
+
+    relevant_measurements = []
+    for measurements_file in iterator:
+        measurements = pd.read_csv(measurements_file)
+
+        settings_file = measurements_file.parent / "settings.json"
+        with settings_file.open("r") as f:
+            settings = json.load(f)
+
+        measurements["dtype"] = settings["benchmark_settings"]["dtype"]
+
+        relevant_measurements.append(measurements)
+
+    relevant_measurements: pd.DataFrame = pd.concat(
+        relevant_measurements, ignore_index=True
     )
-    try:
-        sp_output = subprocess.check_output(
-            ["system_profiler", "SPHardwareDataType"]
-        ).decode("utf-8")
 
-        for line in sp_output.splitlines():
-            if "Model Name:" in line:
-                info["model_name"] = line.split("Model Name:")[1].strip()
-            elif "Chip:" in line:
-                info["chip"] = line.split("Chip:")[1].strip()
-            elif "Total Number of Cores:" in line:
-                info["total_cores"] = line.split("Total Number of Cores:")[1].strip()
-            elif "Memory:" in line:
-                info["memory"] = line.split("Memory:")[1].strip()
+    # Combine framework and backend into a single column with unique labels
+    relevant_measurements["framework_backend"] = relevant_measurements.apply(
+        lambda row: (
+            f"{row['framework']}_{row['backend']}"
+            + ("_compiled" if row["compile"] is True else "")
+        ),
+        axis=1,
+    ).astype("category")
 
-    except:
-        warnings.warn("Could not obtain hardware information")
-
-    return info
+    return relevant_measurements
