@@ -1,9 +1,10 @@
-import torch
-from typing import List, Optional
-import torch.nn
-import mlx.nn
+from typing import List
+
 import mlx
 import mlx.core as mx
+import mlx.nn
+import torch
+import torch.nn
 
 from mlx_transformers_benchmark.benchmarks.base_benchmark import BaseBenchmark
 
@@ -29,6 +30,7 @@ class MhsaBenchmark(BaseBenchmark):
             device=torch.device(backend),
             dtype=dtype,
         )
+        self.torch_function.eval()
 
     def _setup_mlx(self, backend: str, dtype: str, compile: bool):
         batch_size, num_tokens, num_features = self.input_shapes[0]
@@ -38,9 +40,12 @@ class MhsaBenchmark(BaseBenchmark):
             num_heads=self.num_heads,
             bias=True,
         )
+        self.mlx_function.eval()
+
         if compile:
             self.mlx_function = mx.compile(self.mlx_function)
 
+    @torch.inference_mode()
     def _run_torch(self, backend: str) -> torch.Tensor:
         x = self.input_tensors[0]
         fn = self.torch_function

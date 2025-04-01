@@ -1,5 +1,3 @@
-import time
-
 import mlx.core as mx
 import torch
 
@@ -7,7 +5,7 @@ import torch
 class BaseBenchmark:
     """Benchmark class containing entrypoint functions.
 
-    Each benchmark should implement setup and run functions:
+    Each benchmark should implement setup and run four functions:
 
       1. `_setup_torch`
       2. `_setup_mlx`
@@ -81,7 +79,6 @@ class BaseBenchmark:
         else:
             raise NotImplementedError
 
-    @torch.inference_mode()
     def run_torch(self, backend: str):
         """Run the benchmark using torch."""
 
@@ -120,4 +117,5 @@ class BaseBenchmark:
 
         if framework == "mlx":
             del self.mlx_function
+
             mx.clear_cache()

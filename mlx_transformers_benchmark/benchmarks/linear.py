@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 import mlx
 import mlx.core as mx
@@ -38,6 +38,7 @@ class LinearBenchmark(BaseBenchmark):
         if compile:
             self.mlx_function = mx.compile(self.mlx_function)
 
+    @torch.inference_mode()
     def _run_torch(self, backend: str) -> torch.Tensor:
         x = self.input_tensors[0]
         fn = self.torch_function

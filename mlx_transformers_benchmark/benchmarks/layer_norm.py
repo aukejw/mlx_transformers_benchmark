@@ -1,9 +1,10 @@
-import torch
 from typing import List, Optional
-import torch.nn
-import mlx.nn
+
 import mlx
 import mlx.core as mx
+import mlx.nn
+import torch
+import torch.nn
 
 from mlx_transformers_benchmark.benchmarks.base_benchmark import BaseBenchmark
 
@@ -36,6 +37,7 @@ class LayerNormBenchmark(BaseBenchmark):
         if compile:
             self.mlx_function = mx.compile(self.mlx_function)
 
+    @torch.inference_mode()
     def _run_torch(self, backend: str) -> torch.Tensor:
         x = self.input_tensors[0]
         fn = self.torch_function
