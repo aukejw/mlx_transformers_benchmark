@@ -8,29 +8,34 @@ import mlx.core as mx
 from mlx_transformers_benchmark.benchmarks.base_benchmark import BaseBenchmark
 
 
-class LayerNormBenchmark(BaseBenchmark):
-    def __init__(self, input_shapes: List):
+class MhsaBenchmark(BaseBenchmark):
+    """Benchmark LayerNorm implementations."""
+
+    def __init__(self, input_shapes: List, num_heads: int = 8):
         super().__init__(
-            name=f"LayerNorm(dim={input_shapes[0][2]})",
+            name=f"MHSA(dim={input_shapes[0][2]}, num_heads={num_heads})",
             input_shapes=input_shapes,
         )
+        self.num_heads = num_heads
 
     def _setup_torch(self, backend: str, dtype: str):
         batch_size, num_tokens, num_features = self.input_shapes[0]
 
-        self.torch_function = torch.nn.LayerNorm(
-            normalized_shape=num_features,
-            elementwise_affine=True,
+        self.torch_function = torch.nn.MultiheadAttention(
+            embed_dim=num_features,
+            num_heads=self.num_heads,
             bias=True,
-            device=backend,
+            batch_first=True,  # mlx only has batch_first
+            device=torch.device(backend),
+            dtype=dtype,
         )
 
     def _setup_mlx(self, backend: str, dtype: str, compile: bool):
         batch_size, num_tokens, num_features = self.input_shapes[0]
 
-        self.mlx_function = mlx.nn.LayerNorm(
+        self.mlx_function = mlx.nn.MultiHeadAttention(
             dims=num_features,
-            affine=True,
+            num_heads=self.num_heads,
             bias=True,
         )
         if compile:
@@ -39,11 +44,11 @@ class LayerNormBenchmark(BaseBenchmark):
     def _run_torch(self, backend: str) -> torch.Tensor:
         x = self.input_tensors[0]
         fn = self.torch_function
-        y = fn(x)
+        y = fn(x, x, x)
         return y
 
     def _run_mlx(self, backend: str) -> mx.array:
         x = self.input_tensors[0]
         fn = self.mlx_function
-        y = fn(x)
+        y = fn(x, x, x)
         return y
