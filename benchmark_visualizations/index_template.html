@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization Index</title>
+    <script>
+        function loadPage() {
+            var selectedFile = document.getElementById("fileSelector").value;
+            document.getElementById("viewer").src = selectedFile;
+        }
+    </script>
+</head>
+
+<body>
+    <select id="fileSelector" onchange="loadPage()">
+        {% for display_name, file_path in visualizations.items() %}
+        <option value="{{ file_path }}">{{ display_name }}</option>
+        {% endfor %}
+    </select>
+
+    <iframe id="viewer" width="100%" height="920px"></iframe>
+</body>
+
+</html>
