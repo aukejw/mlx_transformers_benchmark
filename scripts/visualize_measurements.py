@@ -3,11 +3,9 @@ from typing import Union
 
 import fire
 
-import mlx_transformers_benchmark as mtb
-from mlx_transformers_benchmark.file_io import aggregate_measurements
-from mlx_transformers_benchmark.visualization.plot_benchmark_result import (
-    show_benchmark_data,
-)
+import mtb as mtb
+from mtb.file_io import aggregate_measurements
+from mtb.visualization.plot_benchmark_result import show_benchmark_data
 
 DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "Apple_M4_Pro"
 DEFAULT_VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "benchmark_visualizations"
@@ -42,7 +40,7 @@ def main(
         )
 
         benchmark_shortname = (
-            benchmark_shortname.lower()
+            benchmark_task.lower()
             .replace("(", "__")
             .replace(")", "")
             .replace(", ", "_")

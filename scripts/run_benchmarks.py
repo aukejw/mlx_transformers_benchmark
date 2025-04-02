@@ -6,10 +6,10 @@ import fire
 import pandas as pd
 from tqdm import tqdm
 
-import mlx_transformers_benchmark as mtb
-import mlx_transformers_benchmark.benchmarks as mtb_bench
-from mlx_transformers_benchmark.file_io import create_benchmark_output_dir
-from mlx_transformers_benchmark.run_benchmark import run_benchmark
+import mtb as mtb
+import mtb.benchmarks as mtb_bench
+from mtb.file_io import create_benchmark_output_dir
+from mtb.run_benchmark import run_benchmark
 
 DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements"
 
