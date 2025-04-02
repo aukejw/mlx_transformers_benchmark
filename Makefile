@@ -16,3 +16,6 @@ activate-venv:
 
 run:
 	python scripts/run_benchmarks.py
+
+test:
+	pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v tests
