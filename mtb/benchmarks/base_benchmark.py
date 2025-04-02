@@ -32,7 +32,7 @@ class BaseBenchmark:
         self.mlx_function = None
 
         self.input_shape = input_shape
-        self.input_tensors = None
+        self.input_tensor = None
 
     def setup(
         self,
@@ -53,9 +53,9 @@ class BaseBenchmark:
                 float16=torch.float16,
             )[dtype]
 
-            self.input_tensors = [
-                torch.rand(self.input_shape, device=backend, dtype=dtype)
-            ]
+            self.input_tensor = torch.rand(
+                self.input_shape, device=backend, dtype=dtype
+            )
             self._setup_torch(backend=backend, dtype=dtype)
 
         elif framework == "mlx":
@@ -75,9 +75,7 @@ class BaseBenchmark:
                 float16=mx.float16,
             )[dtype]
 
-            self.input_tensors = [
-                mx.random.normal(shape=self.input_shape).astype(dtype)
-            ]
+            self.input_tensor = mx.random.normal(self.input_shape).astype(dtype)
             self._setup_mlx(backend=backend, dtype=dtype, compile=compile)
 
         else:
@@ -116,17 +114,17 @@ class BaseBenchmark:
         output: mx.array = self._run_mlx(backend)
         mx.eval(output)
 
-    def _run_torch(self):
+    def _run_torch(self, backend: str):
         """Implement the torch benchmark."""
         raise NotImplementedError
 
-    def _run_mlx(self):
+    def _run_mlx(self, backend: str):
         """Implement the mlx benchmark."""
         raise NotImplementedError
 
     def teardown(self, framework: str, backend: str):
         """Cleanup."""
-        del self.input_tensors
+        del self.input_tensor
 
         if framework == "torch":
             del self.torch_function

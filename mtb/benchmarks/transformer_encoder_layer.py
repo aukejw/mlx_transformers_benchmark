@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 
 import mlx
 import mlx.core as mx
@@ -91,13 +91,13 @@ class TransformerEncoderLayerBenchmark(BaseBenchmark):
 
     @torch.inference_mode()
     def _run_torch(self, backend: str) -> torch.Tensor:
-        x = self.input_tensors[0]
+        x = self.input_tensor
         fn = self.torch_function
         y = fn(x, src_mask=self.mask)
         return y
 
     def _run_mlx(self, backend: str) -> mx.array:
-        x = self.input_tensors[0]
+        x = self.input_tensor
         fn = self.mlx_function
         y = fn(x, mask=self.mask)
         return y

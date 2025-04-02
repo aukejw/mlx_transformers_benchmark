@@ -1,7 +1,6 @@
 import time
 
 import pandas as pd
-from tqdm import trange
 
 from mtb.benchmarks.base_benchmark import BaseBenchmark
 from mtb.measurement import Measurement
@@ -127,8 +126,8 @@ def run_benchmark(
         )
         row = dict(
             name=benchmark.name,
-            batch_size=benchmark.input_shapes[0][0],
-            sequence_length=benchmark.input_shapes[0][1],
+            batch_size=benchmark.input_shape[0],
+            sequence_length=benchmark.input_shape[1],
             **framework_kwargs,
             median_ms=measurement.median,
             mean_ms=measurement.mean,

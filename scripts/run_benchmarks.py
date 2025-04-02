@@ -84,7 +84,7 @@ def main(
     all_results = []
     for benchmark in iterator:
         iterator.set_description(
-            f"Timing {benchmark.name}, input_shapes={benchmark.input_shapes}"
+            f"Timing {benchmark.name}, Input_shape={benchmark.input_shape}"
         )
         try:
             results: pd.DataFrame = run_benchmark(
