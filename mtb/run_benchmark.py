@@ -3,8 +3,8 @@ import time
 import pandas as pd
 from tqdm import trange
 
-from mlx_transformers_benchmark.benchmarks.base_benchmark import BaseBenchmark
-from mlx_transformers_benchmark.measurement import Measurement
+from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.measurement import Measurement
 
 
 def run_benchmark_for_framework(

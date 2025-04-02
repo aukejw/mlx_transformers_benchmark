@@ -14,7 +14,11 @@ class BaseBenchmark:
 
     """
 
-    def __init__(self, name: str, input_shapes: list):
+    def __init__(
+        self,
+        name: str,
+        input_shapes: list,
+    ):
         self.name = name
 
         # placeholders for functions
@@ -24,10 +28,17 @@ class BaseBenchmark:
         self.input_shapes = input_shapes
         self.input_tensors = None
 
-    def setup(self, framework: str, dtype: str, backend: str, compile: bool):
+    def setup(
+        self,
+        framework: str,
+        dtype: str,
+        backend: str,
+        compile: bool,
+    ):
         """Setup the benchmark for the given framework and backend."""
 
         if framework == "torch":
+            torch.manual_seed(0)
             torch.set_default_device(torch.device(backend))
 
             dtype = dict(
@@ -47,7 +58,10 @@ class BaseBenchmark:
                 device = mx.Device(mx.DeviceType.gpu)
             elif backend == "cpu":
                 device = mx.Device(mx.DeviceType.cpu)
+            else:
+                raise NotImplementedError(backend)
 
+            mx.random.seed(0)
             mx.set_default_device(device)
 
             dtype = dict(

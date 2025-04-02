@@ -8,7 +8,7 @@ from typing import Dict, Union
 import pandas as pd
 from tqdm import tqdm
 
-from mlx_transformers_benchmark.platform_info import get_mac_hardware_info
+from mtb.platform_info import get_mac_hardware_info
 
 
 def create_benchmark_output_dir(

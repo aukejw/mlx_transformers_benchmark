@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 import mlx
 import mlx.core as mx
@@ -6,32 +6,33 @@ import mlx.nn
 import torch
 import torch.nn
 
-from mlx_transformers_benchmark.benchmarks.base_benchmark import BaseBenchmark
+from mtb.benchmarks.base_benchmark import BaseBenchmark
 
 
-class LayerNormBenchmark(BaseBenchmark):
+class LinearBenchmark(BaseBenchmark):
     def __init__(self, input_shapes: List):
         super().__init__(
-            name=f"LayerNorm(dim={input_shapes[0][2]})",
+            name=f"Linear(in={input_shapes[0][2]}, out={input_shapes[0][2]})",
             input_shapes=input_shapes,
         )
 
     def _setup_torch(self, backend: str, dtype: str):
         batch_size, num_tokens, num_features = self.input_shapes[0]
 
-        self.torch_function = torch.nn.LayerNorm(
-            normalized_shape=num_features,
-            elementwise_affine=True,
+        self.torch_function = torch.nn.Linear(
+            in_features=num_features,
+            out_features=num_features,
             bias=True,
             device=backend,
+            dtype=dtype,
         )
 
     def _setup_mlx(self, backend: str, dtype: str, compile: bool):
         batch_size, num_tokens, num_features = self.input_shapes[0]
 
-        self.mlx_function = mlx.nn.LayerNorm(
-            dims=num_features,
-            affine=True,
+        self.mlx_function = mlx.nn.Linear(
+            input_dims=num_features,
+            output_dims=num_features,
             bias=True,
         )
         if compile:
