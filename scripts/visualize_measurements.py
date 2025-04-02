@@ -1,7 +1,8 @@
 from pathlib import Path
-from typing import Union
+from typing import Dict, Union
 
 import fire
+from jinja2 import Template
 
 import mtb as mtb
 from mtb.file_io import aggregate_measurements
@@ -25,6 +26,7 @@ def main(
     benchmark_tasks = sorted(relevant_measurements["name"].unique())
 
     print("Visualizing data per benchmark.")
+    benchmark_to_figurefile = dict()
     for benchmark_task in benchmark_tasks:
         relevant_measurements_benchmark = relevant_measurements[
             relevant_measurements.name == benchmark_task
@@ -45,9 +47,36 @@ def main(
             .replace(")", "")
             .replace(", ", "_")
         )
-        fig.write_html(visualizations_folder / f"{benchmark_shortname}.html")
-        fig.show()
+        fig_path = visualizations_folder / f"{benchmark_shortname}.html"
+        fig.write_html(fig_path)
 
+        benchmark_to_figurefile[benchmark_task] = fig_path
+
+    # Create the index file from template
+    create_index(
+        visualizations_folder=visualizations_folder,
+        benchmark_to_figurefile=benchmark_to_figurefile,
+    )
+    return
+
+
+def create_index(
+    visualizations_folder: Path,
+    benchmark_to_figurefile: Dict[str, Path],
+):
+    """Create an index file."""
+    with (visualizations_folder / "index_template.html").open() as file:
+        template = Template(file.read())
+
+    index_content = template.render(
+        visualizations=benchmark_to_figurefile,
+    )
+
+    index_path = visualizations_folder / "index.html"
+    with index_path.open("w") as f:
+        f.write(index_content)
+
+    print(f"See '{index_path}'")
     return
 
 
