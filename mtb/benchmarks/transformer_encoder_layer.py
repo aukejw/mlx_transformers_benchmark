@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import mlx
 import mlx.core as mx
@@ -13,17 +13,24 @@ from mtb.benchmarks.base_benchmark import BaseBenchmark
 class TransformerEncoderLayerBenchmark(BaseBenchmark):
     def __init__(
         self,
-        input_shapes: List,
+        input_shape: Tuple[int, int, int],
         num_heads: int = 8,
         dropout: float = 0.1,
         norm_first: bool = True,
         mask_type: str = None,
     ):
-        num_features = input_shapes[0][2]
+        num_features = input_shape[2]
+
+        name = (
+            f"TransformerEncoderLayer("
+            f"dim={num_features}, "
+            f"num_heads={num_heads}, "
+            f"mask={mask_type})"
+        )
 
         super().__init__(
-            name=f"TransformerEncoderLayer(dim={input_shapes[0][2]})",
-            input_shapes=input_shapes,
+            name=name,
+            input_shape=input_shape,
         )
 
         assert num_features % num_heads == 0, (num_features, num_heads)
@@ -41,7 +48,7 @@ class TransformerEncoderLayerBenchmark(BaseBenchmark):
         self.memory_mask = None
 
     def _setup_torch(self, backend: str, dtype: str):
-        batch_size, num_tokens, num_features = self.input_shapes[0]
+        batch_size, num_tokens, num_features = self.input_shape
 
         self.torch_function = torch.nn.TransformerEncoderLayer(
             d_model=num_features,
@@ -62,7 +69,7 @@ class TransformerEncoderLayerBenchmark(BaseBenchmark):
         )
 
     def _setup_mlx(self, backend: str, dtype: str, compile: bool):
-        batch_size, num_tokens, num_features = self.input_shapes[0]
+        batch_size, num_tokens, num_features = self.input_shape
 
         self.mlx_function = mlx.nn.TransformerEncoderLayer(
             dims=num_features,

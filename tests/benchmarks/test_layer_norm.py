@@ -7,4 +7,4 @@ from tests.benchmarks import BenchmarkTest
 class TestLayerNormBenchmark(BenchmarkTest):
     @pytest.fixture
     def benchmark(self):
-        return LayerNormBenchmark(input_shapes=[(1, 3, 16)])
+        return LayerNormBenchmark(input_shape=(1, 3, 16))

@@ -8,5 +8,5 @@ class TestLinearBenchmark(BenchmarkTest):
     @pytest.fixture
     def benchmark(self):
         return LinearBenchmark(
-            input_shapes=[(1, 3, 16)],
+            input_shape=(1, 3, 16),
         )

@@ -8,6 +8,6 @@ class TestMultiheadAttentionBenchmark(BenchmarkTest):
     @pytest.fixture
     def benchmark(self):
         return MhsaBenchmark(
-            input_shapes=[(1, 3, 16)],
+            input_shape=(1, 3, 16),
             num_heads=8,
         )

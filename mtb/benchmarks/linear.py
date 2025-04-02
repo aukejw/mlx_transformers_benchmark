@@ -1,4 +1,4 @@
-from typing import List
+from typing import Tuple
 
 import mlx
 import mlx.core as mx
@@ -10,14 +10,20 @@ from mtb.benchmarks.base_benchmark import BaseBenchmark
 
 
 class LinearBenchmark(BaseBenchmark):
-    def __init__(self, input_shapes: List):
+    def __init__(
+        self,
+        input_shape: Tuple[int, int, int],
+    ):
+        num_features = input_shape[2]
+        name = f"Linear(in={num_features}, out={num_features})"
+
         super().__init__(
-            name=f"Linear(in={input_shapes[0][2]}, out={input_shapes[0][2]})",
-            input_shapes=input_shapes,
+            name=name,
+            input_shape=input_shape,
         )
 
     def _setup_torch(self, backend: str, dtype: str):
-        batch_size, num_tokens, num_features = self.input_shapes[0]
+        batch_size, num_tokens, num_features = self.input_shape
 
         self.torch_function = torch.nn.Linear(
             in_features=num_features,
@@ -28,7 +34,7 @@ class LinearBenchmark(BaseBenchmark):
         )
 
     def _setup_mlx(self, backend: str, dtype: str, compile: bool):
-        batch_size, num_tokens, num_features = self.input_shapes[0]
+        batch_size, num_tokens, num_features = self.input_shape
 
         self.mlx_function = mlx.nn.Linear(
             input_dims=num_features,

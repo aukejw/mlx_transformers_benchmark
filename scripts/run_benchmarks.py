@@ -16,8 +16,8 @@ DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements"
 
 def main(
     output_root: Union[str, Path] = DEFAULT_OUTPUT_ROOT,
-    num_warmup_iterations: int = 30,
-    num_iterations: int = 100,
+    num_warmup_iterations: int = 20,
+    num_iterations: int = 50,
     dtype: str = "float32",
     run_torch_mps: bool = True,
     run_mlx_metal: bool = True,
@@ -39,19 +39,43 @@ def main(
     )
     print(f"Output directory: '{output_dir}'")
 
-    batch_sizes = [128, 64, 32, 16, 1]
+    batch_sizes = [64, 32, 16, 8, 1]
     sequence_lengths = [512, 256, 128, 64]
 
     benchmarks = []
     for batch_size, sequence_length in itertools.product(batch_sizes, sequence_lengths):
         input_shape = (batch_size, sequence_length, 1024)
 
+        kwargs = dict(
+            input_shape=input_shape,
+        )
+
         benchmarks.extend(
             [
-                mtb_bench.MhsaBenchmark(input_shapes=[input_shape]),
-                mtb_bench.LayerNormBenchmark(input_shapes=[input_shape]),
-                mtb_bench.LinearBenchmark(input_shapes=[input_shape]),
-                mtb_bench.TransformerEncoderLayerBenchmark(input_shapes=[input_shape]),
+                mtb_bench.LayerNormBenchmark(**kwargs),
+                mtb_bench.LinearBenchmark(**kwargs),
+                mtb_bench.MhsaBenchmark(num_heads=1, **kwargs),
+                mtb_bench.MhsaBenchmark(num_heads=8, **kwargs),
+                mtb_bench.TransformerEncoderLayerBenchmark(
+                    mask_type=None,
+                    num_heads=8,
+                    **kwargs,
+                ),
+                mtb_bench.TransformerEncoderLayerBenchmark(
+                    mask_type="causal",
+                    num_heads=8,
+                    **kwargs,
+                ),
+                mtb_bench.TransformerDecoderLayerBenchmark(
+                    mask_type=None,
+                    num_heads=8,
+                    **kwargs,
+                ),
+                mtb_bench.TransformerDecoderLayerBenchmark(
+                    mask_type="causal",
+                    num_heads=8,
+                    **kwargs,
+                ),
             ]
         )
 
