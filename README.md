@@ -78,3 +78,7 @@ You may also be interested in Tristan Bilot's comprehensive benchmark for fundam
 and `torch` functions in a single benchmark class makes it easy to see the differences between the 
 two, and we adopt the same strategy here.
   
+
+### Contributing
+
+PRs welcome! Feel free to add measurement files or new benchmark tasks.
