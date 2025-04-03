@@ -125,6 +125,10 @@ def aggregate_measurements(
         axis=1,
     ).astype("category")
 
+    relevant_measurements = relevant_measurements.sort_values(
+        by=["framework_backend", "name", "batch_size", "sequence_length"],
+        ignore_index=True,
+    )
     return relevant_measurements
 
 

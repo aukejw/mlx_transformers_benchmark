@@ -14,19 +14,21 @@ def run_benchmark_for_framework(
     num_warmup_iterations: int,
     num_iterations: int,
     num_repeats: int,
+    min_runtime_ms: int = 500,
     compile: bool = False,
 ) -> Measurement:
     """Run a specific benchmark for a specific framework.
 
     Args:
-        benchmark (BaseBenchmark): The benchmark to run.
-        framework (str): The framework to run the benchmark on.
-        backend (str): The backend or compute to use.
-        dtype (str): Identifier for the data type.
-        num_warmup_iterations (int): Number of warmup iterations.
-        num_iterations (int): Number of iterations to run inference for.
-        repeats (int): Number of times to repeat the benchmark.
-        compile (bool): If true, compile the function before benchmarking.
+        benchmark: The benchmark to run.
+        framework: The framework to run the benchmark on.
+        backend: The backend or compute to use.
+        dtype: Identifier for the data type.
+        num_warmup_iterations: Number of warmup iterations.
+        num_iterations: Number of iterations to run inference for.
+        repeats: Number of times to repeat the benchmark.
+        min_runtime_ms: Minimum runtime in milliseconds for the benchmark.
+        compile: If true, compile the function before benchmarking.
 
     Returns:
         A measurement instance, containing the durations of each iteration.
@@ -43,11 +45,11 @@ def run_benchmark_for_framework(
     for warmup_iteration in range(num_warmup_iterations):
         benchmark.run_once()
 
-    warmup_time_ms = (time.perf_counter() - start_time) * 1e3 / num_warmup_iterations
-    if warmup_time_ms < 10:
-        # If 1 iteration is less than 10 ms, we need to increase num_iterations
-        # We set it so that the benchmark will take around a second
-        num_iterations = max(num_iterations, int(1000 / warmup_time_ms))
+    iteration_time_ms = (time.perf_counter() - start_time) * 1e3 / num_warmup_iterations
+    if iteration_time_ms * num_iterations < min_runtime_ms:
+        # If iterations are fast, we need to increase the number of iterations
+        # for reliability. We set it so the benchmark will take at least some fixed time.
+        num_iterations = max(num_iterations, int(min_runtime_ms / iteration_time_ms))
 
     measurements = []
     for repeat_index in range(num_repeats):
@@ -69,6 +71,7 @@ def run_benchmark(
     num_warmup_iterations: int = 20,
     num_iterations: int = 50,
     num_repeats: int = 1,
+    min_runtime_ms: int = 500,
     dtype="float32",
     *,
     run_torch_cpu: bool = False,
@@ -85,6 +88,7 @@ def run_benchmark(
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run inference for.
         num_repeats: Number of times to repeat the timing.
+        min_runtime_ms: Minimum runtime in milliseconds for the benchmark.
         run_torch_cpu: Framework torch, on cpu.
         run_torch_mps: Framework torch, on gpu (mps backend).
         run_torch_cuda: Framework torch, on gpu (cuda backend).
@@ -101,6 +105,7 @@ def run_benchmark(
         num_warmup_iterations=num_warmup_iterations,
         num_iterations=num_iterations,
         num_repeats=num_repeats,
+        min_runtime_ms=min_runtime_ms,
         dtype=dtype,
     )
 
