@@ -8,7 +8,8 @@ from typing import Dict, Union
 import pandas as pd
 from tqdm import tqdm
 
-from mtb.platform_info import get_mac_hardware_info
+from mtb.hardware_info import get_mac_hardware_info
+from mtb.software_info import get_mlx_version, get_torch_version
 
 
 def create_benchmark_output_dir(
@@ -39,18 +40,19 @@ def create_benchmark_output_dir(
     hardware_info = get_mac_hardware_info()
     hardware_string = hardware_info["chip"].replace(" ", "_")
 
-    platform_settings = dict(
+    software_info = dict(
         platform=platform.platform(),
-        processor=platform.processor(),
         python_version=platform.python_version(),
+        **get_torch_version(),
+        **get_mlx_version(),
     )
 
     configuration = dict(
         datetime=datetime_string,
         git_commit=git_commit,
         benchmark_settings=benchmark_settings,
-        platform_info=platform_settings,
         hardware_info=hardware_info,
+        software_info=software_info,
     )
 
     output_dir = Path(output_root) / hardware_string / datetime_string

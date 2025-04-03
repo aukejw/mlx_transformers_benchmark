@@ -1,9 +1,7 @@
-import os
 import platform
 import subprocess
 import warnings
-from pathlib import Path
-from typing import Dict, Union
+from typing import Dict
 
 
 def get_mac_hardware_info() -> Dict:
@@ -31,5 +29,7 @@ def get_mac_hardware_info() -> Dict:
 
     except:
         warnings.warn("Could not obtain hardware information")
+
+    info["processor"] = platform.processor()
 
     return info
