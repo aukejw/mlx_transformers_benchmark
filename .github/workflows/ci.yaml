@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master 
+  pull_request:  
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Use Ubuntu for consistency
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pyenv
+        run: |
+          curl https://pyenv.run | bash
+          echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> $GITHUB_ENV
+          echo 'eval "$(pyenv init --path)"' >> $GITHUB_ENV
+          echo 'eval "$(pyenv virtualenv-init -)"' >> $GITHUB_ENV
+
+      - name: Install Python using pyenv
+        run: |
+          pyenv install --skip-existing 3.11.11 
+          pyenv global 3.11.11  
+          python --version  
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry is in PATH
+          poetry --version  # Verify Poetry installation
+
+      - name: Install dependencies
+        run: |
+          make create-venv 
+
+      - name: Run tests with pytest
+        run: |
+          source .venv/bin/activate
+          make test
