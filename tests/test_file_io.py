@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from mtb.file_io import (
+    _convert_row_to_framework_backend,
     aggregate_measurements,
     create_benchmark_config,
     create_benchmark_output_dir,
@@ -41,6 +42,21 @@ def test_create_benchmark_config(
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
     assert config["git_commit"] == "mock_git_commit"
+    assert config["hardware_info"]["chip"] == "M1"
+    assert config["software_info"]["mlx_version"] == "1.0.0"
+    assert config["software_info"]["torch_version"] == "2.0.0"
+
+
+@patch("mtb.file_io.get_mac_hardware_info", return_value={"chip": "M1"})
+@patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
+@patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
+@patch("mtb.file_io.subprocess.check_output", return_value=None)
+def test_create_benchmark_config_illegal_commit(
+    mock_git, mock_torch, mock_mlx, mock_hardware, benchmark_settings
+):
+    config = create_benchmark_config(benchmark_settings)
+    assert config["benchmark_settings"] == benchmark_settings
+    assert config["git_commit"] is None
     assert config["hardware_info"]["chip"] == "M1"
     assert config["software_info"]["mlx_version"] == "1.0.0"
     assert config["software_info"]["torch_version"] == "2.0.0"
@@ -88,3 +104,27 @@ def test_aggregate_measurements(tmp_path):
     assert result.iloc[0]["backend"] == "cpu"
     assert result.iloc[0]["compile"] == False
     assert result.iloc[0]["mean_ms"] == 1.5
+
+
+def test_convert_row_to_framework_backend():
+    series = pd.Series(
+        data=dict(
+            framework="torch",
+            torch_version="2.0.0",
+            backend="cpu",
+            compile=False,
+        )
+    )
+    name = _convert_row_to_framework_backend(series)
+    assert name == "torch_2.0.0_cpu"
+
+    series = pd.Series(
+        data=dict(
+            framework="mlx",
+            mlx_version="0.24.1",
+            backend="metal",
+            compile=True,
+        )
+    )
+    name = _convert_row_to_framework_backend(series)
+    assert name == "mlx_0.24.1_metal_compiled"
