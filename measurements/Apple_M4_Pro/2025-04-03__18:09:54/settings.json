@@ -1,11 +1,11 @@
 {
-  "datetime": "2025-04-03__10:40:16",
-  "git_commit": "69ed5162d4e25a615ca84ce3d1d198bc66d63624",
+  "datetime": "2025-04-03__18:09:54",
+  "git_commit": "9d2c76aa9e6c82c7bbbefdec9f0d6b54ff19e13b",
   "benchmark_settings": {
     "num_warmup_iterations": 10,
     "num_iterations": 30,
     "num_repeats": 1,
-    "dtype": "bfloat16"
+    "dtype": "float32"
   },
   "hardware_info": {
     "model_name": "MacBook Pro",
