@@ -24,3 +24,9 @@ pytest-cov = "^6.1.0"
 
 [tool.coverage.run]
 source = ["mtb"]
+branch = true  
+
+[tool.coverage.report]
+exclude_lines = [
+    "raise NotImplementedError"
+]
