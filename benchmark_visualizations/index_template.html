@@ -10,6 +10,14 @@
             var selectedFile = document.getElementById("fileSelector").value;
             document.getElementById("viewer").src = selectedFile;
         }
+
+        window.onload = function () {
+            var fileSelector = document.getElementById("fileSelector");
+            if (fileSelector.options.length > 0) {
+                fileSelector.value = fileSelector.options[0].value;
+                loadPage();
+            }
+        };
     </script>
 </head>
 
