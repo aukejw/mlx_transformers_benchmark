@@ -146,6 +146,8 @@ def _convert_row_to_framework_backend(row: pd.Series) -> str:
         name += "_" + row["torch_version"]
     elif row["framework"] == "mlx":
         name += "_" + row["mlx_version"]
+    else:
+        raise NotImplementedError(f"Unsupported framework {row['framework']}")
 
     name += "_" + row["backend"]
 

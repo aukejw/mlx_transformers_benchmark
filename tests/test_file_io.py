@@ -128,3 +128,14 @@ def test_convert_row_to_framework_backend():
     )
     name = _convert_row_to_framework_backend(series)
     assert name == "mlx_0.24.1_metal_compiled"
+
+    series = pd.Series(
+        data=dict(
+            framework="illegal",
+            mlx_version="0.24.1",
+            backend="metal",
+            compile=True,
+        )
+    )
+    with pytest.raises(NotImplementedError):
+        _convert_row_to_framework_backend(series)

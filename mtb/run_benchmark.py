@@ -39,8 +39,15 @@ def run_benchmark_for_framework(
         compile=compile,
     )
 
+    start_time = time.perf_counter()
     for warmup_iteration in range(num_warmup_iterations):
         benchmark.run_once()
+
+    warmup_time_ms = (time.perf_counter() - start_time) * 1e3 / num_warmup_iterations
+    if warmup_time_ms < 10:
+        # If 1 iteration is less than 10 ms, we need to increase num_iterations
+        # We set it so that the benchmark will take around a second
+        num_iterations = max(num_iterations, int(1000 / warmup_time_ms))
 
     measurements = []
     for repeat_index in range(num_repeats):

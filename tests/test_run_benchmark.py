@@ -1,3 +1,4 @@
+import time
 from unittest.mock import Mock
 
 import mlx.nn
@@ -30,6 +31,25 @@ def benchmark():
 
 
 def test_run_benchmark_for_framework(benchmark):
+    measurement = run_benchmark_for_framework(
+        benchmark=benchmark,
+        framework="torch",
+        backend="cpu",
+        dtype="float16",
+        num_warmup_iterations=1,
+        num_iterations=2,
+        num_repeats=2,
+        compile=False,
+    )
+    assert isinstance(measurement, Measurement)
+
+
+def test_run_benchmark_for_framework_slowiterations(benchmark):
+    def slow_run_torch():
+        time.sleep(0.2)
+
+    benchmark.run_torch = slow_run_torch
+
     measurement = run_benchmark_for_framework(
         benchmark=benchmark,
         framework="torch",
