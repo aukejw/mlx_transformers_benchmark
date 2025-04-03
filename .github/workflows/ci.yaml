@@ -15,23 +15,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up pyenv
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11.11
+    
+      - name: Install poetry
         run: |
-          curl https://pyenv.run | bash
-          echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> $GITHUB_ENV
-          echo 'export PATH="$HOME/.pyenv/shims:$PATH"' >> $GITHUB_ENV
-
-      - name: Install Python using pyenv
-        run: |
-          pyenv install --skip-existing 3.11.11 
-          pyenv global 3.11.11  
-          python --version  
-
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry is in PATH
-          poetry --version  # Verify Poetry installation
+          python -m pip install poetry==1.1.11
+          python -m poetry config virtualenvs.in-project true
+    
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
         run: |
