@@ -19,9 +19,7 @@ jobs:
         run: |
           curl https://pyenv.run | bash
           echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> $GITHUB_ENV
-          echo 'eval "$(pyenv init --path)"' >> $GITHUB_ENV
-          echo 'eval "$(pyenv init -)"' >> $GITHUB_ENV
-          echo 'eval "$(pyenv virtualenv-init -)"' >> $GITHUB_ENV
+          echo 'export PATH="$HOME/.pyenv/shims:$PATH"' >> $GITHUB_ENV
 
       - name: Install Python using pyenv
         run: |
