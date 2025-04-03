@@ -14,7 +14,7 @@ def test_get_mac_hardware_info_success():
         info = get_mac_hardware_info()
         assert info["model_name"] == "MacBook Pro"
         assert info["chip"] == "Apple M1"
-        assert info["total_cores"] == "8"
+        assert info["total_cores"] == "8 (4 performance and 4 efficiency)"
         assert info["memory"] == "16 GB"
         assert info["processor"] is not None
 
