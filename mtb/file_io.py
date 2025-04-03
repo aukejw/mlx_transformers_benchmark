@@ -100,9 +100,19 @@ def aggregate_measurements(
             settings = json.load(f)
 
         # Copy some global settings to the dataframe
-        measurements["dtype"] = settings["benchmark_settings"]["dtype"]
-        measurements["torch_version"] = settings["software_info"]["torch_version"]
-        measurements["mlx_version"] = settings["software_info"]["mlx_version"]
+        for key in [
+            "dtype",
+            "num_warmup_iterations",
+            "num_iterations",
+            "num_repeats",
+        ]:
+            measurements[key] = settings["benchmark_settings"][key]
+
+        for key in [
+            "torch_version",
+            "mlx_version",
+        ]:
+            measurements[key] = settings["software_info"][key]
 
         relevant_measurements.append(measurements)
 
