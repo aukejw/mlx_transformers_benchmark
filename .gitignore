@@ -1,5 +1,6 @@
-# Jinja-generated files
-benchmark_visualizations/index.html
+# Generated html files
+benchmark_visualizations/*.html
+!benchmark_visualizations/index_template.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
