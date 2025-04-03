@@ -19,6 +19,7 @@ def main(
     output_root: Union[str, Path] = DEFAULT_OUTPUT_ROOT,
     num_warmup_iterations: int = 20,
     num_iterations: int = 50,
+    num_repeats: int = 1,
     dtype: str = "float32",
     cooldown_time_fraction: float = 0.10,
     batch_sizes: Tuple = (64, 32, 16, 8, 1),
@@ -47,6 +48,7 @@ def main(
         benchmark_settings=dict(
             num_warmup_iterations=num_warmup_iterations,
             num_iterations=num_iterations,
+            num_repeats=num_repeats,
             dtype=dtype,
         ),
     )
@@ -103,6 +105,7 @@ def main(
                 benchmark=benchmark,
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
+                num_repeats=num_repeats,
                 dtype=dtype,
                 run_torch_cpu=run_torch_cpu,
                 run_torch_mps=run_torch_mps,
