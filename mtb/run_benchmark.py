@@ -67,7 +67,7 @@ def run_benchmark_for_framework(
 def run_benchmark(
     benchmark: BaseBenchmark,
     num_warmup_iterations: int = 20,
-    num_iterations: int = 100,
+    num_iterations: int = 50,
     num_repeats: int = 1,
     dtype="float32",
     *,

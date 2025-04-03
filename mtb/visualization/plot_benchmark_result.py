@@ -10,7 +10,7 @@ def show_benchmark_data(
     title: str,
     measurements: pd.DataFrame,
     dtypes: Tuple[str] = ("float32", "float16", "bfloat16"),
-    batch_sizes: Tuple[int] = (1, 16, 32, 64, 128),
+    batch_sizes: Tuple[int] = (1, 8, 16, 32, 64),
 ) -> go.Figure:
     """Visualize benchmark data in a single page.
 
@@ -63,13 +63,24 @@ def show_benchmark_data(
                 for trace in scatter["data"]:
                     fig.add_trace(trace, row=row, col=col)
 
-            # Update x-axis for the current subplot
-            fig.update_xaxes(
-                tickvals=[512, 256, 128, 64],
-                ticktext=["512", "256", "128", "64"],
-                row=row,
-                col=col,
-            )
+    # Update x and y axes layouts for all subplots
+    fig.update_xaxes(
+        type="log",
+        tickvals=[512, 256, 128, 64],
+        ticktext=["512", "256", "128", "64"],
+    )
+    fig.update_xaxes(
+        row=len(dtypes),
+        title_text="Sequence length (tokens)",
+    )
+    fig.update_yaxes(
+        type="log",
+        tickformat=".2g",
+    )
+    fig.update_yaxes(
+        col=1,
+        title_text="Runtime (ms)",
+    )
 
     # optimize legend entries
     legend_entries = set()
@@ -90,6 +101,6 @@ def show_benchmark_data(
             font=dict(size=14),
             tracegroupgap=5,
         ),
-        font=dict(size=12),
+        font=dict(size=10),
     )
     return fig
