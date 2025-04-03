@@ -45,7 +45,7 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
         self.memory = None
         self.memory_mask = None
 
-    def _setup_torch(self, backend: str, dtype: str):
+    def setup_torch(self):
         batch_size, num_tokens, num_features = self.input_shape
 
         self.torch_function = torch.nn.TransformerDecoderLayer(
@@ -56,8 +56,8 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
             norm_first=self.norm_first,
             batch_first=True,
             bias=True,  # mlx has bias True by default
-            device=backend,
-            dtype=dtype,
+            device=self._device,
+            dtype=self._dtype,
         )
         self.torch_function.eval()
 
@@ -70,8 +70,8 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
             batch_size,
             num_tokens,
             num_features,
-            device=backend,
-            dtype=dtype,
+            device=self._backend,
+            dtype=self._dtype,
         )
         self.mask = create_torch_attention_mask(
             mask_type=None,
@@ -80,7 +80,7 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
             compile=False,
         )
 
-    def _setup_mlx(self, backend: str, dtype: str, compile: bool):
+    def setup_mlx(self):
         batch_size, num_tokens, num_features = self.input_shape
 
         self.mlx_function = mlx.nn.TransformerDecoderLayer(
@@ -91,29 +91,30 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
             norm_first=self.norm_first,
         )
         self.mlx_function.eval()
+        self.mlx_function.set_dtype(self._dtype)
 
         self.mask = create_mlx_attention_mask(
             mask_type=self.mask_type,
             attention_layer=self.mlx_function.self_attention,
             num_tokens=num_tokens,
-            compile=compile,
+            compile=self._compile,
         )
         self.memory = mx.random.normal(
             (batch_size, num_tokens, num_features),
-            dtype=dtype,
+            dtype=self._dtype,
         )
         self.memory_mask = create_mlx_attention_mask(
             mask_type=None,
             attention_layer=self.mlx_function.cross_attention,
             num_tokens=num_tokens,
-            compile=compile,
+            compile=self._compile,
         )
 
-        if compile:
+        if self._compile:
             self.mlx_function = mx.compile(self.mlx_function)
 
     @torch.inference_mode()
-    def _run_torch(self, backend: str) -> torch.Tensor:
+    def run_torch(self) -> torch.Tensor:
         x = self.input_tensor
         fn = self.torch_function
         y = fn(
@@ -124,7 +125,7 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
         )
         return y
 
-    def _run_mlx(self, backend: str) -> mx.array:
+    def run_mlx(self) -> mx.array:
         x = self.input_tensor
         fn = self.mlx_function
         y = fn(
@@ -135,8 +136,10 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
         )
         return y
 
-    def teardown(self, framework: str, backend: str):
+    def teardown(self):
         del self.mask
         del self.memory
+        self.mask = None
+        self.memory = None
 
-        super().teardown(framework, backend)
+        super().teardown()

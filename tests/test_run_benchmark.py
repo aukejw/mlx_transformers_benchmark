@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import mlx.nn
 import pandas as pd
 import pytest
@@ -9,16 +11,16 @@ from mtb.run_benchmark import run_benchmark, run_benchmark_for_framework
 
 
 class MockBenchmark(BaseBenchmark):
-    def _setup_torch(self, backend: str, dtype: str):
+    def setup_torch(self):
         self.torch_function = torch.nn.Identity()
 
-    def _setup_mlx(self, backend: str, dtype: str, compile: bool):
+    def setup_mlx(self):
         self.mlx_function = mlx.nn.Identity()
 
-    def _run_torch(self, backend: str):
+    def run_torch(self):
         return self.torch_function(self.input_tensor)
 
-    def _run_mlx(self, backend: str):
+    def run_mlx(self):
         return self.mlx_function(self.input_tensor)
 
 
@@ -85,3 +87,90 @@ def test_run_benchmark_on_cuda(benchmark):
     )
     assert isinstance(measurements_df, pd.DataFrame)
     assert len(measurements_df) == 1
+
+
+def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
+    mock_measurement = Measurement(measurements=[0.1, 0.2])
+
+    # Setup the monkeypatch to replace run_benchmark_for_framework
+    mock_run_benchmark_for_framework = Mock(
+        return_value=mock_measurement,
+    )
+    monkeypatch.setattr(
+        "mtb.run_benchmark.run_benchmark_for_framework",
+        mock_run_benchmark_for_framework,
+    )
+
+    # Test parameters
+    num_warmup_iterations = 1
+    num_iterations = 1
+    num_repeats = 1
+    dtype = "float16"
+
+    # Define all backend options and their expected arguments
+    backend_options = [
+        {
+            "option": "run_torch_cpu",
+            "framework": "torch",
+            "backend": "cpu",
+            "compile": False,
+        },
+        {
+            "option": "run_torch_mps",
+            "framework": "torch",
+            "backend": "mps",
+            "compile": False,
+        },
+        {
+            "option": "run_torch_cuda",
+            "framework": "torch",
+            "backend": "cuda",
+            "compile": False,
+        },
+        {
+            "option": "run_mlx_cpu",
+            "framework": "mlx",
+            "backend": "cpu",
+            "compile": False,
+        },
+        {
+            "option": "run_mlx_metal",
+            "framework": "mlx",
+            "backend": "metal",
+            "compile": False,
+        },
+        {
+            "option": "run_mlx_metal_compiled",
+            "framework": "mlx",
+            "backend": "metal",
+            "compile": True,
+        },
+    ]
+
+    for backend in backend_options:
+        mock_run_benchmark_for_framework.reset_mock()
+
+        kwargs = {
+            "benchmark": benchmark,
+            "num_warmup_iterations": num_warmup_iterations,
+            "num_iterations": num_iterations,
+            "num_repeats": num_repeats,
+            "dtype": dtype,
+        }
+        kwargs[backend["option"]] = True
+
+        run_benchmark(**kwargs)
+
+        mock_run_benchmark_for_framework.assert_called_once_with(
+            benchmark=benchmark,
+            num_warmup_iterations=num_warmup_iterations,
+            num_iterations=num_iterations,
+            num_repeats=num_repeats,
+            dtype=dtype,
+            framework=backend["framework"],
+            backend=backend["backend"],
+            compile=backend["compile"],
+        )
+
+    # Test with multiple options enabled
+    mock_run_benchmark_for_framework.reset_mock()

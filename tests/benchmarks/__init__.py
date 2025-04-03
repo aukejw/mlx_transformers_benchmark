@@ -25,14 +25,8 @@ class BenchmarkTest:
             dtype=dtype,
             compile=compile,
         )
-        benchmark.run_once(
-            framework=framework,
-            backend=backend,
-        )
-        benchmark.teardown(
-            framework=framework,
-            backend=backend,
-        )
+        benchmark.run_once()
+        benchmark.teardown()
 
     def test_torch_cpu(self, benchmark):
         self.benchmark_setup_run_teardown(benchmark, "torch", "cpu")

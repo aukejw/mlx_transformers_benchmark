@@ -22,18 +22,18 @@ class LinearBenchmark(BaseBenchmark):
             input_shape=input_shape,
         )
 
-    def _setup_torch(self, backend: str, dtype: str):
+    def setup_torch(self):
         batch_size, num_tokens, num_features = self.input_shape
 
         self.torch_function = torch.nn.Linear(
             in_features=num_features,
             out_features=num_features,
             bias=True,
-            device=backend,
-            dtype=dtype,
+            device=self._device,
+            dtype=self._dtype,
         )
 
-    def _setup_mlx(self, backend: str, dtype: str, compile: bool):
+    def setup_mlx(self):
         batch_size, num_tokens, num_features = self.input_shape
 
         self.mlx_function = mlx.nn.Linear(
@@ -41,17 +41,19 @@ class LinearBenchmark(BaseBenchmark):
             output_dims=num_features,
             bias=True,
         )
-        if compile:
+        self.mlx_function.set_dtype(self._dtype)
+
+        if self._compile:
             self.mlx_function = mx.compile(self.mlx_function)
 
     @torch.inference_mode()
-    def _run_torch(self, backend: str) -> torch.Tensor:
+    def run_torch(self) -> torch.Tensor:
         x = self.input_tensor
         fn = self.torch_function
         y = fn(x)
         return y
 
-    def _run_mlx(self, backend: str) -> mx.array:
+    def run_mlx(self) -> mx.array:
         x = self.input_tensor
         fn = self.mlx_function
         y = fn(x)

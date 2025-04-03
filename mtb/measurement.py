@@ -18,6 +18,6 @@ class Measurement:
             f"\n  num_measurements={self.num_measurements}, "
             f"\n  median={self.median:.4f}, "
             f"\n  mean={self.mean:.4f}, "
-            f"\n  std={self.std:.4f} "
+            f"\n  std={self.std:.4f}, "
             f"\n)"
         )

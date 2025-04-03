@@ -40,26 +40,19 @@ def run_benchmark_for_framework(
     )
 
     for warmup_iteration in range(num_warmup_iterations):
-        benchmark.run_once(
-            framework=framework,
-            backend=backend,
-        )
+        benchmark.run_once()
 
     measurements = []
     for repeat_index in range(num_repeats):
         start_time = time.perf_counter()
+
         for iteration in range(num_iterations):
-            benchmark.run_once(
-                framework=framework,
-                backend=backend,
-            )
+            benchmark.run_once()
+
         duration_ms = (time.perf_counter() - start_time) * 1e3 / num_iterations
         measurements.append(duration_ms)
 
-    benchmark.teardown(
-        framework=framework,
-        backend=backend,
-    )
+    benchmark.teardown()
 
     return Measurement(measurements=measurements)
 

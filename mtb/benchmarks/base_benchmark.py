@@ -1,3 +1,4 @@
+import gc
 from typing import Tuple
 
 import mlx.core as mx
@@ -9,10 +10,16 @@ class BaseBenchmark:
 
     Each benchmark should implement setup and run four functions:
 
-      1. `_setup_torch`
-      2. `_setup_mlx`
-      3. `_run_torch`
-      4. `_run_mlx`:
+      1. `setup_torch`
+      2. `setup_mlx`
+      3. `run_torch`
+      4. `run_mlx`:
+
+    We can then call the following three functions in order:
+
+      1. `setup`: Initialize for the given framework, backend, and dtype.
+      2. `run_once`: Run the benchmark once. Of course, we can run this more than once.
+      3. `teardown`: Cleanup.
 
     """
 
@@ -22,119 +29,139 @@ class BaseBenchmark:
         input_shape: Tuple[int, int, int],
     ):
         self.name = name
+        self.input_shape = input_shape
 
         self._batch_size = input_shape[0]
         self._num_tokens = input_shape[1]
         self._num_features = input_shape[2]
 
-        # placeholders for functions
+        # placeholders set during setup
+        self._framework = None
+        self._backend = None
+        self._compile = None
+        self._device = None
+        self._dtype = None
+
+        # placeholders for the function and tensors
         self.torch_function = None
         self.mlx_function = None
-
-        self.input_shape = input_shape
         self.input_tensor = None
+
+    def setup_torch(self):
+        """Setup the torch benchmark."""
+        raise NotImplementedError
+
+    def setup_mlx(self):
+        """Setup the mlx benchmark."""
+        raise NotImplementedError
+
+    def run_torch(self):
+        """Run the benchmark using torch."""
+        raise NotImplementedError
+
+    def run_mlx(self):
+        """Run the benchmark using mlx."""
+        raise NotImplementedError
 
     def setup(
         self,
         framework: str,
-        dtype: str,
         backend: str,
+        dtype: str,
         compile: bool,
     ):
         """Setup the benchmark for the given framework and backend."""
 
-        if framework == "torch":
-            torch.manual_seed(0)
-            torch.set_default_device(torch.device(backend))
+        self._framework = framework
+        self._backend = backend
+        self._compile = compile
 
-            dtype = dict(
+        if framework == "torch":
+            self._device = torch.device(backend)
+
+            self._dtype = dict(
                 float32=torch.float32,
                 bfloat16=torch.bfloat16,
                 float16=torch.float16,
             )[dtype]
 
+            torch.manual_seed(0)
+            torch.set_default_device(self._device)
+            torch.set_default_dtype(self._dtype)
+
             self.input_tensor = torch.rand(
-                self.input_shape, device=backend, dtype=dtype
+                self.input_shape,
+                device=self._device,
+                dtype=self._dtype,
             )
-            self._setup_torch(backend=backend, dtype=dtype)
+            self.setup_torch()
 
         elif framework == "mlx":
             if backend == "metal":
-                device = mx.Device(mx.DeviceType.gpu)
+                self._device = mx.Device(mx.DeviceType.gpu)
             elif backend == "cpu":
-                device = mx.Device(mx.DeviceType.cpu)
+                self._device = mx.Device(mx.DeviceType.cpu)
             else:
                 raise NotImplementedError(backend)
 
-            mx.random.seed(0)
-            mx.set_default_device(device)
-
-            dtype = dict(
+            self._dtype = dict(
                 float32=mx.float32,
                 bfloat16=mx.bfloat16,
                 float16=mx.float16,
             )[dtype]
 
-            self.input_tensor = mx.random.normal(self.input_shape).astype(dtype)
-            self._setup_mlx(backend=backend, dtype=dtype, compile=compile)
+            mx.random.seed(0)
+            mx.set_default_device(self._device)
+
+            self.input_tensor = mx.random.normal(self.input_shape).astype(self._dtype)
+            self.setup_mlx()
 
         else:
-            raise NotImplementedError(framework)
+            raise NotImplementedError(f"Unknown framework {framework}")
 
-    def _setup_torch(self, backend: str, dtype: str):
-        """Setup the torch benchmark."""
-        raise NotImplementedError
-
-    def _setup_mlx(self, backend: str, dtype: str, compile: bool):
-        """Setup the mlx benchmark."""
-        raise NotImplementedError
-
-    def run_once(self, framework: str, backend: str):
+    def run_once(self):
         """Run the benchmark once."""
-        if framework == "torch":
-            self.run_torch(backend)
-        elif framework == "mlx":
-            self.run_mlx(backend)
+        if self._framework == "torch":
+            output: torch.Tensor = self.run_torch()
+
+            if self._backend == "mps":
+                torch.mps.synchronize()
+            elif self._backend == "cuda":
+                torch.cuda.synchronize()
+
+        elif self._framework == "mlx":
+            output: mx.array = self.run_mlx()
+            mx.eval(output)
+
+        elif self._framework is None:
+            raise ValueError("Framework not set. Call setup() first!")
         else:
             raise NotImplementedError
 
-    def run_torch(self, backend: str):
-        """Run the benchmark using torch."""
-
-        output: torch.Tensor = self._run_torch(backend)
-
-        if backend == "mps":
-            torch.mps.synchronize()
-        elif backend == "cuda":
-            torch.cuda.synchronize()
-
-    def run_mlx(self, backend: str):
-        """Run the benchmark using mlx."""
-
-        output: mx.array = self._run_mlx(backend)
-        mx.eval(output)
-
-    def _run_torch(self, backend: str):
-        """Implement the torch benchmark."""
-        raise NotImplementedError
-
-    def _run_mlx(self, backend: str):
-        """Implement the mlx benchmark."""
-        raise NotImplementedError
-
-    def teardown(self, framework: str, backend: str):
+    def teardown(self):
         """Cleanup."""
         del self.input_tensor
 
-        if framework == "torch":
+        if self._framework == "torch":
             del self.torch_function
-
-            if backend == "mps":
+            if self._backend == "mps":
                 torch.mps.empty_cache()
-            if backend == "cuda":
+            if self._backend == "cuda":
                 torch.cuda.empty_cache()
 
-        if framework == "mlx":
+        if self._framework == "mlx":
             del self.mlx_function
-
             mx.clear_cache()
+
+        # reset placeholders
+        self.input_tensor = None
+        self.torch_function = None
+        self.mlx_function = None
+
+        self._framework = None
+        self._backend = None
+        self._dtype = None
+        self._device = None
+        self._compile = None
+
+        gc.collect()
