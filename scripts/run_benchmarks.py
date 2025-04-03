@@ -123,8 +123,7 @@ def main(
         save_header = not output_path.exists()
         results.to_csv(output_path, index=False, mode="a", header=save_header)
 
-        # Cooldown is a fraction of the duration
-        print(f"Duration {duration_s}")
+        # Cooldown is a fraction of the task duration -- let's not fry your chips
         time.sleep(cooldown_time_fraction * duration_s)
 
     print(f"Saved measurements to '{output_path}'")

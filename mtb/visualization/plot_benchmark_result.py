@@ -48,16 +48,10 @@ def show_benchmark_data(
                 scatter = px.scatter(
                     filtered_data,
                     x="sequence_length",
-                    y="median_ms",
+                    y="mean_ms",
                     color="framework_backend",
+                    custom_data=["batch_size"],
                     title=f"dtype: {dtype}, batch_size: {batch_size}",
-                    labels={
-                        "name": "Benchmark",
-                        "framework_backend": "Compute",
-                        "batch_size": "Batch size",
-                        "sequence_length": "Sequence length",
-                        "mean_ms": "Mean runtime (ms)",
-                    },
                 )
 
                 for trace in scatter["data"]:
@@ -102,5 +96,21 @@ def show_benchmark_data(
             tracegroupgap=5,
         ),
         font=dict(size=10),
+    )
+
+    # Add a hover template
+    fig.update_traces(
+        hovertemplate=(
+            "<b>Batch size:</b>  %{customdata[0]:.0f}<br>"
+            "<b>Seq. length:</b> %{x:.0f}<br>"
+            "<b>Runtime:</b>     %{y:.4f} ms"
+        ),
+        mode="markers",
+    )
+    fig.update_layout(
+        hoverlabel=dict(
+            font_family="Menlo, monospace",
+            font_size=14,
+        )
     )
     return fig
