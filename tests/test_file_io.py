@@ -38,7 +38,11 @@ def test_create_benchmark_output_dir(output_root, benchmark_settings):
 @patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
 @patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
 def test_create_benchmark_config_mac(
-    mock_platform, mock_torch, mock_mlx, mock_hardware, benchmark_settings
+    mock_platform,
+    mock_torch,
+    mock_mlx,
+    mock_hardware,
+    benchmark_settings,
 ):
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
@@ -52,7 +56,11 @@ def test_create_benchmark_config_mac(
 @patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
 @patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
 def test_create_benchmark_config_linux(
-    mock_platform, mock_torch, mock_mlx, mock_hardware, benchmark_settings
+    mock_platform,
+    mock_torch,
+    mock_mlx,
+    mock_hardware,
+    benchmark_settings,
 ):
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
