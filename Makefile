@@ -24,4 +24,4 @@ show:
 	open benchmark_visualizations/index.html 
 
 test:
-	poetry run pytest
+	poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
