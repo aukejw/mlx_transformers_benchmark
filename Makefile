@@ -15,13 +15,13 @@ activate-venv:
 ## Targets for running benchmarks
 
 run:
-	python scripts/run_benchmarks.py --num_iterations 30 --num_warmup_iterations 10 --dtype float32
-	python scripts/run_benchmarks.py --num_iterations 30 --num_warmup_iterations 10 --dtype float16
-	python scripts/run_benchmarks.py --num_iterations 30 --num_warmup_iterations 10 --dtype bfloat16
+	poetry run python scripts/run_benchmarks.py --num_iterations 30 --num_warmup_iterations 10 --dtype float32
+	poetry run python scripts/run_benchmarks.py --num_iterations 30 --num_warmup_iterations 10 --dtype float16
+	poetry run python scripts/run_benchmarks.py --num_iterations 30 --num_warmup_iterations 10 --dtype bfloat16
 
 show:
-	python scripts/visualize_measurements.py
+	poetry run python scripts/visualize_measurements.py
 	open benchmark_visualizations/index.html 
 
 test:
-	pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v tests
+	poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v tests
