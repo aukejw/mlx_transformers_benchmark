@@ -2,6 +2,8 @@
 name = "mtb"
 version = "0.1.0"
 readme = "README.md"
+description = "Benchmarking neural network layers on MLX+Metal vs torch+MPS"
+authors = ["Auke Wiggers <wiggers.auke@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
