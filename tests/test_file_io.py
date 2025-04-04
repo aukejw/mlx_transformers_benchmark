@@ -6,6 +6,7 @@ import pytest
 
 from mtb.file_io import (
     _convert_row_to_framework_backend,
+    _get_commit,
     aggregate_measurements,
     create_benchmark_config,
     create_benchmark_output_dir,
@@ -32,17 +33,30 @@ def test_create_benchmark_output_dir(output_root, benchmark_settings):
         assert settings["benchmark_settings"] == benchmark_settings
 
 
+@patch("platform.system", return_value="Darwin")
 @patch("mtb.file_io.get_mac_hardware_info", return_value={"chip": "M1"})
 @patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
 @patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
-@patch("mtb.file_io.subprocess.check_output", return_value=b"mock_git_commit")
-def test_create_benchmark_config(
-    mock_git, mock_torch, mock_mlx, mock_hardware, benchmark_settings
+def test_create_benchmark_config_mac(
+    mock_platform, mock_torch, mock_mlx, mock_hardware, benchmark_settings
 ):
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
-    assert config["git_commit"] == "mock_git_commit"
     assert config["hardware_info"]["chip"] == "M1"
+    assert config["software_info"]["mlx_version"] == "1.0.0"
+    assert config["software_info"]["torch_version"] == "2.0.0"
+
+
+@patch("platform.system", return_value="Linux")
+@patch("mtb.file_io.get_linux_hardware_info", return_value={"chip": "aarch64"})
+@patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
+@patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
+def test_create_benchmark_config_linux(
+    mock_platform, mock_torch, mock_mlx, mock_hardware, benchmark_settings
+):
+    config = create_benchmark_config(benchmark_settings)
+    assert config["benchmark_settings"] == benchmark_settings
+    assert config["hardware_info"]["chip"] == "aarch64"
     assert config["software_info"]["mlx_version"] == "1.0.0"
     assert config["software_info"]["torch_version"] == "2.0.0"
 
@@ -50,16 +64,26 @@ def test_create_benchmark_config(
 @patch("mtb.file_io.get_mac_hardware_info", return_value={"chip": "M1"})
 @patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
 @patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
-@patch("mtb.file_io.subprocess.check_output", return_value=None)
 def test_create_benchmark_config_illegal_commit(
-    mock_git, mock_torch, mock_mlx, mock_hardware, benchmark_settings
+    mock_torch, mock_mlx, mock_hardware, benchmark_settings
 ):
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
-    assert config["git_commit"] is None
     assert config["hardware_info"]["chip"] == "M1"
     assert config["software_info"]["mlx_version"] == "1.0.0"
     assert config["software_info"]["torch_version"] == "2.0.0"
+
+
+@patch("mtb.file_io.subprocess.check_output", return_value=b"mock_git_commit")
+def test_get_commit(mock_git_commit):
+    commit = _get_commit()
+    assert commit == "mock_git_commit"
+
+
+@patch("mtb.file_io.subprocess.check_output", return_value="illegal_value")
+def test_get_illegal_commit(mock_git_commit):
+    commit = _get_commit()
+    assert commit is None
 
 
 def test_aggregate_measurements(tmp_path):

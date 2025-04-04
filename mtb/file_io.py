@@ -8,7 +8,7 @@ from typing import Dict, Union
 import pandas as pd
 from tqdm import tqdm
 
-from mtb.hardware_info import get_mac_hardware_info
+from mtb.hardware_info import get_linux_hardware_info, get_mac_hardware_info
 from mtb.software_info import get_mlx_version, get_torch_version
 
 __all__ = [
@@ -36,7 +36,10 @@ def create_benchmark_output_dir(
         benchmark_settings=benchmark_settings,
     )
     datetime_string = configuration["datetime"]
-    hardware_string = configuration["hardware_info"]["chip"].replace(" ", "_")
+
+    chip = configuration["hardware_info"]["chip"].lower()
+    processor = configuration["hardware_info"]["processor"].lower()
+    hardware_string = f"{chip}__{processor}"
 
     output_dir = Path(output_root) / hardware_string / datetime_string
     output_dir.mkdir(parents=True, exist_ok=False)
@@ -54,16 +57,13 @@ def create_benchmark_config(
 
     datetime_string = datetime.datetime.now().strftime("%Y-%m-%d__%H:%M:%S")
 
-    try:
-        git_commit = (
-            subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
-            .strip()
-        )
-    except:
-        git_commit = None
+    git_commit = _get_commit()
 
-    hardware_info = get_mac_hardware_info()
+    # Select the appropriate hardware info function based on platform
+    if platform.system() == "Darwin":
+        hardware_info = get_mac_hardware_info()
+    else:
+        hardware_info = get_linux_hardware_info()
 
     software_info = dict(
         platform=platform.platform(),
@@ -81,6 +81,18 @@ def create_benchmark_config(
     )
 
     return configuration
+
+
+def _get_commit():
+    try:
+        git_commit = (
+            subprocess.check_output(["git", "rev-parse", "HEAD"])
+            .decode("ascii")
+            .strip()
+        )
+    except:
+        git_commit = None
+    return git_commit
 
 
 def aggregate_measurements(
