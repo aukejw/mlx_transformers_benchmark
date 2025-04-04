@@ -1,0 +1,481 @@
+name,framework,backend,compile,batch_size,sequence_length,num_warmup_iterations,num_iterations,num_repeats,median_ms,mean_ms,std_ms
+LayerNorm(dim=768),torch,mps,False,64,512,,,,2.7511403234658407,2.7511403234658407,0.0
+LayerNorm(dim=768),mlx,metal,False,64,512,,,,1.0604743851266953,1.0604743851266953,0.0
+LayerNorm(dim=768),mlx,metal,True,64,512,,,,1.0851967429478233,1.0851967429478233,0.0
+"Linear(in=768, out=768)",torch,mps,False,64,512,,,,6.481540820095688,6.481540820095688,0.0
+"Linear(in=768, out=768)",mlx,metal,False,64,512,,,,6.083638157865049,6.083638157865049,0.0
+"Linear(in=768, out=768)",mlx,metal,True,64,512,,,,6.79240234376266,6.79240234376266,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,64,512,,,,39.921623340051156,39.921623340051156,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,64,512,,,,33.03701249998994,33.03701249998994,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,64,512,,,,35.64523665991146,35.64523665991146,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,64,512,,,,47.39878749998752,47.39878749998752,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,64,512,,,,39.72068416012917,39.72068416012917,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,64,512,,,,42.40175000013551,42.40175000013551,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,512,,,,109.42418916005408,109.42418916005408,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,512,,,,93.7309658198501,93.7309658198501,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,512,,,,102.44024582003476,102.44024582003476,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,512,,,,111.3166266598273,111.3166266598273,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,512,,,,98.78470999974525,98.78470999974525,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,512,,,,102.61496999999508,102.61496999999508,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,512,,,,162.41588834003778,162.41588834003778,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,512,,,,135.44648415991105,135.44648415991105,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,512,,,,149.57505999977002,149.57505999977002,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,512,,,,162.88837166008307,162.88837166008307,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,512,,,,141.0664266598178,141.0664266598178,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,512,,,,149.44890499988105,149.44890499988105,0.0
+LayerNorm(dim=768),torch,mps,False,64,256,,,,1.5322941599879414,1.5322941599879414,0.0
+LayerNorm(dim=768),mlx,metal,False,64,256,,,,0.56647468076195,0.56647468076195,0.0
+LayerNorm(dim=768),mlx,metal,True,64,256,,,,0.6257401787738649,0.6257401787738649,0.0
+"Linear(in=768, out=768)",torch,mps,False,64,256,,,,3.3565514707280433,3.3565514707280433,0.0
+"Linear(in=768, out=768)",mlx,metal,False,64,256,,,,3.1535650406608253,3.1535650406608253,0.0
+"Linear(in=768, out=768)",mlx,metal,True,64,256,,,,3.5687562500243075,3.5687562500243075,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,64,256,,,,17.881263320159633,17.881263320159633,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,64,256,,,,14.634499999810942,14.634499999810942,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,64,256,,,,16.0188949998701,16.0188949998701,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,64,256,,,,20.06593581987545,20.06593581987545,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,64,256,,,,16.78557165985694,16.78557165985694,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,64,256,,,,18.26012665987946,18.26012665987946,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,256,,,,50.892279999970924,50.892279999970924,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,256,,,,43.920504999987315,43.920504999987315,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,256,,,,46.78489334008191,46.78489334008191,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,256,,,,51.35480750002898,51.35480750002898,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,256,,,,45.189844999986235,45.189844999986235,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,256,,,,47.11261583986925,47.11261583986925,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,256,,,,72.81994250020944,72.81994250020944,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,256,,,,61.94127249997109,61.94127249997109,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,256,,,,65.83333499991568,65.83333499991568,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,256,,,,72.72347667982103,72.72347667982103,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,256,,,,62.56891333992826,62.56891333992826,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,256,,,,65.54364081996027,65.54364081996027,0.0
+LayerNorm(dim=768),torch,mps,False,64,128,,,,1.3230611167576474,1.3230611167576474,0.0
+LayerNorm(dim=768),mlx,metal,False,64,128,,,,0.3645851609734364,0.3645851609734364,0.0
+LayerNorm(dim=768),mlx,metal,True,64,128,,,,0.3682994481852188,0.3682994481852188,0.0
+"Linear(in=768, out=768)",torch,mps,False,64,128,,,,1.8148627500255208,1.8148627500255208,0.0
+"Linear(in=768, out=768)",mlx,metal,False,64,128,,,,1.677690970645213,1.677690970645213,0.0
+"Linear(in=768, out=768)",mlx,metal,True,64,128,,,,1.852760964858023,1.852760964858023,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,64,128,,,,8.662379159941338,8.662379159941338,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,64,128,,,,6.9901995969215225,6.9901995969215225,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,64,128,,,,7.7336666666572755,7.7336666666572755,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,64,128,,,,9.551254999823868,9.551254999823868,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,64,128,,,,7.711675000080669,7.711675000080669,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,64,128,,,,8.466774553588559,8.466774553588559,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,128,,,,24.709126679808833,24.709126679808833,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,128,,,,21.150360840256326,21.150360840256326,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,128,,,,22.48660333978478,22.48660333978478,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,128,,,,24.726869159785565,24.726869159785565,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,128,,,,21.362392499868292,21.362392499868292,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,128,,,,22.530757500207983,22.530757500207983,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,128,,,,34.474239999835845,34.474239999835845,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,128,,,,29.484812500013504,29.484812500013504,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,128,,,,31.24062582006445,31.24062582006445,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,128,,,,35.16568918013945,35.16568918013945,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,128,,,,29.58466000010958,29.58466000010958,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,128,,,,30.806584999954794,30.806584999954794,0.0
+LayerNorm(dim=768),torch,mps,False,64,64,,,,1.073494043001639,1.073494043001639,0.0
+LayerNorm(dim=768),mlx,metal,False,64,64,,,,0.24607268769671548,0.24607268769671548,0.0
+LayerNorm(dim=768),mlx,metal,True,64,64,,,,0.24927015773257907,0.24927015773257907,0.0
+"Linear(in=768, out=768)",torch,mps,False,64,64,,,,1.2835588000598364,1.2835588000598364,0.0
+"Linear(in=768, out=768)",mlx,metal,False,64,64,,,,0.9463214092046166,0.9463214092046166,0.0
+"Linear(in=768, out=768)",mlx,metal,True,64,64,,,,1.0618563816103193,1.0618563816103193,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,64,64,,,,4.601969159848522,4.601969159848522,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,64,64,,,,3.5690032051424456,3.5690032051424456,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,64,64,,,,4.082581036752987,4.082581036752987,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,64,64,,,,4.861501660197973,4.861501660197973,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,64,64,,,,3.8208975306681205,3.8208975306681205,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,64,64,,,,4.326285714272498,4.326285714272498,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,64,,,,12.060888340056408,12.060888340056408,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,64,,,,10.707233319990337,10.707233319990337,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,64,,,,11.432665839965921,11.432665839965921,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,64,,,,12.12300168001093,12.12300168001093,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,64,,,,10.693182499962859,10.693182499962859,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,64,,,,11.438702500017826,11.438702500017826,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,64,64,,,,16.496691679931246,16.496691679931246,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,64,64,,,,14.482563339988701,14.482563339988701,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,64,64,,,,15.37066999997478,15.37066999997478,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,64,64,,,,16.547852500225417,16.547852500225417,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,64,64,,,,14.590096680040006,14.590096680040006,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,64,64,,,,15.3731174999848,15.3731174999848,0.0
+LayerNorm(dim=768),torch,mps,False,32,512,,,,1.7177035409926635,1.7177035409926635,0.0
+LayerNorm(dim=768),mlx,metal,False,32,512,,,,0.5763547599781305,0.5763547599781305,0.0
+LayerNorm(dim=768),mlx,metal,True,32,512,,,,0.6339527909768936,0.6339527909768936,0.0
+"Linear(in=768, out=768)",torch,mps,False,32,512,,,,3.356883339874912,3.356883339874912,0.0
+"Linear(in=768, out=768)",mlx,metal,False,32,512,,,,3.145951817429665,3.145951817429665,0.0
+"Linear(in=768, out=768)",mlx,metal,True,32,512,,,,3.4689947479912338,3.4689947479912338,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,32,512,,,,21.872132499993313,21.872132499993313,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,32,512,,,,16.698751680087298,16.698751680087298,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,32,512,,,,18.069612499966752,18.069612499966752,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,32,512,,,,25.710536680126097,25.710536680126097,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,32,512,,,,20.02806333999615,20.02806333999615,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,32,512,,,,21.40395582013298,21.40395582013298,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,512,,,,56.91770000004908,56.91770000004908,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,512,,,,47.10616832016967,47.10616832016967,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,512,,,,51.18344000016805,51.18344000016805,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,512,,,,57.39830250007799,57.39830250007799,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,512,,,,49.46302583994111,49.46302583994111,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,512,,,,52.001340000133496,52.001340000133496,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,512,,,,85.55304167995928,85.55304167995928,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,512,,,,68.207903339935,68.207903339935,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,512,,,,75.35498333978467,75.35498333978467,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,512,,,,85.56199333979748,85.56199333979748,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,512,,,,70.17746583995176,70.17746583995176,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,512,,,,74.49008166004205,74.49008166004205,0.0
+LayerNorm(dim=768),torch,mps,False,32,256,,,,1.3241184705311395,1.3241184705311395,0.0
+LayerNorm(dim=768),mlx,metal,False,32,256,,,,0.358997269429592,0.358997269429592,0.0
+LayerNorm(dim=768),mlx,metal,True,32,256,,,,0.35562009543162193,0.35562009543162193,0.0
+"Linear(in=768, out=768)",torch,mps,False,32,256,,,,1.816399017116055,1.816399017116055,0.0
+"Linear(in=768, out=768)",mlx,metal,False,32,256,,,,1.684797076939923,1.684797076939923,0.0
+"Linear(in=768, out=768)",mlx,metal,True,32,256,,,,1.8509931144500902,1.8509931144500902,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,32,256,,,,10.238057499809656,10.238057499809656,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,32,256,,,,7.475597457614948,7.475597457614948,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,32,256,,,,8.284008620680181,8.284008620680181,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,32,256,,,,11.328669999784324,11.328669999784324,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,32,256,,,,8.585214058756737,8.585214058756737,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,32,256,,,,9.365260000049602,9.365260000049602,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,256,,,,26.431342500145547,26.431342500145547,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,256,,,,22.01952250004979,22.01952250004979,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,256,,,,23.620006660057697,23.620006660057697,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,256,,,,26.518340000184253,26.518340000184253,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,256,,,,22.479414159897715,22.479414159897715,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,256,,,,23.570117499912158,23.570117499912158,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,256,,,,38.107003339973744,38.107003339973744,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,256,,,,30.852269179886207,30.852269179886207,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,256,,,,33.07864666014211,33.07864666014211,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,256,,,,38.07794834021479,38.07794834021479,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,256,,,,31.34646165999584,31.34646165999584,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,256,,,,33.36335666012019,33.36335666012019,0.0
+LayerNorm(dim=768),torch,mps,False,32,128,,,,0.9447295660205748,0.9447295660205748,0.0
+LayerNorm(dim=768),mlx,metal,False,32,128,,,,0.23324365110630832,0.23324365110630832,0.0
+LayerNorm(dim=768),mlx,metal,True,32,128,,,,0.25050763357736605,0.25050763357736605,0.0
+"Linear(in=768, out=768)",torch,mps,False,32,128,,,,1.2941518986355984,1.2941518986355984,0.0
+"Linear(in=768, out=768)",mlx,metal,False,32,128,,,,0.9495846645147078,0.9495846645147078,0.0
+"Linear(in=768, out=768)",mlx,metal,True,32,128,,,,1.0809871323455773,1.0809871323455773,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,32,128,,,,5.07428249984514,5.07428249984514,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,32,128,,,,3.6124186475284485,3.6124186475284485,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,32,128,,,,4.12815935966424,4.12815935966424,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,32,128,,,,5.451419999881182,5.451419999881182,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,32,128,,,,3.927117132061196,3.927117132061196,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,32,128,,,,4.462040085733558,4.462040085733558,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,128,,,,12.812097500136588,12.812097500136588,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,128,,,,10.734338340116665,10.734338340116665,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,128,,,,11.649292499932926,11.649292499932926,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,128,,,,12.850669180043042,12.850669180043042,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,128,,,,10.795197499974165,10.795197499974165,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,128,,,,11.569116659811698,11.569116659811698,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,128,,,,18.188950000039767,18.188950000039767,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,128,,,,14.922776680032257,14.922776680032257,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,128,,,,15.94311333989026,15.94311333989026,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,128,,,,18.57693250000011,18.57693250000011,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,128,,,,14.92792584002018,14.92792584002018,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,128,,,,15.931740000087302,15.931740000087302,0.0
+LayerNorm(dim=768),torch,mps,False,32,64,,,,0.8398747819189745,0.8398747819189745,0.0
+LayerNorm(dim=768),mlx,metal,False,32,64,,,,0.16878460293295605,0.16878460293295605,0.0
+LayerNorm(dim=768),mlx,metal,True,32,64,,,,0.17385839457091137,0.17385839457091137,0.0
+"Linear(in=768, out=768)",torch,mps,False,32,64,,,,0.9747357190268774,0.9747357190268774,0.0
+"Linear(in=768, out=768)",mlx,metal,False,32,64,,,,0.5407594864221741,0.5407594864221741,0.0
+"Linear(in=768, out=768)",mlx,metal,True,32,64,,,,0.6707786411407926,0.6707786411407926,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,32,64,,,,2.9923125001369044,2.9923125001369044,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,32,64,,,,1.9167775572744479,1.9167775572744479,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,32,64,,,,2.2841553030902464,2.2841553030902464,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,32,64,,,,3.2294308199197985,3.2294308199197985,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,32,64,,,,1.9918974867323413,1.9918974867323413,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,32,64,,,,2.389593482230847,2.389593482230847,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,64,,,,6.48938750004163,6.48938750004163,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,64,,,,5.4688546875695465,5.4688546875695465,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,64,,,,6.042224999873724,6.042224999873724,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,64,,,,6.4789133198792115,6.4789133198792115,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,64,,,,5.483343225023418,5.483343225023418,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,64,,,,6.050958851838116,6.050958851838116,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,32,64,,,,8.993639179971069,8.993639179971069,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,32,64,,,,7.456617491877043,7.456617491877043,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,32,64,,,,8.073314583452884,8.073314583452884,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,32,64,,,,9.087689999723807,9.087689999723807,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,32,64,,,,7.592278949263253,7.592278949263253,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,32,64,,,,8.105628466728376,8.105628466728376,0.0
+LayerNorm(dim=768),torch,mps,False,16,512,,,,1.2302758201258257,1.2302758201258257,0.0
+LayerNorm(dim=768),mlx,metal,False,16,512,,,,0.34975301930433417,0.34975301930433417,0.0
+LayerNorm(dim=768),mlx,metal,True,16,512,,,,0.3659315260722505,0.3659315260722505,0.0
+"Linear(in=768, out=768)",torch,mps,False,16,512,,,,1.886624999851996,1.886624999851996,0.0
+"Linear(in=768, out=768)",mlx,metal,False,16,512,,,,1.6764164604027618,1.6764164604027618,0.0
+"Linear(in=768, out=768)",mlx,metal,True,16,512,,,,1.859055554156103,1.859055554156103,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,16,512,,,,11.40656499977922,11.40656499977922,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,16,512,,,,8.502540886973224,8.502540886973224,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,16,512,,,,9.278290057689166,9.278290057689166,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,16,512,,,,13.6618958399049,13.6618958399049,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,16,512,,,,10.35566917998949,10.35566917998949,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,16,512,,,,11.19531750009628,11.19531750009628,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,512,,,,29.109905840014108,29.109905840014108,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,512,,,,23.88181168003939,23.88181168003939,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,512,,,,26.493510000000242,26.493510000000242,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,512,,,,28.757574160117656,28.757574160117656,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,512,,,,24.887818340212107,24.887818340212107,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,512,,,,26.156195819785353,26.156195819785353,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,512,,,,42.89474416000303,42.89474416000303,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,512,,,,34.49112083995715,34.49112083995715,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,512,,,,38.151537499797996,38.151537499797996,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,512,,,,42.90075500000967,42.90075500000967,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,512,,,,35.58413415972609,35.58413415972609,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,512,,,,38.03812416008441,38.03812416008441,0.0
+LayerNorm(dim=768),torch,mps,False,16,256,,,,0.959355731402635,0.959355731402635,0.0
+LayerNorm(dim=768),mlx,metal,False,16,256,,,,0.22983172374104732,0.22983172374104732,0.0
+LayerNorm(dim=768),mlx,metal,True,16,256,,,,0.23218671920051615,0.23218671920051615,0.0
+"Linear(in=768, out=768)",torch,mps,False,16,256,,,,1.2813019479304406,1.2813019479304406,0.0
+"Linear(in=768, out=768)",mlx,metal,False,16,256,,,,0.9397515066092111,0.9397515066092111,0.0
+"Linear(in=768, out=768)",mlx,metal,True,16,256,,,,1.0736965882197005,1.0736965882197005,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,16,256,,,,5.482472500007134,5.482472500007134,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,16,256,,,,3.8689249999482525,3.8689249999482525,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,16,256,,,,4.361013095227203,4.361013095227203,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,16,256,,,,5.8018774999072775,5.8018774999072775,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,16,256,,,,4.348357571425553,4.348357571425553,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,16,256,,,,4.863554666723846,4.863554666723846,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,256,,,,13.283119179832283,13.283119179832283,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,256,,,,11.269999160140287,11.269999160140287,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,256,,,,12.083509159856476,12.083509159856476,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,256,,,,13.595130840258207,13.595130840258207,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,256,,,,11.435554999916349,11.435554999916349,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,256,,,,12.124588339938782,12.124588339938782,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,256,,,,19.358502499817405,19.358502499817405,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,256,,,,15.609829160093796,15.609829160093796,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,256,,,,16.985309180163313,16.985309180163313,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,256,,,,19.44635917985579,19.44635917985579,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,256,,,,15.870427500049118,15.870427500049118,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,256,,,,16.89637584000593,16.89637584000593,0.0
+LayerNorm(dim=768),torch,mps,False,16,128,,,,0.7774386532726375,0.7774386532726375,0.0
+LayerNorm(dim=768),mlx,metal,False,16,128,,,,0.17441021620332745,0.17441021620332745,0.0
+LayerNorm(dim=768),mlx,metal,True,16,128,,,,0.17662915435007176,0.17662915435007176,0.0
+"Linear(in=768, out=768)",torch,mps,False,16,128,,,,0.7716100817525412,0.7716100817525412,0.0
+"Linear(in=768, out=768)",mlx,metal,False,16,128,,,,0.5381018275519233,0.5381018275519233,0.0
+"Linear(in=768, out=768)",mlx,metal,True,16,128,,,,0.6765561990763627,0.6765561990763627,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,16,128,,,,3.1150766799692065,3.1150766799692065,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,16,128,,,,1.945142578127464,1.945142578127464,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,16,128,,,,2.3169199506846243,2.3169199506846243,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,16,128,,,,3.266029160004109,3.266029160004109,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,16,128,,,,2.072800403199239,2.072800403199239,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,16,128,,,,2.4660985260046195,2.4660985260046195,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,128,,,,6.580614999984391,6.580614999984391,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,128,,,,5.6230937500004075,5.6230937500004075,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,128,,,,6.23765953959695,6.23765953959695,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,128,,,,6.6986500000348315,6.6986500000348315,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,128,,,,5.61434523389197,5.61434523389197,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,128,,,,6.147650428616756,6.147650428616756,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,128,,,,9.330428319808561,9.330428319808561,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,128,,,,7.625564966119937,7.625564966119937,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,128,,,,8.309070627161665,8.309070627161665,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,128,,,,9.314916679868475,9.314916679868475,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,128,,,,7.730415966006595,7.730415966006595,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,128,,,,8.378177631560614,8.378177631560614,0.0
+LayerNorm(dim=768),torch,mps,False,16,64,,,,0.6541764022309191,0.6541764022309191,0.0
+LayerNorm(dim=768),mlx,metal,False,16,64,,,,0.14826280356353788,0.14826280356353788,0.0
+LayerNorm(dim=768),mlx,metal,True,16,64,,,,0.1420146901417428,0.1420146901417428,0.0
+"Linear(in=768, out=768)",torch,mps,False,16,64,,,,0.6789849656317991,0.6789849656317991,0.0
+"Linear(in=768, out=768)",mlx,metal,False,16,64,,,,0.34063036035846855,0.34063036035846855,0.0
+"Linear(in=768, out=768)",mlx,metal,True,16,64,,,,0.4165903125559974,0.4165903125559974,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,16,64,,,,3.3130520960884704,3.3130520960884704,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,16,64,,,,1.1145164015884956,1.1145164015884956,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,16,64,,,,1.4056373873862575,1.4056373873862575,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,16,64,,,,2.760268115958172,2.760268115958172,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,16,64,,,,1.1391288505325539,1.1391288505325539,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,16,64,,,,1.4053025176985208,1.4053025176985208,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,64,,,,3.477119160233997,3.477119160233997,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,64,,,,2.9383163065794027,2.9383163065794027,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,64,,,,3.4245349155061775,3.4245349155061775,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,64,,,,3.4803391600144096,3.4803391600144096,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,64,,,,2.941877607164705,2.941877607164705,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,64,,,,3.4187453028108123,3.4187453028108123,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,16,64,,,,4.790100840036757,4.790100840036757,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,16,64,,,,3.968182533364078,3.968182533364078,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,16,64,,,,4.53652594337912,4.53652594337912,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,16,64,,,,4.840351660095621,4.840351660095621,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,16,64,,,,3.97596224788258,3.97596224788258,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,16,64,,,,4.536567129738008,4.536567129738008,0.0
+LayerNorm(dim=768),torch,mps,False,8,512,,,,1.141718439502063,1.141718439502063,0.0
+LayerNorm(dim=768),mlx,metal,False,8,512,,,,0.29098022598273376,0.29098022598273376,0.0
+LayerNorm(dim=768),mlx,metal,True,8,512,,,,0.22909440298490016,0.22909440298490016,0.0
+"Linear(in=768, out=768)",torch,mps,False,8,512,,,,1.2953000001075186,1.2953000001075186,0.0
+"Linear(in=768, out=768)",mlx,metal,False,8,512,,,,0.9670630566445956,0.9670630566445956,0.0
+"Linear(in=768, out=768)",mlx,metal,True,8,512,,,,1.0855152553771263,1.0855152553771263,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,8,512,,,,5.85803333990043,5.85803333990043,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,8,512,,,,4.422440908122238,4.422440908122238,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,8,512,,,,4.8691408970326036,4.8691408970326036,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,8,512,,,,6.755526659835596,6.755526659835596,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,8,512,,,,5.232587843293223,5.232587843293223,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,8,512,,,,5.782113095240978,5.782113095240978,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,512,,,,14.366926679795142,14.366926679795142,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,512,,,,12.121878339967225,12.121878339967225,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,512,,,,13.579247500165366,13.579247500165366,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,512,,,,14.34726084000431,14.34726084000431,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,512,,,,12.471355840098113,12.471355840098113,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,512,,,,13.367365000012796,13.367365000012796,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,512,,,,21.890621679776814,21.890621679776814,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,512,,,,17.260385840199888,17.260385840199888,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,512,,,,19.182776660018135,19.182776660018135,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,512,,,,21.45969917997718,21.45969917997718,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,512,,,,17.744983340089675,17.744983340089675,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,512,,,,19.02578833978623,19.02578833978623,0.0
+LayerNorm(dim=768),torch,mps,False,8,256,,,,0.8642173186886152,0.8642173186886152,0.0
+LayerNorm(dim=768),mlx,metal,False,8,256,,,,0.1838925641997267,0.1838925641997267,0.0
+LayerNorm(dim=768),mlx,metal,True,8,256,,,,0.17320258681378378,0.17320258681378378,0.0
+"Linear(in=768, out=768)",torch,mps,False,8,256,,,,0.9408949526627303,0.9408949526627303,0.0
+"Linear(in=768, out=768)",mlx,metal,False,8,256,,,,0.5348032077194034,0.5348032077194034,0.0
+"Linear(in=768, out=768)",mlx,metal,True,8,256,,,,0.6687025093212825,0.6687025093212825,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,8,256,,,,3.324257500062231,3.324257500062231,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,8,256,,,,2.0729115161473954,2.0729115161473954,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,8,256,,,,2.459850473996994,2.459850473996994,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,8,256,,,,3.3213158400030807,3.3213158400030807,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,8,256,,,,2.273809210460617,2.273809210460617,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,8,256,,,,2.6487212513923395,2.6487212513923395,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,256,,,,6.921238339855336,6.921238339855336,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,256,,,,5.72394210389398,5.72394210389398,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,256,,,,6.387246000000008,6.387246000000008,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,256,,,,6.886363340017851,6.886363340017851,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,256,,,,5.842003289504454,5.842003289504454,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,256,,,,6.447203708376037,6.447203708376037,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,256,,,,9.765694180096034,9.765694180096034,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,256,,,,8.035087500077983,8.035087500077983,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,256,,,,8.895797269360628,8.895797269360628,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,256,,,,9.854147500009276,9.854147500009276,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,256,,,,8.120103410484651,8.120103410484651,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,256,,,,8.808782563640058,8.808782563640058,0.0
+LayerNorm(dim=768),torch,mps,False,8,128,,,,0.6137204708845707,0.6137204708845707,0.0
+LayerNorm(dim=768),mlx,metal,False,8,128,,,,0.1464787569550294,0.1464787569550294,0.0
+LayerNorm(dim=768),mlx,metal,True,8,128,,,,0.14489354726674827,0.14489354726674827,0.0
+"Linear(in=768, out=768)",torch,mps,False,8,128,,,,0.6102031818061898,0.6102031818061898,0.0
+"Linear(in=768, out=768)",mlx,metal,False,8,128,,,,0.33691158945973665,0.33691158945973665,0.0
+"Linear(in=768, out=768)",mlx,metal,True,8,128,,,,0.4144560296217399,0.4144560296217399,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,8,128,,,,2.674815558908877,2.674815558908877,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,8,128,,,,1.1478472948832756,1.1478472948832756,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,8,128,,,,1.4286703768739675,1.4286703768739675,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,8,128,,,,3.0408501039204707,3.0408501039204707,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,8,128,,,,1.1963806818212932,1.1963806818212932,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,8,128,,,,1.4689522616130404,1.4689522616130404,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,128,,,,3.5193480392027756,3.5193480392027756,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,128,,,,2.9414830126712146,2.9414830126712146,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,128,,,,3.437526297841406,3.437526297841406,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,128,,,,3.548276735873858,3.548276735873858,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,128,,,,2.961965275365704,2.961965275365704,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,128,,,,3.4340818510440356,3.4340818510440356,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,128,,,,4.8831816599704325,4.8831816599704325,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,128,,,,4.042035046661334,4.042035046661334,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,128,,,,4.60251571691841,4.60251571691841,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,128,,,,4.881159180076793,4.881159180076793,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,128,,,,4.070811422495573,4.070811422495573,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,128,,,,4.607468257225784,4.607468257225784,0.0
+LayerNorm(dim=768),torch,mps,False,8,64,,,,0.48800332843878486,0.48800332843878486,0.0
+LayerNorm(dim=768),mlx,metal,False,8,64,,,,0.13053723403760784,0.13053723403760784,0.0
+LayerNorm(dim=768),mlx,metal,True,8,64,,,,0.12884318996555677,0.12884318996555677,0.0
+"Linear(in=768, out=768)",torch,mps,False,8,64,,,,0.4083546642851572,0.4083546642851572,0.0
+"Linear(in=768, out=768)",mlx,metal,False,8,64,,,,0.2411672056930918,0.2411672056930918,0.0
+"Linear(in=768, out=768)",mlx,metal,True,8,64,,,,0.3030315117870967,0.3030315117870967,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,8,64,,,,2.5479642857904903,2.5479642857904903,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,8,64,,,,0.7358893557745538,0.7358893557745538,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,8,64,,,,0.9638249803986806,0.9638249803986806,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,8,64,,,,1.8299170168108863,1.8299170168108863,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,8,64,,,,0.7617892651323508,0.7617892651323508,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,8,64,,,,0.969488933053851,0.969488933053851,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,64,,,,2.4561721312982794,2.4561721312982794,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,64,,,,1.634811886052536,1.634811886052536,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,64,,,,2.0680558534187528,2.0680558534187528,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,64,,,,2.86894322540748,2.86894322540748,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,64,,,,1.6605263452448635,1.6605263452448635,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,64,,,,2.0704054848434104,2.0704054848434104,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,8,64,,,,3.0676390778790408,3.0676390778790408,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,8,64,,,,2.197493305698235,2.197493305698235,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,8,64,,,,2.665407638899827,2.665407638899827,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,8,64,,,,3.0087573951835025,3.0087573951835025,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,8,64,,,,2.2160895282211595,2.2160895282211595,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,8,64,,,,2.6698124999987494,2.6698124999987494,0.0
+LayerNorm(dim=768),torch,mps,False,1,512,,,,0.45633528889645536,0.45633528889645536,0.0
+LayerNorm(dim=768),mlx,metal,False,1,512,,,,0.13157312531162224,0.13157312531162224,0.0
+LayerNorm(dim=768),mlx,metal,True,1,512,,,,0.12364470324387608,0.12364470324387608,0.0
+"Linear(in=768, out=768)",torch,mps,False,1,512,,,,0.463071152336463,0.463071152336463,0.0
+"Linear(in=768, out=768)",mlx,metal,False,1,512,,,,0.24281091205411703,0.24281091205411703,0.0
+"Linear(in=768, out=768)",mlx,metal,True,1,512,,,,0.3029354342845033,0.3029354342845033,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,1,512,,,,1.803648741809421,1.803648741809421,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,1,512,,,,0.8456827160747101,0.8456827160747101,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,1,512,,,,1.0550572916512018,1.0550572916512018,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,1,512,,,,2.50663226730932,2.50663226730932,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,1,512,,,,0.9201245239494551,0.9201245239494551,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,1,512,,,,1.160306190832224,1.160306190832224,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,512,,,,2.356391566306218,2.356391566306218,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,512,,,,1.8061322804963467,1.8061322804963467,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,512,,,,2.295888487951479,2.295888487951479,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,512,,,,2.907318837020759,2.907318837020759,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,512,,,,1.8611251810492329,1.8611251810492329,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,512,,,,2.307676682623703,2.307676682623703,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,512,,,,3.5797001737987357,3.5797001737987357,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,512,,,,2.609202075201878,2.609202075201878,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,512,,,,3.1208214285789517,3.1208214285789517,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,512,,,,3.635786931971035,3.635786931971035,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,512,,,,2.6315347202485317,2.6315347202485317,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,512,,,,3.146101307185531,3.146101307185531,0.0
+LayerNorm(dim=768),torch,mps,False,1,256,,,,0.46430285972258106,0.46430285972258106,0.0
+LayerNorm(dim=768),mlx,metal,False,1,256,,,,0.11757175583127324,0.11757175583127324,0.0
+LayerNorm(dim=768),mlx,metal,True,1,256,,,,0.12133576962758583,0.12133576962758583,0.0
+"Linear(in=768, out=768)",torch,mps,False,1,256,,,,0.3466791175275696,0.3466791175275696,0.0
+"Linear(in=768, out=768)",mlx,metal,False,1,256,,,,0.18877711345875964,0.18877711345875964,0.0
+"Linear(in=768, out=768)",mlx,metal,True,1,256,,,,0.2491298415509551,0.2491298415509551,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,1,256,,,,2.2931368208148015,2.2931368208148015,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,1,256,,,,0.5193875602744553,0.5193875602744553,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,1,256,,,,0.7882413407103468,0.7882413407103468,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,1,256,,,,2.224415452533952,2.224415452533952,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,1,256,,,,0.5314995551703902,0.5314995551703902,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,1,256,,,,0.789874999999778,0.789874999999778,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,256,,,,2.2800355390976548,2.2800355390976548,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,256,,,,1.1262508832638964,1.1262508832638964,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,256,,,,1.4965610226124315,1.4965610226124315,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,256,,,,2.7571617499941365,2.7571617499941365,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,256,,,,1.1954408144061524,1.1954408144061524,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,256,,,,1.4954867362964845,1.4954867362964845,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,256,,,,2.8293644180416404,2.8293644180416404,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,256,,,,1.6232137788401861,1.6232137788401861,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,256,,,,1.9423657407363255,1.9423657407363255,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,256,,,,3.020041999989189,3.020041999989189,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,256,,,,1.63508550283456,1.63508550283456,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,256,,,,1.948999652897839,1.948999652897839,0.0
+LayerNorm(dim=768),torch,mps,False,1,128,,,,0.43628878010638866,0.43628878010638866,0.0
+LayerNorm(dim=768),mlx,metal,False,1,128,,,,0.11003603662087766,0.11003603662087766,0.0
+LayerNorm(dim=768),mlx,metal,True,1,128,,,,0.11644587933950742,0.11644587933950742,0.0
+"Linear(in=768, out=768)",torch,mps,False,1,128,,,,0.2900920980292457,0.2900920980292457,0.0
+"Linear(in=768, out=768)",mlx,metal,False,1,128,,,,0.16173413876981171,0.16173413876981171,0.0
+"Linear(in=768, out=768)",mlx,metal,True,1,128,,,,0.2266950364207366,0.2266950364207366,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,1,128,,,,1.4804026153980143,1.4804026153980143,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,1,128,,,,0.4619324702454211,0.4619324702454211,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,1,128,,,,0.6360670532692476,0.6360670532692476,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,1,128,,,,1.595592437044483,1.595592437044483,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,1,128,,,,0.4006697002573967,0.4006697002573967,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,1,128,,,,0.594324881427123,0.594324881427123,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,128,,,,1.9979113627307337,1.9979113627307337,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,128,,,,0.8330277317791055,0.8330277317791055,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,128,,,,1.2014404270660246,1.2014404270660246,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,128,,,,1.734760313117265,1.734760313117265,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,128,,,,0.8419753881937624,0.8419753881937624,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,128,,,,1.2009621501332102,1.2009621501332102,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,128,,,,2.690341662121776,2.690341662121776,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,128,,,,1.280582840237546,1.280582840237546,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,128,,,,1.50721800967022,1.50721800967022,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,128,,,,2.7382140855670993,2.7382140855670993,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,128,,,,1.27629212018222,1.27629212018222,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,128,,,,1.503516059800862,1.503516059800862,0.0
+LayerNorm(dim=768),torch,mps,False,1,64,,,,0.3785947266062309,0.3785947266062309,0.0
+LayerNorm(dim=768),mlx,metal,False,1,64,,,,0.10862326698168417,0.10862326698168417,0.0
+LayerNorm(dim=768),mlx,metal,True,1,64,,,,0.10823579086726146,0.10823579086726146,0.0
+"Linear(in=768, out=768)",torch,mps,False,1,64,,,,0.21789671361926616,0.21789671361926616,0.0
+"Linear(in=768, out=768)",mlx,metal,False,1,64,,,,0.152811895821676,0.152811895821676,0.0
+"Linear(in=768, out=768)",mlx,metal,True,1,64,,,,0.2171358853977091,0.2171358853977091,0.0
+"MHSA(dim=768, num_heads=1)",torch,mps,False,1,64,,,,1.0619478033210694,1.0619478033210694,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,False,1,64,,,,0.33558485598556514,0.33558485598556514,0.0
+"MHSA(dim=768, num_heads=1)",mlx,metal,True,1,64,,,,0.529458175500475,0.529458175500475,0.0
+"MHSA(dim=768, num_heads=8)",torch,mps,False,1,64,,,,1.2911131656136277,1.2911131656136277,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,False,1,64,,,,0.3300934580908287,0.3300934580908287,0.0
+"MHSA(dim=768, num_heads=8)",mlx,metal,True,1,64,,,,0.5288502587317845,0.5288502587317845,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,64,,,,2.3327359999339174,2.3327359999339174,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,64,,,,0.7431554428905622,0.7431554428905622,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,64,,,,1.0504406115144556,1.0504406115144556,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,64,,,,2.3024528406325033,2.3024528406325033,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,64,,,,0.8525037499930477,0.8525037499930477,0.0
+"TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,64,,,,1.060113247111114,1.060113247111114,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",torch,mps,False,1,64,,,,2.835220654932028,2.835220654932028,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,False,1,64,,,,1.0400397255664777,1.0400397255664777,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=None)",mlx,metal,True,1,64,,,,1.3503593294412908,1.3503593294412908,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",torch,mps,False,1,64,,,,2.834140267064043,2.834140267064043,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,False,1,64,,,,1.0562460521684067,1.0562460521684067,0.0
+"TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)",mlx,metal,True,1,64,,,,1.3499835043834232,1.3499835043834232,0.0
