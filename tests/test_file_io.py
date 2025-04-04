@@ -71,8 +71,11 @@ def test_aggregate_measurements(tmp_path):
     # Create a mock CSV file
     csv_file = run_dir / "benchmark_results.csv"
     mock_data = {
+        "name": ["SomeBenchmark"],
         "framework": ["torch"],
         "backend": ["cpu"],
+        "batch_size": [1],
+        "sequence_length": [16],
         "compile": [False],
         "mean_ms": [1.5],
     }

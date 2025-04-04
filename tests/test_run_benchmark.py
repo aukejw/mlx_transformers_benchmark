@@ -125,6 +125,7 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
     num_warmup_iterations = 1
     num_iterations = 1
     num_repeats = 1
+    min_runtime_ms = 500
     dtype = "float16"
 
     # Define all backend options and their expected arguments
@@ -186,6 +187,7 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
             num_warmup_iterations=num_warmup_iterations,
             num_iterations=num_iterations,
             num_repeats=num_repeats,
+            min_runtime_ms=min_runtime_ms,
             dtype=dtype,
             framework=backend["framework"],
             backend=backend["backend"],
