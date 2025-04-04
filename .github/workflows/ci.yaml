@@ -33,7 +33,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          make create-venv 
+          poetry lock
+          poetry install
 
       - name: Run tests with pytest
         run: |
