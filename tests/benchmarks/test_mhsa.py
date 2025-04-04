@@ -4,7 +4,7 @@ from mtb.benchmarks.mhsa import MhsaBenchmark
 from tests.benchmarks import BenchmarkTest
 
 
-class TestMultiheadAttentionBenchmark(BenchmarkTest):
+class TestMhsaBenchmark(BenchmarkTest):
     @pytest.fixture
     def benchmark(self):
         return MhsaBenchmark(

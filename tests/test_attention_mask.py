@@ -10,13 +10,19 @@ from mtb.attention_mask import create_mlx_attention_mask, create_torch_attention
 
 @pytest.fixture
 def torch_attention_layer():
-    torch.set_default_device("cpu")
+    try:
+        torch.set_default_device("mps")
+    except:
+        torch.set_default_device("cpu")
     return torch.nn.MultiheadAttention(embed_dim=16, num_heads=4)
 
 
 @pytest.fixture
 def mlx_attention_layer():
-    mx.set_default_device(mx.DeviceType.gpu)
+    try:
+        mx.set_default_device(mx.DeviceType.gpu)
+    except ValueError:
+        mx.set_default_device(mx.DeviceType.cpu)
     return mlx.nn.MultiHeadAttention(dims=16, num_heads=4)
 
 
@@ -115,6 +121,6 @@ def test_attention_mask_equality(torch_attention_layer, mlx_attention_layer):
     mlx_mask_numpy = (mlx_mask < 0).astype(mx.float32)
 
     # the torch mask is - since pytorch 1.9.0 - a boolean mask: faster and memory-efficient
-    torch_mask_numpy = torch_mask.numpy().astype(np.float32)
+    torch_mask_numpy = torch_mask.cpu().numpy().astype(np.float32)
 
     np.testing.assert_equal(mlx_mask_numpy, torch_mask_numpy)
