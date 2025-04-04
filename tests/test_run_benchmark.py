@@ -52,6 +52,7 @@ def test_run_benchmark_for_framework_slowiterations(benchmark):
 
     measurement = run_benchmark_for_framework(
         benchmark=benchmark,
+        min_runtime_ms=0.1,
         framework="torch",
         backend="cpu",
         dtype="float16",
