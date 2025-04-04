@@ -5,7 +5,7 @@ create-venv:
 	pyenv local 3.11.11
 	POETRY_VIRTUALENVS_IN_PROJECT=1 poetry env use $(shell pyenv which python3)
 	poetry lock
-	poetry install
+	poetry install --with dev
 
 # Activate the virtual environment
 activate-venv:
