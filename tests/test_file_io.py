@@ -42,9 +42,9 @@ def test_create_benchmark_config_mac(
 ):
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
-    assert config["hardware_info"]["chip"] == "M1"
     assert config["software_info"]["mlx_version"] == "1.0.0"
     assert config["software_info"]["torch_version"] == "2.0.0"
+    assert config["hardware_info"]["chip"] == "M1"
 
 
 @patch("platform.system", return_value="Linux")
@@ -57,19 +57,6 @@ def test_create_benchmark_config_linux(
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
     assert config["hardware_info"]["chip"] == "aarch64"
-    assert config["software_info"]["mlx_version"] == "1.0.0"
-    assert config["software_info"]["torch_version"] == "2.0.0"
-
-
-@patch("mtb.file_io.get_mac_hardware_info", return_value={"chip": "M1"})
-@patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
-@patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
-def test_create_benchmark_config_illegal_commit(
-    mock_torch, mock_mlx, mock_hardware, benchmark_settings
-):
-    config = create_benchmark_config(benchmark_settings)
-    assert config["benchmark_settings"] == benchmark_settings
-    assert config["hardware_info"]["chip"] == "M1"
     assert config["software_info"]["mlx_version"] == "1.0.0"
     assert config["software_info"]["torch_version"] == "2.0.0"
 
