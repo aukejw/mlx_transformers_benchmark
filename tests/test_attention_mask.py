@@ -10,20 +10,17 @@ from mtb.attention_mask import create_mlx_attention_mask, create_torch_attention
 
 @pytest.fixture
 def torch_attention_layer():
-    try:
-        torch.set_default_device("mps")
-    except:
-        torch.set_default_device("cpu")
+    torch.set_default_device("cpu")
+    torch.set_default_dtype(torch.float16)
     return torch.nn.MultiheadAttention(embed_dim=16, num_heads=4)
 
 
 @pytest.fixture
 def mlx_attention_layer():
-    try:
-        mx.set_default_device(mx.DeviceType.gpu)
-    except ValueError:
-        mx.set_default_device(mx.DeviceType.cpu)
-    return mlx.nn.MultiHeadAttention(dims=16, num_heads=4)
+    mx.set_default_device(mx.DeviceType.cpu)
+    layer = mlx.nn.MultiHeadAttention(dims=16, num_heads=4)
+    layer.set_dtype(mx.float16)
+    return layer
 
 
 def test_create_torch_attention_mask_causal(torch_attention_layer):
@@ -67,6 +64,7 @@ def test_create_mlx_attention_mask_causal(mlx_attention_layer):
     )
     assert mask is not None
     assert mask.shape == (num_tokens, num_tokens)
+    assert mask.dtype == mx.float16
 
 
 def test_create_mlx_attention_mask_none(mlx_attention_layer):
@@ -89,6 +87,7 @@ def test_create_mlx_attention_mask_none_compile(mlx_attention_layer):
     )
     assert mask is not None
     assert mask.shape == (num_tokens, num_tokens)
+    assert mask.dtype == mx.float16
 
 
 def test_create_mlx_attention_mask_invalid(mlx_attention_layer):
@@ -117,8 +116,9 @@ def test_attention_mask_equality(torch_attention_layer, mlx_attention_layer):
     assert mlx_mask is not None
     assert torch_mask.shape == mlx_mask.shape
 
-    # the mlx mask is an additive causal mask with -infty for masked positions.
-    mlx_mask_numpy = (mlx_mask < 0).astype(mx.float32)
+    # the mlx mask is an additive causal mask with -infty for masked positions,
+    # but -0 for unmasked ones. We need to be careful with neq checks here.
+    mlx_mask_numpy = (mlx_mask.astype(mx.float32) < -0.1).astype(mx.float32)
 
     # the torch mask is - since pytorch 1.9.0 - a boolean mask: faster and memory-efficient
     torch_mask_numpy = torch_mask.cpu().numpy().astype(np.float32)
