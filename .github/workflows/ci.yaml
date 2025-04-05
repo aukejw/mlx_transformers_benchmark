@@ -47,11 +47,33 @@ jobs:
         run: |
           poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
 
-  # Visualization
-  visualize_measurements:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  # Check if measurements changed
+  check-measurements-changed:
     runs-on: ubuntu-latest
     needs: test
+    outputs:
+      measurements_changed: ${{ steps.check.outputs.changed }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Need at least two commits to compare
+
+      - name: Check for changes in measurements folder
+        id: check
+        run: |
+          if git diff --quiet HEAD^ HEAD -- 'measurements/'; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # Visualization
+  visualize_measurements:
+    runs-on: ubuntu-latest
+    needs: check-measurements-changed
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
