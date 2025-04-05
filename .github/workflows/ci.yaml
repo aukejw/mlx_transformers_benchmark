@@ -48,7 +48,7 @@ jobs:
           poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
 
   # Visualization
-  generate-and-deploy:
+  visualize_measurements:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: test
@@ -78,15 +78,6 @@ jobs:
         run: |
           poetry install --with dev
 
-      - name: Check for benchmark file changes
-        id: check_diff
-        run: |
-          echo "changed=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^measurements/' || true)" >> $GITHUB_OUTPUT
-
-      - name: Exit if no visualization changes
-        if: steps.check_diff.outputs.changed == ''
-        run: echo "No visualization files changed. Skipping visualization job." && exit 0
-
       - name: Run visualization script
         run: |
           poetry run python scripts/visualize_measurements.py
@@ -96,5 +87,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: visualization 
-          folder: benchmark_visualization 
+          folder: benchmark_visualizations
           clean: true 
