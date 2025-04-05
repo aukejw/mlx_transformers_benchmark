@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benchmark results</title>
+    <script>
+        // Available chips and benchmarks
+        let availableChips = [];
+        let availableBenchmarks = [];
+        // Mapping to keep track of valid combinations
+        let validCombinations = {};
+
+        function initializeData() {
+            // Extract unique chips and benchmarks and build valid combinations map
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('LayerNorm(dim=768)')) {
+                availableBenchmarks.push('LayerNorm(dim=768)');
+            }
+            validCombinations['Apple_M4_Pro__arm_LayerNorm(dim=768)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/layernorm__dim=768.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('Linear(in=768, out=768)')) {
+                availableBenchmarks.push('Linear(in=768, out=768)');
+            }
+            validCombinations['Apple_M4_Pro__arm_Linear(in=768, out=768)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/linear__in=768_out=768.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=1)')) {
+                availableBenchmarks.push('MHSA(dim=768, num_heads=1)');
+            }
+            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=1)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=8)')) {
+                availableBenchmarks.push('MHSA(dim=768, num_heads=8)');
+            }
+            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=8)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=8, mask=None)')) {
+                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=8, mask=None)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=8, mask=None)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=8_mask=none.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)')) {
+                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=8_mask=causal.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=8, mask=None)')) {
+                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=8, mask=None)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=8, mask=None)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=8_mask=none.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)')) {
+                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)'] = '/home/runner/work/mlx_transformers_benchmark/mlx_transformers_benchmark/benchmark_visualizations/Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=8_mask=causal.html';
+            
+
+            // Populate dropdowns
+            const chipSelector = document.getElementById("chipSelector");
+            availableChips.forEach(chip => {
+                const option = document.createElement("option");
+                option.value = chip;
+                option.textContent = chip;
+                chipSelector.appendChild(option);
+            });
+
+            const benchmarkSelector = document.getElementById("benchmarkSelector");
+            availableBenchmarks.forEach(benchmark => {
+                const option = document.createElement("option");
+                option.value = benchmark;
+                option.textContent = benchmark;
+                benchmarkSelector.appendChild(option);
+            });
+
+            // Load initial page
+            loadPage();
+        }
+
+        function loadPage() {
+            const selectedChip = document.getElementById("chipSelector").value;
+            const selectedBenchmark = document.getElementById("benchmarkSelector").value;
+            const combinationKey = `${selectedChip}_${selectedBenchmark}`;
+            const viewer = document.getElementById("viewer");
+            const noDataMessage = document.getElementById("noDataMessage");
+
+            // Check if combination exists
+            if (validCombinations[combinationKey]) {
+                viewer.src = validCombinations[combinationKey];
+                viewer.style.display = "block";
+                noDataMessage.style.display = "none";
+            } else {
+                viewer.style.display = "none";
+                noDataMessage.style.display = "block";
+                noDataMessage.textContent = `No data available for ${selectedChip} with ${selectedBenchmark}`;
+            }
+        }
+
+        window.onload = function () {
+            initializeData();
+        };
+    </script>
+    <style>
+        .dropdown-container {
+            margin: 10px 0;
+        }
+
+        select {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        label {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        #noDataMessage {
+            padding: 20px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dropdown-container">
+        <label for="chipSelector">Chip:</label>
+        <select id="chipSelector" onchange="loadPage()"></select>
+
+        <label for="benchmarkSelector">Benchmark:</label>
+        <select id="benchmarkSelector" onchange="loadPage()"></select>
+    </div>
+
+    <iframe id="viewer" width="100%" height="920px"></iframe>
+    <div id="noDataMessage"></div>
+</body>
+
+</html>
