@@ -9,18 +9,18 @@ from mtb.file_io import aggregate_measurements
 from mtb.visualization.plot_benchmark_result import show_benchmark_data
 
 DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "Apple_M4_Pro__arm"
-DEFAULT_VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "benchmark_visualizations"
+VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "benchmark_visualizations"
 
 
 def main(
     measurements_folder: Union[str, Path] = DEFAULT_MEASUREMENTS_FOLDER,
-    visualizations_folder: Union[str, Path] = DEFAULT_VISUALIZATIONS_FOLDER,
 ):
     """Visualize measurements. We create one page per benchmark task."""
 
     measurements_folder = Path(measurements_folder)
     chip_name = measurements_folder.stem
-    visualizations_folder = Path(visualizations_folder) / chip_name
+
+    visualizations_folder = VISUALIZATIONS_FOLDER / chip_name
     visualizations_folder.mkdir(parents=True, exist_ok=True)
 
     relevant_measurements = aggregate_measurements(measurements_folder)
@@ -53,9 +53,9 @@ def main(
         fig_path = visualizations_folder / f"{benchmark_shortname}.html"
         fig.write_html(fig_path)
 
-        benchmark_to_figurefile[(chip_name, benchmark_task)] = fig_path
+        relative_fig_path = fig_path.relative_to(VISUALIZATIONS_FOLDER)
+        benchmark_to_figurefile[(chip_name, benchmark_task)] = relative_fig_path
 
-    # Create the index file from template
     create_index(
         visualizations_folder=visualizations_folder,
         benchmark_to_figurefile=benchmark_to_figurefile,
