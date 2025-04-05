@@ -1,26 +1,23 @@
 # Benchmarking transformer operators on Apple silicon
 
-Let's say you're interested in performing inference for small (unquantized) transformers on Apple hardware. 
-You care about speed, but don't want to fry your machine.
+Let's say you're interested in performing inference for small (unquantized) transformers on 
+Apple hardware. You do care about speed, but aren't ready to quantize just yet, and you do 
+not want to fry your machine.
 
-This means you need to make an important choice: use 
-[PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html),
-or move to Apple's
-[MLX, built directly for Metal](https://github.com/ml-explore/mlx)?
+This means you need to make an important choice: 
 
-We aim to answer this question here by benchmarking inference for a few common operations and layers.
+- use [PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html),
+- or move to Apple's [MLX, built directly for Metal](https://github.com/ml-explore/mlx)?
 
-> [!NOTE] 
-> Although the default parameters do not result in thermal throttling for a Macbook M4 Pro, older
-machines may have trouble with the heavier operators, or may have too little RAM and fall back on 
-swap space. For a large number of iterations, the GPU will certainly heat up. If needed, you can 
-increase the cooldown period using the `cooldown_time_fraction` argument.  
+We aim to help make this choice by benchmarking inference for a few common operations and layers. 
+Results can be found at 
+[https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
 
 ### Dependencies
 
-You will need:
- - [`pyenv`](https://github.com/pyenv/pyenv) to manage python versions
+Before you start, you will need:
+ - [`pyenv`](https://github.com/pyenv/pyenv) to manage the python version
  - [`poetry`](https://python-poetry.org/) for dependency management
 
 ### Quickstart
@@ -34,7 +31,6 @@ You will need:
 2. Set up a python3.11 virtual environment using 
    [`pyenv`](https://github.com/pyenv/pyenv) and 
    [`poetry`](https://python-poetry.org/), and activate it:
-
    ```
    make create-venv
    source .venv/bin/activate
@@ -56,29 +52,59 @@ You will need:
       --run_mlx_metal_compiled=True  \
       --cooldown_time_fraction=0.1 
    ```
+   This creates a new result in the `measurements` folder.
 
-   To run a full benchmark on GPU for `float32`, `float16`, `bfloat16` datatypes, you can also use:
+   Optionally, to run a full benchmark on GPU for `float32`, `float16`, `bfloat16` datatypes, you can also use:
    ``` 
    make run
    ```
 
-4. Visualize measurements and open the index page:
+4. To create a HTML report of all measurements and open the index page:
    ```
    make show
    ```
 
-### Notes
+   This should open a page similar to 
+   [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
-This benchmark focuses on runtime. Monitoring GPU temperature is interesting too, but typically 
-requires admin privileges. For manual monitoring, you can use third-party apps like 
+
+### On reproducibility
+
+Apple's virtualization framework does not provide a GPU API for virtualized envionments, 
+and using Metal from a Docker container is not supported yet. This makes exact reproducibility 
+challenging, but the numbers should give a decent idea nevertheless. 
+
+Although the default parameters do not result in thermal throttling for a Macbook M4 Pro, older
+machines may have trouble with the heavier operators, or may have too little RAM and fall back on 
+swap space. If you see huge outliers, do take a closer look!
+
+> [!NOTE] 
+> For a large number of iterations, the GPU will certainly heat up. If needed, you can 
+increase the cooldown period using the `cooldown_time_fraction` argument. Monitoring GPU 
+temperature programatically requires admin privileges, but you can use third-party apps like 
 [stats](https://github.com/exelban/stats), also available as [homebrew](https://formulae.brew.sh/cask/stats).
 
-You may also be interested in Tristan Bilot's comprehensive benchmark for fundamental operators for `mlx`, 
-`torch+mps`, and `torch+cuda` ([link](https://github.com/TristanBilot/mlx-benchmark)). Placing both `mlx` 
-and `torch` functions in a single benchmark class makes it easy to see the differences between the 
-two, and we adopt the same strategy here.
-  
+
+### Notes
+
+Apple silicon is fairly cost-effective for LLM inference due to its unified memory architecture.
+As LLM inference is mostly memory-bound for low batch sizes, devices with high memory bandwidth 
+typically obtain 
+[high tokens/sec in inference benchmarks](https://github.com/ggml-org/llama.cpp/discussions/4167).
+
+This benchmark focuses on the runtime of unquantized transformer ops, primarily useful 
+when training small, custom models for (or on!) Apple devices. While speed is one factor,
+do consider ecosystem and cross-platform support too - here, Nvidia+CUDA remain hard to beat!  
+
+You may also be interested in:
+- Tristan Bilot's comprehensive benchmark for fundamental operators for `mlx`, 
+  `torch+mps`, and `torch+cuda` ([link](https://github.com/TristanBilot/mlx-benchmark)). Placing both `mlx` 
+  and `torch` functions in a single benchmark class makes it easy to see the differences between the 
+  two, and we adopt the same strategy here.
+
+- [The work of Feng et al](https://arxiv.org/pdf/2501.14925) comparing training on Nvidia cards vs Apple Silicon. 
+
 
 ### Contributing
 
-PRs welcome! Feel free to add measurement files or new benchmark tasks.
+If you have an Apple device, additional measurements are always welcome. Feel free to raise an issue or submit a PR!
