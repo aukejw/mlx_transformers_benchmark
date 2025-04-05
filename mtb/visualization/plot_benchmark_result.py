@@ -34,7 +34,7 @@ def show_benchmark_data(
             for batch_size in batch_sizes
         ],
         horizontal_spacing=0.05,
-        vertical_spacing=0.1,
+        vertical_spacing=0.075,
     )
 
     for row, dtype in enumerate(dtypes, start=1):
@@ -85,9 +85,22 @@ def show_benchmark_data(
             trace.showlegend = False
 
     fig.update_layout(
-        height=900,
-        width=1500,
-        title_text=f"Benchmark '{title}'",
+        height=800,
+        width=1600,
+        title_text=f"Benchmark {title}",
+        title=dict(
+            y=0.98,
+            x=0.5,
+            xanchor="center",
+            yanchor="top",
+            font=dict(size=18),
+        ),
+        margin=dict(
+            t=80,
+            l=50,
+            r=50,
+            b=60,
+        ),
         showlegend=True,
         legend=dict(
             x=1.05,
@@ -97,6 +110,10 @@ def show_benchmark_data(
         ),
         font=dict(size=10),
     )
+
+    # Reduce subplot title font size
+    for annotation in fig["layout"]["annotations"]:
+        annotation["font"] = dict(size=14)
 
     # Add a hover template
     fig.update_traces(
