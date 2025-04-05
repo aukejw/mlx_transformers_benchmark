@@ -11,7 +11,7 @@ on:
 jobs:
   # Testing
   test:
-    runs-on: ubuntu-latest  # Use Ubuntu for consistency
+    runs-on: ubuntu-latest  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,8 +49,8 @@ jobs:
 
   # Check if measurements changed
   check-measurements-changed:
-    runs-on: ubuntu-latest
     needs: test
+    runs-on: ubuntu-latest
     outputs:
       measurements_changed: ${{ steps.check.outputs.changed }}
 
@@ -58,7 +58,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # Need at least two commits to compare
+          # Need at least two commits to compare
+          fetch-depth: 2 
 
       - name: Check for changes in measurements folder
         id: check
@@ -70,9 +71,10 @@ jobs:
           fi
 
   # Visualization
-  visualize_measurements:
-    runs-on: ubuntu-latest
+  visualize-measurements:
     needs: check-measurements-changed
+    if: needs.check-measurements-changed.outputs.measurements_changed == 'true'
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
