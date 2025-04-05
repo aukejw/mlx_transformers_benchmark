@@ -1,5 +1,5 @@
 # Generated html files
-benchmark_visualizations/*.html
+benchmark_visualizations/*
 !benchmark_visualizations/index_template.html
 
 # Byte-compiled / optimized / DLL files

@@ -4,31 +4,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualization Index</title>
+    <title>Benchmark results</title>
     <script>
+        // Available chips and benchmarks
+        let availableChips = [];
+        let availableBenchmarks = [];
+        // Mapping to keep track of valid combinations
+        let validCombinations = {};
+
+        function initializeData() {
+            // Extract unique chips and benchmarks and build valid combinations map
+            {% for (chip, benchmark), file_path in visualizations.items() %}
+            if (!availableChips.includes('{{ chip }}')) {
+                availableChips.push('{{ chip }}');
+            }
+            if (!availableBenchmarks.includes('{{ benchmark }}')) {
+                availableBenchmarks.push('{{ benchmark }}');
+            }
+            validCombinations['{{ chip }}_{{ benchmark }}'] = '{{ file_path }}';
+            {% endfor %}
+
+            // Populate dropdowns
+            const chipSelector = document.getElementById("chipSelector");
+            availableChips.forEach(chip => {
+                const option = document.createElement("option");
+                option.value = chip;
+                option.textContent = chip;
+                chipSelector.appendChild(option);
+            });
+
+            const benchmarkSelector = document.getElementById("benchmarkSelector");
+            availableBenchmarks.forEach(benchmark => {
+                const option = document.createElement("option");
+                option.value = benchmark;
+                option.textContent = benchmark;
+                benchmarkSelector.appendChild(option);
+            });
+
+            // Load initial page
+            loadPage();
+        }
+
         function loadPage() {
-            var selectedFile = document.getElementById("fileSelector").value;
-            document.getElementById("viewer").src = selectedFile;
+            const selectedChip = document.getElementById("chipSelector").value;
+            const selectedBenchmark = document.getElementById("benchmarkSelector").value;
+            const combinationKey = `${selectedChip}_${selectedBenchmark}`;
+            const viewer = document.getElementById("viewer");
+            const noDataMessage = document.getElementById("noDataMessage");
+
+            // Check if combination exists
+            if (validCombinations[combinationKey]) {
+                viewer.src = validCombinations[combinationKey];
+                viewer.style.display = "block";
+                noDataMessage.style.display = "none";
+            } else {
+                viewer.style.display = "none";
+                noDataMessage.style.display = "block";
+                noDataMessage.textContent = `No data available for ${selectedChip} with ${selectedBenchmark}`;
+            }
         }
 
         window.onload = function () {
-            var fileSelector = document.getElementById("fileSelector");
-            if (fileSelector.options.length > 0) {
-                fileSelector.value = fileSelector.options[0].value;
-                loadPage();
-            }
+            initializeData();
         };
     </script>
+    <style>
+        .dropdown-container {
+            margin: 10px 0;
+        }
+
+        select {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        label {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        #noDataMessage {
+            padding: 20px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
-    <select id="fileSelector" onchange="loadPage()">
-        {% for display_name, file_path in visualizations.items() %}
-        <option value="{{ file_path }}">{{ display_name }}</option>
-        {% endfor %}
-    </select>
+    <div class="dropdown-container">
+        <label for="chipSelector">Chip:</label>
+        <select id="chipSelector" onchange="loadPage()"></select>
+
+        <label for="benchmarkSelector">Benchmark:</label>
+        <select id="benchmarkSelector" onchange="loadPage()"></select>
+    </div>
 
     <iframe id="viewer" width="100%" height="920px"></iframe>
+    <div id="noDataMessage"></div>
 </body>
 
 </html>

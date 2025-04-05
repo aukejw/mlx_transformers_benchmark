@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Tuple, Union
 
 import fire
 from jinja2 import Template
@@ -8,7 +8,7 @@ import mtb as mtb
 from mtb.file_io import aggregate_measurements
 from mtb.visualization.plot_benchmark_result import show_benchmark_data
 
-DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "Apple_M4_Pro"
+DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "Apple_M4_Pro__arm"
 DEFAULT_VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "benchmark_visualizations"
 
 
@@ -19,14 +19,17 @@ def main(
     """Visualize measurements. We create one page per benchmark task."""
 
     measurements_folder = Path(measurements_folder)
-    visualizations_folder = Path(visualizations_folder)
+    chip_name = measurements_folder.stem
+    visualizations_folder = Path(visualizations_folder) / chip_name
     visualizations_folder.mkdir(parents=True, exist_ok=True)
 
     relevant_measurements = aggregate_measurements(measurements_folder)
     benchmark_tasks = sorted(relevant_measurements["name"].unique())
 
+    # Create a mapping from (chip, benchmark) -> results html file
+    benchmark_to_figurefile: Dict[Tuple[str, str], Path] = dict()
+
     print("Visualizing data per benchmark.")
-    benchmark_to_figurefile = dict()
     for benchmark_task in benchmark_tasks:
         relevant_measurements_benchmark = relevant_measurements[
             relevant_measurements.name == benchmark_task
@@ -50,7 +53,7 @@ def main(
         fig_path = visualizations_folder / f"{benchmark_shortname}.html"
         fig.write_html(fig_path)
 
-        benchmark_to_figurefile[benchmark_task] = fig_path
+        benchmark_to_figurefile[(chip_name, benchmark_task)] = fig_path
 
     # Create the index file from template
     create_index(
@@ -65,14 +68,17 @@ def create_index(
     benchmark_to_figurefile: Dict[str, Path],
 ):
     """Create an index file."""
-    with (visualizations_folder / "index_template.html").open() as file:
+
+    benchmark_folder = mtb.REPO_ROOT / "benchmark_visualizations"
+    template_path = benchmark_folder / "index_template.html"
+    with template_path.open() as file:
         template = Template(file.read())
 
     index_content = template.render(
         visualizations=benchmark_to_figurefile,
     )
 
-    index_path = visualizations_folder / "index.html"
+    index_path = benchmark_folder / "index.html"
     with index_path.open("w") as f:
         f.write(index_content)
 
