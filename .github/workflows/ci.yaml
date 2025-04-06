@@ -9,15 +9,15 @@ on:
       - main
 
 jobs:
-  # Testing
-  test:
+  # Testing via githubs linux runner
+  tests-linux:
     runs-on: ubuntu-latest  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.11.11
     
@@ -34,10 +34,32 @@ jobs:
           python -m pip install poetry==2.1.2
           python -m poetry config virtualenvs.in-project true
 
-      - name: Re-generate poetry.lock for Linux
-        if: runner.os == 'Linux'
+      - name: Re-generate poetry.lock file for linux, install dependencies
         run: |
           poetry lock
+          poetry install --with dev
+
+      - name: Run tests with pytest
+        run: |
+          poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
+
+  # Testing on a local macOS runner
+  tests-mac:
+    if: github.event_name == 'workflow_dispatch' 
+    runs-on: [self-hosted, macOS]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.11
+    
+      - name: Install poetry
+        run: |
+          python -m pip install poetry==2.1.2
+          python -m poetry config virtualenvs.in-project true
 
       - name: Install dependencies
         run: |
@@ -49,7 +71,7 @@ jobs:
 
   # Check if measurements changed
   check-measurements-changed:
-    needs: test
+    needs: tests-linux
     runs-on: ubuntu-latest
     outputs:
       measurements_changed: ${{ steps.check.outputs.changed }}
