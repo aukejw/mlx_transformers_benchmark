@@ -64,10 +64,12 @@ jobs:
       - name: Check for changes in measurements folder
         id: check
         run: |
-          if (git diff --quiet HEAD^ HEAD -- 'measurements/' || git diff --quiet HEAD^ HEAD -- 'benchmark_visualizations/index_template.html'); then
+          if (git diff-index --quiet HEAD^ HEAD -- 'measurements/' && git diff-index --quiet HEAD^ HEAD -- 'benchmark_visualizations/index_template.html'); then
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes in measurements folder or index_template."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Found changes in measurements folder or index_template."
           fi
 
   # Visualization
