@@ -48,9 +48,6 @@ jobs:
   tests-mac:
     if: github.event_name == 'workflow_dispatch' 
     runs-on: [self-hosted, macOS]
-    defaults:
-      run:
-        working-directory: ./runner_working_directory
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
