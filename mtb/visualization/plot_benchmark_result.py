@@ -11,6 +11,7 @@ def show_benchmark_data(
     measurements: pd.DataFrame,
     dtypes: Tuple[str] = ("float32", "float16", "bfloat16"),
     batch_sizes: Tuple[int] = (1, 8, 16, 32, 64),
+    do_average_measurements: bool = True,
 ) -> go.Figure:
     """Visualize benchmark data in a single page.
 
@@ -19,6 +20,7 @@ def show_benchmark_data(
         measurements: DataFrame containing benchmark measurements.
         dtypes: Tuple of data types to show. One dtype = one row.
         batch_sizes: Tuple of batchsizes to show. One batchsize = one column.
+        do_average_measurements: If False, show all individual measurements.
 
     Returns:
         The created figure.
@@ -39,17 +41,37 @@ def show_benchmark_data(
 
     for row, dtype in enumerate(dtypes, start=1):
         for col, batch_size in enumerate(batch_sizes, start=1):
+            # Select data
             filtered_data = measurements[
                 (measurements["dtype"] == dtype)
                 & (measurements["batch_size"] == batch_size)
             ]
+            if do_average_measurements:
+                filtered_data = filtered_data[
+                    [
+                        "framework_backend",
+                        "batch_size",
+                        "sequence_length",
+                        "mean_ms",
+                    ]
+                ]
+                filtered_data = (
+                    filtered_data.groupby(
+                        ["framework_backend", "batch_size", "sequence_length"],
+                        observed=True,
+                    )
+                    .mean()
+                    .reset_index()
+                )
 
+            # Show
             if not filtered_data.empty:
                 scatter = px.scatter(
                     filtered_data,
                     x="sequence_length",
                     y="mean_ms",
                     color="framework_backend",
+                    symbol="framework_backend",
                     custom_data=["batch_size"],
                     title=f"dtype: {dtype}, batch_size: {batch_size}",
                 )
@@ -76,7 +98,7 @@ def show_benchmark_data(
         title_text="Runtime (ms)",
     )
 
-    # optimize legend entries
+    # Optimize legend entries, layout
     legend_entries = set()
     for trace in fig.data:
         if trace.name not in legend_entries:
@@ -115,7 +137,7 @@ def show_benchmark_data(
     for annotation in fig["layout"]["annotations"]:
         annotation["font"] = dict(size=14)
 
-    # Add a hover template
+    # Add a hover template, already shows framework_backend by default
     fig.update_traces(
         hovertemplate=(
             "<b>Batch size:</b>  %{customdata[0]:.0f}<br>"
