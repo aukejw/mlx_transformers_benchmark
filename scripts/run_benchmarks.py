@@ -1,7 +1,7 @@
 import itertools
 import time
 from pathlib import Path
-from typing import Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import fire
 import pandas as pd
@@ -11,6 +11,7 @@ import mtb as mtb
 import mtb.benchmarks as mtb_bench
 from mtb.file_io import create_benchmark_output_dir
 from mtb.run_benchmark import run_benchmark
+from mtb.select_benchmarks import filter_benchmarks
 
 DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements"
 
@@ -32,6 +33,7 @@ def main(
     run_torch_cpu: bool = False,
     run_torch_cuda: bool = False,
     run_mlx_cpu: bool = False,
+    run_only_benchmarks: Optional[List[str]] = None,
 ):
     """Run benchmarks. By default, we always run torch mps on GPU, and mlx on metal.
 
@@ -43,17 +45,7 @@ def main(
     non-compiled mode.
 
     """
-    output_dir = create_benchmark_output_dir(
-        output_root=output_root,
-        benchmark_settings=dict(
-            num_warmup_iterations=num_warmup_iterations,
-            num_iterations=num_iterations,
-            num_repeats=num_repeats,
-            dtype=dtype,
-        ),
-    )
-    print(f"Output directory: '{output_dir}'")
-
+    # Set up benchmarks
     benchmarks = []
     for batch_size, sequence_length in itertools.product(batch_sizes, sequence_lengths):
         input_shape = (batch_size, sequence_length, feature_dim)
@@ -91,6 +83,34 @@ def main(
             ]
         )
 
+    # Filter benchmarks if specified
+    if run_only_benchmarks is not None:
+        num_benchmarks = len(benchmarks)
+        benchmarks = filter_benchmarks(
+            benchmarks=benchmarks,
+            run_only_benchmarks=run_only_benchmarks,
+        )
+        if len(benchmarks) == 0:
+            raise ValueError(
+                f"No benchmarks to run! Check the filter: {run_only_benchmarks}."
+            )
+
+        print(f"Running {len(benchmarks)} out of {num_benchmarks} benchmarks")
+
+    # Create output directory for measurements
+    output_dir = create_benchmark_output_dir(
+        output_root=output_root,
+        benchmark_settings=dict(
+            num_warmup_iterations=num_warmup_iterations,
+            num_iterations=num_iterations,
+            num_repeats=num_repeats,
+            dtype=dtype,
+            run_only_benchmarks=run_only_benchmarks,
+        ),
+    )
+    print(f"Output directory: '{output_dir}'")
+
+    # Run
     iterator = tqdm(benchmarks)
 
     all_results = []
@@ -119,7 +139,7 @@ def main(
             continue
 
         all_results.append(results)
-        duration_s = time.perf_counter() - start_time
+        duration_seconds = time.perf_counter() - start_time
 
         # Save measurements after each benchmark to avoid losing data on interruption
         output_path = output_dir / "benchmark_results.csv"
@@ -127,7 +147,7 @@ def main(
         results.to_csv(output_path, index=False, mode="a", header=save_header)
 
         # Cooldown is a fraction of the task duration -- let's not fry your chips
-        time.sleep(cooldown_time_fraction * duration_s)
+        time.sleep(cooldown_time_fraction * duration_seconds)
 
     print(f"Saved measurements to '{output_path}'")
     return
