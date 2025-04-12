@@ -61,13 +61,14 @@ class ScaledDotProductAttentionBenchmark(BaseBenchmark):
     def setup_mlx(self):
         batch_size, num_tokens, num_features = self.input_shape
 
-        self.input_tensor = self.input_tensor.reshape(
-            batch_size,
-            num_tokens,
-            self.num_heads,
-            num_features // self.num_heads,
-        ).transpose(0, 2, 1, 3)
-        self.input_tensor = mx.contiguous(self.input_tensor)
+        self.input_tensor = mx.contiguous(
+            self.input_tensor.reshape(
+                batch_size,
+                num_tokens,
+                self.num_heads,
+                num_features // self.num_heads,
+            ).transpose(0, 2, 1, 3)
+        )
 
         self.mask = create_mlx_attention_mask(
             mask_type=self.mask_type,
