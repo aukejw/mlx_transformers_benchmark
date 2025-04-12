@@ -63,8 +63,10 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
 
         self.mask = create_torch_attention_mask(
             mask_type=self.mask_type,
-            attention_layer=self.torch_function.self_attn,
+            device=self._device,
+            dtype=self._dtype,
             num_tokens=num_tokens,
+            compile=False,
         )
         self.memory = torch.randn(
             batch_size,
@@ -75,8 +77,9 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
         )
         self.mask = create_torch_attention_mask(
             mask_type=None,
-            attention_layer=self.torch_function.multihead_attn,
             num_tokens=num_tokens,
+            device=self._device,
+            dtype=self._dtype,
             compile=False,
         )
 
@@ -95,8 +98,9 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
 
         self.mask = create_mlx_attention_mask(
             mask_type=self.mask_type,
-            attention_layer=self.mlx_function.self_attention,
             num_tokens=num_tokens,
+            device=self._device,
+            dtype=self._dtype,
             compile=self._compile,
         )
         self.memory = mx.random.normal(
@@ -105,8 +109,9 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
         )
         self.memory_mask = create_mlx_attention_mask(
             mask_type=None,
-            attention_layer=self.mlx_function.cross_attention,
             num_tokens=num_tokens,
+            device=self._device,
+            dtype=self._dtype,
             compile=self._compile,
         )
 

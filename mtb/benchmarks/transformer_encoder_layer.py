@@ -65,8 +65,9 @@ class TransformerEncoderLayerBenchmark(BaseBenchmark):
 
         self.mask = create_torch_attention_mask(
             mask_type=self.mask_type,
-            attention_layer=self.torch_function.self_attn,
             num_tokens=num_tokens,
+            device=self._device,
+            dtype=self._dtype,
         )
 
     def setup_mlx(self):
@@ -84,8 +85,9 @@ class TransformerEncoderLayerBenchmark(BaseBenchmark):
 
         self.mask = create_mlx_attention_mask(
             mask_type=self.mask_type,
-            attention_layer=self.mlx_function.attention,
             num_tokens=num_tokens,
+            device=self._device,
+            dtype=self._dtype,
             compile=self._compile,
         )
         if self._compile:

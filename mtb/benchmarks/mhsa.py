@@ -10,8 +10,6 @@ from mtb.benchmarks.base_benchmark import BaseBenchmark
 
 
 class MhsaBenchmark(BaseBenchmark):
-    """Benchmark LayerNorm implementations."""
-
     def __init__(
         self,
         input_shape: Tuple[int, int, int],
@@ -24,9 +22,12 @@ class MhsaBenchmark(BaseBenchmark):
             name=name,
             input_shape=input_shape,
         )
-        assert num_features % num_heads == 0, (num_features, num_heads)
-
         self.num_heads = num_heads
+
+        if num_features % self.num_heads != 0:
+            raise ValueError(
+                f"num_features={num_features} must be divisible by num_heads={self.num_heads}"
+            )
 
     def setup_torch(self):
         batch_size, num_tokens, num_features = self.input_shape
@@ -57,13 +58,13 @@ class MhsaBenchmark(BaseBenchmark):
 
     @torch.inference_mode()
     def run_torch(self) -> torch.Tensor:
-        x = self.input_tensor
+        q = k = v = self.input_tensor
         fn = self.torch_function
-        y = fn(x, x, x)
+        y = fn(q, k, v)
         return y
 
     def run_mlx(self) -> mx.array:
-        x = self.input_tensor
+        q = k = v = self.input_tensor
         fn = self.mlx_function
-        y = fn(x, x, x)
+        y = fn(q, k, v)
         return y
