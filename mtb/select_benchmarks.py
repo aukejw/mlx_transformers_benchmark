@@ -5,6 +5,7 @@ from mtb.benchmarks import (
     LinearBenchmark,
     MhsaBenchmark,
     ScaledDotProductAttentionBenchmark,
+    SoftmaxBenchmark,
     TransformerDecoderLayerBenchmark,
     TransformerEncoderLayerBenchmark,
 )
@@ -27,6 +28,8 @@ def layer_name_to_benchmark_class(
         return LinearBenchmark
     elif layer_name in ("mhsa", "multiheadattention"):
         return MhsaBenchmark
+    elif layer_name in ("softmax"):
+        return SoftmaxBenchmark
     elif layer_name in ("scaled_dot_product_attention", "sdpa"):
         return ScaledDotProductAttentionBenchmark
     elif layer_name in ("transformerencoderlayer", "transformer_encoder_layer"):
