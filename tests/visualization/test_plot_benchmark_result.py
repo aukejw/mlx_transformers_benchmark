@@ -33,10 +33,14 @@ def sample_benchmark_data() -> pd.DataFrame:
     return pd.DataFrame(data)
 
 
-def test_show_benchmark_data_returns_figure(sample_benchmark_data):
+@pytest.mark.parametrize("do_average_measurements", [True, False])
+def test_show_benchmark_data_returns_figure(
+    sample_benchmark_data, do_average_measurements
+):
     fig = show_benchmark_data(
         title="Title",
         measurements=sample_benchmark_data,
+        do_average_measurements=do_average_measurements,
     )
     assert isinstance(fig, go.Figure)
 
