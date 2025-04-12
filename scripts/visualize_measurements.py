@@ -14,8 +14,15 @@ VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "benchmark_visualizations"
 
 def main(
     measurements_folder: Union[str, Path] = DEFAULT_MEASUREMENTS_FOLDER,
+    show_all_measurements: bool = False,
 ):
-    """Visualize measurements. We create one page per benchmark task."""
+    """Visualize measurements. We create one page per benchmark task.
+
+    Args:
+        measurements_folder: Folder containing the measurements.
+        show_all_measurements: If True, show all individual measurements.
+
+    """
 
     measurements_folder = Path(measurements_folder)
     chip_name = measurements_folder.stem
@@ -42,6 +49,7 @@ def main(
         fig = show_benchmark_data(
             title=benchmark_task,
             measurements=relevant_measurements_benchmark,
+            do_average_measurements=(not show_all_measurements),
         )
 
         benchmark_shortname = (
