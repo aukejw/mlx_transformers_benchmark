@@ -25,6 +25,8 @@ def main(
     cooldown_time_fraction: float = 0.10,
     batch_sizes: Tuple = (64, 32, 16, 8, 1),
     sequence_lengths: Tuple = (512, 256, 128, 64),
+    num_attention_heads: Tuple = (1, 8),
+    mask_types: Tuple = (None, "causal"),
     feature_dim: int = 768,
     *,
     run_torch_mps: bool = True,
@@ -50,38 +52,31 @@ def main(
     for batch_size, sequence_length in itertools.product(batch_sizes, sequence_lengths):
         input_shape = (batch_size, sequence_length, feature_dim)
 
+        # add regular benchmarks
         kwargs = dict(
             input_shape=input_shape,
         )
+        regular_benchmarks = [
+            mtb_bench.LayerNormBenchmark(**kwargs),
+            mtb_bench.LinearBenchmark(**kwargs),
+            mtb_bench.SoftmaxBenchmark(**kwargs),
+        ]
+        benchmarks.extend(regular_benchmarks)
 
-        benchmarks.extend(
-            [
-                mtb_bench.LayerNormBenchmark(**kwargs),
-                mtb_bench.LinearBenchmark(**kwargs),
-                mtb_bench.MhsaBenchmark(num_heads=1, **kwargs),
-                mtb_bench.MhsaBenchmark(num_heads=8, **kwargs),
-                mtb_bench.TransformerEncoderLayerBenchmark(
-                    mask_type=None,
-                    num_heads=8,
-                    **kwargs,
-                ),
-                mtb_bench.TransformerEncoderLayerBenchmark(
-                    mask_type="causal",
-                    num_heads=8,
-                    **kwargs,
-                ),
-                mtb_bench.TransformerDecoderLayerBenchmark(
-                    mask_type=None,
-                    num_heads=8,
-                    **kwargs,
-                ),
-                mtb_bench.TransformerDecoderLayerBenchmark(
-                    mask_type="causal",
-                    num_heads=8,
-                    **kwargs,
-                ),
+        # add benchmarks with attention heads + masks
+        for num_heads, mask_type in itertools.product(num_attention_heads, mask_types):
+            kwargs["num_heads"] = num_heads
+            kwargs["mask_type"] = mask_type
+
+            attention_benchmarks = [
+                mtb_bench.MhsaBenchmark(**kwargs),
+                mtb_bench.MhsaBenchmark(**kwargs),
+                mtb_bench.TransformerEncoderLayerBenchmark(**kwargs),
+                mtb_bench.TransformerEncoderLayerBenchmark(**kwargs),
+                mtb_bench.TransformerDecoderLayerBenchmark(**kwargs),
+                mtb_bench.TransformerDecoderLayerBenchmark(**kwargs),
             ]
-        )
+            benchmarks.extend(attention_benchmarks)
 
     # Filter benchmarks if specified
     if run_only_benchmarks is not None:

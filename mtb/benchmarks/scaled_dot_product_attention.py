@@ -19,7 +19,12 @@ class ScaledDotProductAttentionBenchmark(BaseBenchmark):
         mask_type: Optional[str] = None,
     ):
         num_features = input_shape[2]
-        name = f"MHSA(dim={num_features}, num_heads={num_heads})"
+        name = (
+            f"ScaledDotProductAttention("
+            f"dim={num_features}, "
+            f"num_heads={num_heads}, "
+            f"mask={mask_type})"
+        )
 
         super().__init__(
             name=name,

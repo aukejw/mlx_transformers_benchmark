@@ -24,9 +24,9 @@ class MhsaBenchmark(BaseBenchmark):
         num_features = input_shape[2]
         name = (
             f"MHSA("
-            "dim={num_features}, "
-            "num_heads={num_heads}, "
-            "mask={mask_type})"
+            f"dim={num_features}, "
+            f"num_heads={num_heads}, "
+            f"mask={mask_type})"
         )
 
         super().__init__(

@@ -31,11 +31,11 @@ class SoftmaxBenchmark(BaseBenchmark):
     def run_torch(self) -> torch.Tensor:
         x = self.input_tensor
         fn = self.torch_function
-        y = fn(x)
+        y = fn(x, dim=2)
         return y
 
     def run_mlx(self) -> mx.array:
         x = self.input_tensor
         fn = self.mlx_function
-        y = fn(x)
+        y = fn(x, axis=2)
         return y
