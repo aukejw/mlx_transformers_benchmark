@@ -1,28 +1,32 @@
 from typing import Optional
 
-import mlx
 import mlx.core as mx
 import mlx.nn
-import torch.nn
+import torch
 
 
 def create_torch_attention_mask(
     mask_type: Optional[str],
-    attention_layer: torch.nn.MultiheadAttention,
+    dtype: torch.dtype,
+    device: torch.device,
     num_tokens: int,
     compile: bool = False,
 ) -> torch.Tensor:
     """Create an attention mask for the torch function."""
     if mask_type == "causal":
-        param = next(attention_layer.parameters())
+        max_float = torch.finfo(dtype).max
+
+        lower_triangular = torch.ones(
+            num_tokens,
+            num_tokens,
+            dtype=torch.bool,
+        ).tril(diagonal=0)
 
         mask = (
-            torch.triu(
-                torch.ones(num_tokens, num_tokens),
-                diagonal=1,
-            )
-            .bool()
-            .to(device=param.device)
+            torch.zeros(num_tokens, num_tokens)
+            .to(dtype)
+            .masked_fill_(lower_triangular.logical_not(), -max_float)
+            .to(dtype=dtype, device=device)
         )
 
     elif mask_type is None:
@@ -36,15 +40,14 @@ def create_torch_attention_mask(
 
 def create_mlx_attention_mask(
     mask_type: Optional[str],
-    attention_layer: mlx.nn.MultiHeadAttention,
+    dtype: mx.Dtype,
+    device: mx.Device,
     num_tokens: int,
     compile: bool = False,
 ) -> mx.array:
     """Create an attention mask for the MLX layer."""
-    dtype = attention_layer.query_proj.weight.dtype
-
     if mask_type == "causal":
-        mask = attention_layer.create_additive_causal_mask(
+        mask = mlx.nn.MultiHeadAttention.create_additive_causal_mask(
             N=num_tokens,
             dtype=dtype,
         )

@@ -1,6 +1,4 @@
-import mlx
 import mlx.core as mx
-import mlx.nn
 import numpy as np
 import pytest
 import torch
@@ -9,57 +7,59 @@ from mtb.attention_mask import create_mlx_attention_mask, create_torch_attention
 
 
 @pytest.fixture
-def torch_attention_layer():
+def torch_dtype():
     torch.set_default_device("cpu")
     torch.set_default_dtype(torch.float16)
-    return torch.nn.MultiheadAttention(embed_dim=16, num_heads=4)
+    return torch.float16
 
 
 @pytest.fixture
-def mlx_attention_layer():
+def mlx_dtype():
     mx.set_default_device(mx.DeviceType.cpu)
-    layer = mlx.nn.MultiHeadAttention(dims=16, num_heads=4)
-    layer.set_dtype(mx.float16)
-    return layer
+    return mx.float16
 
 
-def test_create_torch_attention_mask_causal(torch_attention_layer):
+def test_create_torch_attention_mask_causal(torch_dtype):
     num_tokens = 5
     mask = create_torch_attention_mask(
         mask_type="causal",
-        attention_layer=torch_attention_layer,
         num_tokens=num_tokens,
+        device=torch.device("cpu"),
+        dtype=torch.float16,
     )
     assert mask is not None
     assert mask.shape == (num_tokens, num_tokens)
-    assert mask.dtype == torch.bool
+    assert mask.dtype == torch.float16
 
 
-def test_create_torch_attention_mask_none(torch_attention_layer):
+def test_create_torch_attention_mask_none(torch_dtype):
     num_tokens = 5
     mask = create_torch_attention_mask(
         mask_type=None,
-        attention_layer=torch_attention_layer,
         num_tokens=num_tokens,
+        device=torch.device("cpu"),
+        dtype=torch.float16,
     )
     assert mask is None
 
 
-def test_create_torch_attention_mask_invalid(torch_attention_layer):
+def test_create_torch_attention_mask_invalid(torch_dtype):
     num_tokens = 5
     with pytest.raises(ValueError, match="Unknown mask type: invalid"):
         create_torch_attention_mask(
             mask_type="invalid",
-            attention_layer=torch_attention_layer,
             num_tokens=num_tokens,
+            device=torch.device("cpu"),
+            dtype=torch.float16,
         )
 
 
-def test_create_mlx_attention_mask_causal(mlx_attention_layer):
+def test_create_mlx_attention_mask_causal(mlx_dtype):
     num_tokens = 5
     mask = create_mlx_attention_mask(
         mask_type="causal",
-        attention_layer=mlx_attention_layer,
+        device=mx.default_device(),
+        dtype=mx.float16,
         num_tokens=num_tokens,
     )
     assert mask is not None
@@ -67,22 +67,24 @@ def test_create_mlx_attention_mask_causal(mlx_attention_layer):
     assert mask.dtype == mx.float16
 
 
-def test_create_mlx_attention_mask_none(mlx_attention_layer):
+def test_create_mlx_attention_mask_none(mlx_dtype):
     num_tokens = 5
     mask = create_mlx_attention_mask(
         mask_type=None,
-        attention_layer=mlx_attention_layer,
         num_tokens=num_tokens,
+        device=mx.default_device(),
+        dtype=mx.float16,
     )
     assert mask is None
 
 
-def test_create_mlx_attention_mask_none_compile(mlx_attention_layer):
+def test_create_mlx_attention_mask_none_compile(mlx_dtype):
     num_tokens = 5
     mask = create_mlx_attention_mask(
         mask_type=None,
-        attention_layer=mlx_attention_layer,
         num_tokens=num_tokens,
+        device=mx.default_device(),
+        dtype=mx.float16,
         compile=True,
     )
     assert mask is not None
@@ -90,37 +92,45 @@ def test_create_mlx_attention_mask_none_compile(mlx_attention_layer):
     assert mask.dtype == mx.float16
 
 
-def test_create_mlx_attention_mask_invalid(mlx_attention_layer):
+def test_create_mlx_attention_mask_invalid(mlx_dtype):
     num_tokens = 5
     with pytest.raises(ValueError, match="Unknown mask type: invalid"):
         create_mlx_attention_mask(
             mask_type="invalid",
-            attention_layer=mlx_attention_layer,
+            device=mx.default_device(),
+            dtype=mx.float16,
             num_tokens=num_tokens,
         )
 
 
-def test_attention_mask_equality(torch_attention_layer, mlx_attention_layer):
+@pytest.mark.parametrize("dtype", [torch.float16, torch.float32, torch.bfloat16])
+def test_attention_mask_equality(dtype):
     num_tokens = 5
+
+    torch_dtype = dtype
     torch_mask: torch.Tensor = create_torch_attention_mask(
         mask_type="causal",
-        attention_layer=torch_attention_layer,
         num_tokens=num_tokens,
+        device=torch.device("cpu"),
+        dtype=torch_dtype,
     )
+
+    mlx_dtype = {
+        torch.float16: mx.float16,
+        torch.float32: mx.float32,
+        torch.bfloat16: mx.bfloat16,
+    }[torch_dtype]
     mlx_mask: mx.array = create_mlx_attention_mask(
         mask_type="causal",
-        attention_layer=mlx_attention_layer,
+        device=mx.default_device(),
+        dtype=mlx_dtype,
         num_tokens=num_tokens,
     )
     assert torch_mask is not None
     assert mlx_mask is not None
     assert torch_mask.shape == mlx_mask.shape
+    assert torch_mask.dtype == torch_dtype
+    assert mlx_mask.dtype == mlx_dtype
 
-    # the mlx mask is an additive causal mask with -infty for masked positions,
-    # but -0 for unmasked ones. We need to be careful with neq checks here.
-    mlx_mask_numpy = (mlx_mask.astype(mx.float32) < -0.1).astype(mx.float32)
-
-    # the torch mask is - since pytorch 1.9.0 - a boolean mask: faster and memory-efficient
-    torch_mask_numpy = torch_mask.cpu().numpy().astype(np.float32)
-
-    np.testing.assert_equal(mlx_mask_numpy, torch_mask_numpy)
+    # both masks are additive causal masks by default
+    np.testing.assert_equal(mlx_mask.astype(mx.float32), torch_mask.float().numpy())
