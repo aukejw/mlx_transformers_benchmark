@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import mlx
 import mlx.core as mx
@@ -6,6 +6,11 @@ import mlx.nn
 import torch
 import torch.nn
 
+from mtb.attention_mask import (
+    create_mlx_attention_mask,
+    create_torch_attention_mask,
+    validate_attention_kwargs,
+)
 from mtb.benchmarks.base_benchmark import BaseBenchmark
 
 
@@ -14,20 +19,31 @@ class MhsaBenchmark(BaseBenchmark):
         self,
         input_shape: Tuple[int, int, int],
         num_heads: int = 8,
+        mask_type: Optional[str] = None,
     ):
         num_features = input_shape[2]
-        name = f"MHSA(dim={num_features}, num_heads={num_heads})"
+        name = (
+            f"MHSA("
+            "dim={num_features}, "
+            "num_heads={num_heads}, "
+            "mask={mask_type})"
+        )
 
         super().__init__(
             name=name,
             input_shape=input_shape,
         )
-        self.num_heads = num_heads
+        validate_attention_kwargs(
+            num_features=num_features,
+            num_heads=num_heads,
+            mask_type=mask_type,
+        )
 
-        if num_features % self.num_heads != 0:
-            raise ValueError(
-                f"num_features={num_features} must be divisible by num_heads={self.num_heads}"
-            )
+        self.num_heads = num_heads
+        self.mask_type = mask_type
+
+        # placeholder variables
+        self.mask = None
 
     def setup_torch(self):
         batch_size, num_tokens, num_features = self.input_shape
@@ -42,6 +58,14 @@ class MhsaBenchmark(BaseBenchmark):
         )
         self.torch_function.eval()
 
+        self.mask = create_torch_attention_mask(
+            mask_type=self.mask_type,
+            num_tokens=num_tokens,
+            device=self._device,
+            dtype=self._dtype,
+            compile=False,
+        )
+
     def setup_mlx(self):
         batch_size, num_tokens, num_features = self.input_shape
 
@@ -52,6 +76,14 @@ class MhsaBenchmark(BaseBenchmark):
         )
         self.mlx_function.eval()
         self.mlx_function.set_dtype(self._dtype)
+
+        self.mask = create_mlx_attention_mask(
+            mask_type=self.mask_type,
+            num_tokens=num_tokens,
+            device=self._device,
+            dtype=self._dtype,
+            compile=self._compile,
+        )
 
         if self._compile:
             self.mlx_function = mx.compile(self.mlx_function)

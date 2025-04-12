@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import mlx
 import mlx.core as mx
@@ -6,7 +6,11 @@ import mlx.nn
 import torch
 import torch.nn
 
-from mtb.attention_mask import create_mlx_attention_mask, create_torch_attention_mask
+from mtb.attention_mask import (
+    create_mlx_attention_mask,
+    create_torch_attention_mask,
+    validate_attention_kwargs,
+)
 from mtb.benchmarks.base_benchmark import BaseBenchmark
 
 
@@ -17,7 +21,7 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
         num_heads: int = 8,
         dropout: float = 0.1,
         norm_first: bool = True,
-        mask_type: str = None,
+        mask_type: Optional[str] = None,
     ):
         num_features = input_shape[2]
 
@@ -31,9 +35,12 @@ class TransformerDecoderLayerBenchmark(BaseBenchmark):
             name=name,
             input_shape=input_shape,
         )
-        assert num_features % num_heads == 0, (num_features, num_heads)
+        validate_attention_kwargs(
+            num_features=num_features,
+            num_heads=num_heads,
+            mask_type=mask_type,
+        )
         assert dropout >= 0.0 and dropout <= 1.0, dropout
-        assert mask_type in (None, "causal"), mask_type
 
         self.num_heads = num_heads
         self.dropout = dropout

@@ -5,6 +5,26 @@ import mlx.nn
 import torch
 
 
+def validate_attention_kwargs(
+    num_features: int,
+    num_heads: int,
+    mask_type: Optional[str],
+):
+    """Check that arguments are correct."""
+
+    if num_features % num_heads != 0:
+        raise ValueError(
+            f"num_features={num_features} must be divisible by num_heads={num_heads}"
+        )
+
+    if mask_type not in (None, "causal"):
+        raise ValueError(
+            f"mask_type must be None or 'causal', but received '{mask_type}'"
+        )
+
+    return
+
+
 def create_torch_attention_mask(
     mask_type: Optional[str],
     dtype: torch.dtype,
