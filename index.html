@@ -34,18 +34,58 @@
             if (!availableChips.includes('Apple_M4_Pro__arm')) {
                 availableChips.push('Apple_M4_Pro__arm');
             }
-            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=1)')) {
-                availableBenchmarks.push('MHSA(dim=768, num_heads=1)');
+            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=1, mask=None)')) {
+                availableBenchmarks.push('MHSA(dim=768, num_heads=1, mask=None)');
             }
-            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=1)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1.html';
+            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=1, mask=None)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1_mask=none.html';
             
             if (!availableChips.includes('Apple_M4_Pro__arm')) {
                 availableChips.push('Apple_M4_Pro__arm');
             }
-            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=8)')) {
-                availableBenchmarks.push('MHSA(dim=768, num_heads=8)');
+            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=1, mask=causal)')) {
+                availableBenchmarks.push('MHSA(dim=768, num_heads=1, mask=causal)');
             }
-            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=8)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8.html';
+            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=1, mask=causal)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1_mask=causal.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=8, mask=None)')) {
+                availableBenchmarks.push('MHSA(dim=768, num_heads=8, mask=None)');
+            }
+            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=8, mask=None)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8_mask=none.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=8, mask=causal)')) {
+                availableBenchmarks.push('MHSA(dim=768, num_heads=8, mask=causal)');
+            }
+            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=8, mask=causal)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8_mask=causal.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('Softmax(dim=768)')) {
+                availableBenchmarks.push('Softmax(dim=768)');
+            }
+            validCombinations['Apple_M4_Pro__arm_Softmax(dim=768)'] = 'Apple_M4_Pro__arm/softmax__dim=768.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=1, mask=None)')) {
+                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=1, mask=None)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=1, mask=None)'] = 'Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=1_mask=none.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=1, mask=causal)')) {
+                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=1, mask=causal)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=1, mask=causal)'] = 'Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=1_mask=causal.html';
             
             if (!availableChips.includes('Apple_M4_Pro__arm')) {
                 availableChips.push('Apple_M4_Pro__arm');
@@ -62,6 +102,22 @@
                 availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)');
             }
             validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)'] = 'Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=8_mask=causal.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=1, mask=None)')) {
+                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=1, mask=None)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=1, mask=None)'] = 'Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=1_mask=none.html';
+            
+            if (!availableChips.includes('Apple_M4_Pro__arm')) {
+                availableChips.push('Apple_M4_Pro__arm');
+            }
+            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=1, mask=causal)')) {
+                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=1, mask=causal)');
+            }
+            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=1, mask=causal)'] = 'Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=1_mask=causal.html';
             
             if (!availableChips.includes('Apple_M4_Pro__arm')) {
                 availableChips.push('Apple_M4_Pro__arm');
