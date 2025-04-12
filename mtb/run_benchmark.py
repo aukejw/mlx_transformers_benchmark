@@ -72,6 +72,7 @@ def run_benchmark(
     num_iterations: int = 50,
     num_repeats: int = 1,
     min_runtime_ms: int = 500,
+    cooldown_time_fraction: float = 0.2,
     dtype="float32",
     *,
     run_torch_cpu: bool = False,
@@ -125,10 +126,14 @@ def run_benchmark(
 
     benchmark_measurements = []
     for framework_kwargs in benchmarks_to_run:
+        start_time = time.perf_counter()
+
         measurement: Measurement = run_benchmark_for_framework(
             **general_kwargs,
             **framework_kwargs,
         )
+        duration_seconds = time.perf_counter() - start_time
+
         row = dict(
             name=benchmark.name,
             batch_size=benchmark.input_shape[0],
@@ -139,6 +144,9 @@ def run_benchmark(
             std_ms=measurement.std,
         )
         benchmark_measurements.append(row)
+
+        # Cooldown is a fraction of the task duration -- let's not fry your chips
+        time.sleep(cooldown_time_fraction * duration_seconds)
 
     columns = [
         "name",

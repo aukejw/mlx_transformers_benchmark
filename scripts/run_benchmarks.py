@@ -1,5 +1,4 @@
 import itertools
-import time
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
@@ -18,11 +17,11 @@ DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements"
 
 def main(
     output_root: Union[str, Path] = DEFAULT_OUTPUT_ROOT,
-    num_warmup_iterations: int = 20,
-    num_iterations: int = 50,
+    num_warmup_iterations: int = 10,
+    num_iterations: int = 20,
     num_repeats: int = 1,
     dtype: str = "float32",
-    cooldown_time_fraction: float = 0.10,
+    cooldown_time_fraction: float = 0.2,
     batch_sizes: Tuple = (64, 32, 16, 8, 1),
     sequence_lengths: Tuple = (512, 256, 128, 64),
     num_attention_heads: Tuple = (1, 8),
@@ -113,14 +112,13 @@ def main(
         iterator.set_description(
             f"Timing {benchmark.name}, input_shape={benchmark.input_shape}"
         )
-        start_time = time.perf_counter()
-
         try:
             results: pd.DataFrame = run_benchmark(
                 benchmark=benchmark,
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
                 num_repeats=num_repeats,
+                cooldown_time_fraction=cooldown_time_fraction,
                 dtype=dtype,
                 run_torch_cpu=run_torch_cpu,
                 run_torch_mps=run_torch_mps,
@@ -134,15 +132,11 @@ def main(
             continue
 
         all_results.append(results)
-        duration_seconds = time.perf_counter() - start_time
 
         # Save measurements after each benchmark to avoid losing data on interruption
         output_path = output_dir / "benchmark_results.csv"
         save_header = not output_path.exists()
         results.to_csv(output_path, index=False, mode="a", header=save_header)
-
-        # Cooldown is a fraction of the task duration -- let's not fry your chips
-        time.sleep(cooldown_time_fraction * duration_seconds)
 
     print(f"Saved measurements to '{output_path}'")
     return
