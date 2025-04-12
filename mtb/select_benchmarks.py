@@ -1,11 +1,14 @@
 from typing import List, Type
 
+from mtb.benchmarks import (
+    LayerNormBenchmark,
+    LinearBenchmark,
+    MhsaBenchmark,
+    ScaledDotProductAttentionBenchmark,
+    TransformerDecoderLayerBenchmark,
+    TransformerEncoderLayerBenchmark,
+)
 from mtb.benchmarks.base_benchmark import BaseBenchmark
-from mtb.benchmarks.layer_norm import LayerNormBenchmark
-from mtb.benchmarks.linear import LinearBenchmark
-from mtb.benchmarks.mhsa import MhsaBenchmark
-from mtb.benchmarks.transformer_decoder_layer import TransformerDecoderLayerBenchmark
-from mtb.benchmarks.transformer_encoder_layer import TransformerEncoderLayerBenchmark
 
 
 def layer_name_to_benchmark_class(
@@ -28,6 +31,8 @@ def layer_name_to_benchmark_class(
         return TransformerEncoderLayerBenchmark
     elif layer_name in ("transformerdecoderlayer", "transformer_decoder_layer"):
         return TransformerDecoderLayerBenchmark
+    elif layer_name in ("scaled_dot_product_attention", "sdpa"):
+        return ScaledDotProductAttentionBenchmark
     else:
         raise ValueError(f"Unknown layer_name '{layer_name}'")
 
