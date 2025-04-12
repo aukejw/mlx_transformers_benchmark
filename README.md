@@ -108,4 +108,13 @@ You may also be interested in:
 
 ### Contributing
 
-If you have an Apple device, additional measurements are always welcome. Feel free to raise an issue or submit a PR!
+If you have an Apple device, additional measurements are always welcome! 
+
+The easiest way to contribute is to set up the repo as described, and run benchmarks for three dtypes:
+```
+make run
+```
+Running benchmarks for all operators should take around 20 minutes per dtype.
+
+This creates a new measurement folder for each dtype, and stores the platform info as well as the  
+`mlx` and `torch` versions in a settings file. Pull requests welcome!
