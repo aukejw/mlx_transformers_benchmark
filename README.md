@@ -41,7 +41,7 @@ Before you start, you will need:
    make test
    ```
 
-3. Run benchmarking. By default, we will test multiple batch sizes and sequence lengths for each operator. 
+3. Run benchmarking. By default, we will test multiple batch sizes and sequence lengths for each specified operator. 
    ```
    python scripts/run_benchmarks.py \
       --num_warmup_iterations 10 \
@@ -50,6 +50,7 @@ Before you start, you will need:
       --run_torch_mps=True \
       --run_mlx_metal=True \
       --run_mlx_metal_compiled=True  \
+      --run_only_benchmarks "[linear, softmax]" \
       --cooldown_time_fraction=0.1 
    ```
    This creates a new result in the `measurements` folder.
