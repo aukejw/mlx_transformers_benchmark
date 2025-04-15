@@ -6,15 +6,15 @@ import torch
 
 
 def validate_attention_kwargs(
-    num_features: int,
+    feature_dim: int,
     num_heads: int,
     mask_type: Optional[str],
 ):
     """Check that arguments are correct."""
 
-    if num_features % num_heads != 0:
+    if feature_dim % num_heads != 0:
         raise ValueError(
-            f"num_features={num_features} must be divisible by num_heads={num_heads}"
+            f"feature_dim={feature_dim} must be divisible by num_heads={num_heads}"
         )
 
     if mask_type not in (None, "causal"):
@@ -23,6 +23,21 @@ def validate_attention_kwargs(
         )
 
     return
+
+
+def create_attention_mask(
+    framework: str,
+    **kwargs,
+) -> Optional[torch.Tensor]:
+    """Create an attention mask for the given framework."""
+    if framework == "torch":
+        return create_torch_attention_mask(**kwargs)
+    elif framework == "mlx":
+        return create_mlx_attention_mask(**kwargs)
+    else:
+        raise NotImplementedError(
+            f"Unknown framework {framework}. " "Only 'torch' and 'mlx' are supported."
+        )
 
 
 def create_torch_attention_mask(
@@ -74,6 +89,7 @@ def create_mlx_attention_mask(
 
     elif mask_type is None:
         if compile:
+            # compilation with None inputs is not supported
             mask = mx.zeros((num_tokens, num_tokens), dtype=dtype)
         else:
             mask = None

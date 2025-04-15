@@ -24,14 +24,14 @@ def mlx_dtype():
 
 
 def test_validate_attention_kwargs():
-    validate_attention_kwargs(num_features=16, num_heads=4, mask_type=None)
-    validate_attention_kwargs(num_features=32, num_heads=8, mask_type="causal")
+    validate_attention_kwargs(feature_dim=16, num_heads=4, mask_type=None)
+    validate_attention_kwargs(feature_dim=32, num_heads=8, mask_type="causal")
 
     with pytest.raises(ValueError):
-        validate_attention_kwargs(num_features=16, num_heads=5, mask_type=None)
+        validate_attention_kwargs(feature_dim=16, num_heads=5, mask_type=None)
 
     with pytest.raises(ValueError):
-        validate_attention_kwargs(num_features=16, num_heads=4, mask_type="nonexisting")
+        validate_attention_kwargs(feature_dim=16, num_heads=4, mask_type="nonexisting")
 
 
 def test_create_torch_attention_mask_causal(torch_dtype):
