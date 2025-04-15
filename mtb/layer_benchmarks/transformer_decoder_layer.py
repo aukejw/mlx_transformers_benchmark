@@ -77,6 +77,17 @@ class TransformerDecoderLayerBenchmark(BaseLayerBenchmark):
         batch_size: int,
         sequence_length: int,
     ):
+        input_shape = (batch_size, sequence_length, self.feature_dim)
+        if self._framework == "torch":
+            self.memory = torch.randn(
+                size=input_shape,
+                device=self._device,
+                dtype=self._dtype,
+            )
+
+        elif self._framework == "mlx":
+            self.memory = mx.random.normal(input_shape, dtype=self._dtype)
+
         attention_mask_kwargs = dict(
             framework=self._framework,
             num_tokens=sequence_length,
@@ -84,13 +95,10 @@ class TransformerDecoderLayerBenchmark(BaseLayerBenchmark):
             dtype=self._dtype,
             compile=self._compile,
         )
+
         self.mask = create_attention_mask(
             mask_type=self.mask_type,
             **attention_mask_kwargs,
-        )
-        self.memory = mx.random.normal(
-            (batch_size, sequence_length, self.feature_dim),
-            dtype=self._dtype,
         )
         self.memory_mask = create_attention_mask(
             mask_type=None,

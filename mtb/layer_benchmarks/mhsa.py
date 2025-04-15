@@ -27,7 +27,7 @@ class MhsaBenchmark(BaseLayerBenchmark):
             f"num_heads={num_heads}, "
             f"mask={mask_type})"
         )
-        super().__init__(name=name)
+        super().__init__(name=name, feature_dim=feature_dim)
 
         validate_attention_kwargs(
             feature_dim=feature_dim,

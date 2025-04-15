@@ -12,7 +12,7 @@ class LayerNormBenchmark(BaseLayerBenchmark):
         self,
         feature_dim: int,
     ):
-        super().__init__(name=f"LayerNorm(dim={feature_dim})")
+        super().__init__(name=f"LayerNorm(dim={feature_dim})", feature_dim=feature_dim)
 
     def setup_torch(self):
         self.torch_function = torch.nn.LayerNorm(

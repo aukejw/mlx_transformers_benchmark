@@ -20,7 +20,7 @@ class ScaledDotProductAttentionBenchmark(BaseLayerBenchmark):
             f"num_heads={num_heads}, "
             f"mask={mask_type})"
         )
-        super().__init__(name=name)
+        super().__init__(name=name, feature_dim=feature_dim)
 
         validate_attention_kwargs(
             feature_dim=feature_dim,
@@ -39,8 +39,8 @@ class ScaledDotProductAttentionBenchmark(BaseLayerBenchmark):
 
         input_shape = (
             batch_size,
-            sequence_length,
             self.num_heads,
+            sequence_length,
             self.head_dim,
         )
 
