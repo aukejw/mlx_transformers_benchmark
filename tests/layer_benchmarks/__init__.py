@@ -34,6 +34,7 @@ class LayerBenchmarkTest:
             dtype=dtype,
             compile=compile,
         )
+        benchmark.set_input_tensor(batch_size=1, sequence_length=3)
         benchmark.run_once()
         benchmark.teardown()
 

@@ -11,7 +11,7 @@ class TestTransformerDecoderLayerBenchmark(LayerBenchmarkTest):
     @pytest.fixture
     def benchmark(self):
         return TransformerDecoderLayerBenchmark(
-            input_shape=(1, 3, 16),
+            feature_dim=16,
             num_heads=8,
             dropout=0.1,
         )

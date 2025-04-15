@@ -7,6 +7,4 @@ from tests.layer_benchmarks import LayerBenchmarkTest
 class TestSoftmax(LayerBenchmarkTest):
     @pytest.fixture
     def benchmark(self):
-        return SoftmaxBenchmark(
-            input_shape=(1, 3, 16),
-        )
+        return SoftmaxBenchmark(feature_dim=16)

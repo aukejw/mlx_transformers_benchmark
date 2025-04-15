@@ -10,6 +10,7 @@ class TestScaledDotProductAttentionBenchmark(LayerBenchmarkTest):
     @pytest.fixture
     def benchmark(self):
         return ScaledDotProductAttentionBenchmark(
-            input_shape=(1, 3, 16),
+            feature_dim=16,
             num_heads=8,
+            mask_type="causal",
         )
