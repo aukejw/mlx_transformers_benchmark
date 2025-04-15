@@ -9,10 +9,10 @@ from tqdm import tqdm
 import mtb as mtb
 import mtb.layer_benchmarks as mtb_bench
 from mtb.file_io import create_benchmark_output_dir
-from mtb.run_operator_benchmark import run_benchmark
+from mtb.run_layer_benchmark import run_benchmark
 from mtb.select_benchmarks import filter_benchmarks
 
-DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements"
+DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements" / "layer_benchmarks"
 
 
 def main(
@@ -36,13 +36,13 @@ def main(
     run_mlx_cpu: bool = False,
     run_only_benchmarks: Optional[List[str]] = None,
 ):
-    """Run benchmarks. By default, we always run torch mps on GPU, and mlx on metal.
+    """Run layer benchmarks.
 
     To avoid frying the hardware, we add a small cooldown during which the chips
     should (mostly) idle. A cooldown of 10% of the duration of the task results
     in a 95°C peak GPU temperature on a Macbook M4 Pro, but YMMV.
 
-    By default, we run torch with MPS becakend, and MLX in compiled and
+    By default, we run torch with MPS backend and MLX in compiled and
     non-compiled mode.
 
     """
