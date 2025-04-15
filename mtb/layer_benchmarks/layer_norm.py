@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import mlx
 import mlx.core as mx
 import mlx.nn
@@ -10,27 +8,23 @@ from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 
 class LayerNormBenchmark(BaseLayerBenchmark):
-    def __init__(self, input_shape: Tuple[int, int, int]):
-        super().__init__(
-            name=f"LayerNorm(dim={input_shape[2]})",
-            input_shape=input_shape,
-        )
+    def __init__(
+        self,
+        feature_dim: int,
+    ):
+        super().__init__(name=f"LayerNorm(dim={feature_dim})")
 
     def setup_torch(self):
-        batch_size, num_tokens, num_features = self.input_shape
-
         self.torch_function = torch.nn.LayerNorm(
-            normalized_shape=num_features,
+            normalized_shape=self.feature_dim,
             elementwise_affine=True,
             bias=True,
             device=self._backend,
         )
 
     def setup_mlx(self):
-        batch_size, num_tokens, num_features = self.input_shape
-
         self.mlx_function = mlx.nn.LayerNorm(
-            dims=num_features,
+            dims=self.feature_dim,
             affine=True,
             bias=True,
         )

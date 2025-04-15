@@ -1,5 +1,4 @@
 import gc
-from typing import Tuple
 
 import mlx.core as mx
 import torch
@@ -26,14 +25,10 @@ class BaseLayerBenchmark:
     def __init__(
         self,
         name: str,
-        input_shape: Tuple[int, int, int],
+        feature_dim: int,
     ):
         self.name = name
-        self.input_shape = input_shape
-
-        self._batch_size = input_shape[0]
-        self._num_tokens = input_shape[1]
-        self._num_features = input_shape[2]
+        self.feature_dim = feature_dim
 
         # placeholders set during setup
         self._framework = None
@@ -89,11 +84,6 @@ class BaseLayerBenchmark:
             torch.set_default_device(self._device)
             torch.set_default_dtype(self._dtype)
 
-            self.input_tensor = torch.rand(
-                self.input_shape,
-                device=self._device,
-                dtype=self._dtype,
-            )
             self.setup_torch()
 
         elif framework == "mlx":
@@ -113,11 +103,31 @@ class BaseLayerBenchmark:
             mx.random.seed(0)
             mx.set_default_device(self._device)
 
-            self.input_tensor = mx.random.normal(self.input_shape).astype(self._dtype)
             self.setup_mlx()
 
         else:
             raise NotImplementedError(f"Unknown framework {framework}")
+
+    def set_input_tensor(
+        self,
+        batch_size: int,
+        sequence_length: int,
+    ):
+        self._batch_size = batch_size
+        self._sequence_length = sequence_length
+
+        input_shape = (batch_size, sequence_length, self.feature_dim)
+
+        if self._framework == "torch":
+            self.input_tensor = torch.rand(
+                input_shape, device=self._device, dtype=self._dtype
+            )
+        elif self._framework == "mlx":
+            self.input_tensor = mx.random.normal(
+                input_shape,
+            ).astype(self._dtype)
+        else:
+            raise NotImplementedError(f"Unknown framework {self._framework}")
 
     def run_once(self):
         """Run the benchmark once."""

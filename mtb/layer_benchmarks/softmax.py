@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import mlx.core as mx
 import torch
 
@@ -9,15 +7,11 @@ from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 class SoftmaxBenchmark(BaseLayerBenchmark):
     def __init__(
         self,
-        input_shape: Tuple[int, int, int],
+        feature_dim: int,
     ):
-        num_features = input_shape[2]
-        name = f"Softmax(dim={num_features})"
+        name = f"Softmax(dim={feature_dim})"
 
-        super().__init__(
-            name=name,
-            input_shape=input_shape,
-        )
+        super().__init__(name=name, feature_dim=feature_dim)
 
     def setup_torch(self):
         self.torch_function = torch.nn.functional.softmax

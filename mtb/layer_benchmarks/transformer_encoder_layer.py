@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 
 import mlx
 import mlx.core as mx
@@ -6,38 +6,29 @@ import mlx.nn
 import torch
 import torch.nn
 
-from mtb.attention_mask import (
-    create_mlx_attention_mask,
-    create_torch_attention_mask,
-    validate_attention_kwargs,
-)
+from mtb.attention_mask import create_attention_mask, validate_attention_kwargs
 from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 
 class TransformerEncoderLayerBenchmark(BaseLayerBenchmark):
     def __init__(
         self,
-        input_shape: Tuple[int, int, int],
+        feature_dim: int,
         num_heads: int = 8,
         dropout: float = 0.1,
         norm_first: bool = True,
         mask_type: Optional[str] = None,
     ):
-        num_features = input_shape[2]
-
         name = (
             f"TransformerEncoderLayer("
-            f"dim={num_features}, "
+            f"dim={feature_dim}, "
             f"num_heads={num_heads}, "
             f"mask={mask_type})"
         )
+        super().__init__(name=name, feature_dim=feature_dim)
 
-        super().__init__(
-            name=name,
-            input_shape=input_shape,
-        )
         validate_attention_kwargs(
-            num_features=num_features,
+            feature_dim=feature_dim,
             num_heads=num_heads,
             mask_type=mask_type,
         )
@@ -50,15 +41,22 @@ class TransformerEncoderLayerBenchmark(BaseLayerBenchmark):
 
         # placeholder variables
         self.mask = None
-        self.memory = None
-        self.memory_mask = None
+
+    def set_input_tensor(self, batch_size, sequence_length):
+        self.mask = create_attention_mask(
+            framework=self._framework,
+            mask_type=self.mask_type,
+            num_tokens=sequence_length,
+            device=self._device,
+            dtype=self._dtype,
+            compile=self._compile,
+        )
+        return super().set_input_tensor(batch_size, sequence_length)
 
     def setup_torch(self):
-        batch_size, num_tokens, num_features = self.input_shape
-
         self.torch_function = torch.nn.TransformerEncoderLayer(
-            d_model=num_features,
-            dim_feedforward=num_features * 4,
+            d_model=self.feature_dim,
+            dim_feedforward=self.feature_dim * 4,
             nhead=self.num_heads,
             dropout=self.dropout,
             norm_first=self.norm_first,
@@ -69,19 +67,10 @@ class TransformerEncoderLayerBenchmark(BaseLayerBenchmark):
         )
         self.torch_function.eval()
 
-        self.mask = create_torch_attention_mask(
-            mask_type=self.mask_type,
-            num_tokens=num_tokens,
-            device=self._device,
-            dtype=self._dtype,
-        )
-
     def setup_mlx(self):
-        batch_size, num_tokens, num_features = self.input_shape
-
         self.mlx_function = mlx.nn.TransformerEncoderLayer(
-            dims=num_features,
-            mlp_dims=4 * num_features,
+            dims=self.feature_dim,
+            mlp_dims=4 * self.feature_dim,
             num_heads=self.num_heads,
             dropout=self.dropout,
             norm_first=self.norm_first,
@@ -89,13 +78,6 @@ class TransformerEncoderLayerBenchmark(BaseLayerBenchmark):
         self.mlx_function.eval()
         self.mlx_function.set_dtype(self._dtype)
 
-        self.mask = create_mlx_attention_mask(
-            mask_type=self.mask_type,
-            num_tokens=num_tokens,
-            device=self._device,
-            dtype=self._dtype,
-            compile=self._compile,
-        )
         if self._compile:
             self.mlx_function = mx.compile(self.mlx_function)
 
@@ -111,3 +93,8 @@ class TransformerEncoderLayerBenchmark(BaseLayerBenchmark):
         fn = self.mlx_function
         y = fn(x, mask=self.mask)
         return y
+
+    def teardown(self):
+        del self.mask
+        self.mask = None
+        super().teardown()

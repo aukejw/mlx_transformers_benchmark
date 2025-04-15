@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import mlx
 import mlx.core as mx
 import mlx.nn
@@ -12,33 +10,28 @@ from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 class LinearBenchmark(BaseLayerBenchmark):
     def __init__(
         self,
-        input_shape: Tuple[int, int, int],
+        feature_dim: int,
     ):
-        num_features = input_shape[2]
-        name = f"Linear(in={num_features}, out={num_features})"
+        name = f"Linear(in={feature_dim}, out={feature_dim})"
 
         super().__init__(
             name=name,
-            input_shape=input_shape,
+            feature_dim=feature_dim,
         )
 
     def setup_torch(self):
-        batch_size, num_tokens, num_features = self.input_shape
-
         self.torch_function = torch.nn.Linear(
-            in_features=num_features,
-            out_features=num_features,
+            in_features=self.feature_dim,
+            out_features=self.feature_dim,
             bias=True,
             device=self._device,
             dtype=self._dtype,
         )
 
     def setup_mlx(self):
-        batch_size, num_tokens, num_features = self.input_shape
-
         self.mlx_function = mlx.nn.Linear(
-            input_dims=num_features,
-            output_dims=num_features,
+            input_dims=self.feature_dim,
+            output_dims=self.feature_dim,
             bias=True,
         )
         self.mlx_function.set_dtype(self._dtype)

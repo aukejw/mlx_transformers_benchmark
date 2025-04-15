@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 
 import mlx
 import mlx.core as mx
@@ -17,39 +17,56 @@ from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 class MhsaBenchmark(BaseLayerBenchmark):
     def __init__(
         self,
-        input_shape: Tuple[int, int, int],
+        feature_dim: int,
         num_heads: int = 8,
         mask_type: Optional[str] = None,
     ):
-        num_features = input_shape[2]
         name = (
             f"MHSA("
-            f"dim={num_features}, "
+            f"dim={feature_dim}, "
             f"num_heads={num_heads}, "
             f"mask={mask_type})"
         )
+        super().__init__(name=name)
 
-        super().__init__(
-            name=name,
-            input_shape=input_shape,
-        )
         validate_attention_kwargs(
-            num_features=num_features,
+            feature_dim=feature_dim,
             num_heads=num_heads,
             mask_type=mask_type,
         )
-
         self.num_heads = num_heads
         self.mask_type = mask_type
 
         # placeholder variables
         self.mask = None
 
-    def setup_torch(self):
-        batch_size, num_tokens, num_features = self.input_shape
+    def set_input_tensor(
+        self,
+        batch_size: int,
+        sequence_length: int,
+    ):
+        super().set_input_tensor(batch_size, sequence_length)
 
+        if self._framework == "torch":
+            self.mask = create_torch_attention_mask(
+                mask_type=self.mask_type,
+                num_tokens=sequence_length,
+                device=self._device,
+                dtype=self._dtype,
+                compile=False,
+            )
+        elif self._framework == "mlx":
+            self.mask = create_mlx_attention_mask(
+                mask_type=self.mask_type,
+                num_tokens=sequence_length,
+                device=self._device,
+                dtype=self._dtype,
+                compile=self._compile,
+            )
+
+    def setup_torch(self):
         self.torch_function = torch.nn.MultiheadAttention(
-            embed_dim=num_features,
+            embed_dim=self.feature_dim,
             num_heads=self.num_heads,
             bias=True,
             batch_first=True,  # mlx only has batch_first
@@ -58,32 +75,14 @@ class MhsaBenchmark(BaseLayerBenchmark):
         )
         self.torch_function.eval()
 
-        self.mask = create_torch_attention_mask(
-            mask_type=self.mask_type,
-            num_tokens=num_tokens,
-            device=self._device,
-            dtype=self._dtype,
-            compile=False,
-        )
-
     def setup_mlx(self):
-        batch_size, num_tokens, num_features = self.input_shape
-
         self.mlx_function = mlx.nn.MultiHeadAttention(
-            dims=num_features,
+            dims=self.feature_dim,
             num_heads=self.num_heads,
             bias=True,
         )
         self.mlx_function.eval()
         self.mlx_function.set_dtype(self._dtype)
-
-        self.mask = create_mlx_attention_mask(
-            mask_type=self.mask_type,
-            num_tokens=num_tokens,
-            device=self._device,
-            dtype=self._dtype,
-            compile=self._compile,
-        )
 
         if self._compile:
             self.mlx_function = mx.compile(self.mlx_function)
