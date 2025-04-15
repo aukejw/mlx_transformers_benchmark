@@ -39,13 +39,15 @@ def test_benchmark_name_to_benchmark_class_valueerror():
 
 
 def test_filter_benchmarks():
-    input_shape = (1, 3, 16)
+    kwargs = dict(
+        feature_dim=16,
+    )
     benchmarks = [
-        LayerNormBenchmark(input_shape=input_shape),
-        LinearBenchmark(input_shape=input_shape),
-        MhsaBenchmark(input_shape=input_shape),
-        TransformerDecoderLayerBenchmark(input_shape=input_shape),
-        TransformerEncoderLayerBenchmark(input_shape=input_shape),
+        LayerNormBenchmark(**kwargs),
+        LinearBenchmark(**kwargs),
+        MhsaBenchmark(**kwargs),
+        TransformerDecoderLayerBenchmark(**kwargs),
+        TransformerEncoderLayerBenchmark(**kwargs),
     ]
     run_only_benchmarks = ["layernorm", "linear"]
 
