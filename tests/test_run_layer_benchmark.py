@@ -7,7 +7,6 @@ import pytest
 import torch.nn
 
 from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
-from mtb.measurement import Measurement
 from mtb.run_layer_benchmark import run_benchmark, run_benchmark_for_framework
 
 
@@ -27,21 +26,27 @@ class MockBenchmark(BaseLayerBenchmark):
 
 @pytest.fixture
 def benchmark():
-    return MockBenchmark(name="mock", input_shape=(1, 3, 16))
+    return MockBenchmark(name="mock", feature_dim=16)
 
 
 def test_run_benchmark_for_framework(benchmark):
-    measurement = run_benchmark_for_framework(
+    measurements = run_benchmark_for_framework(
         benchmark=benchmark,
+        batch_sizes=(1,),
+        sequence_lengths=(3,),
         framework="torch",
         backend="cpu",
         dtype="float16",
         num_warmup_iterations=1,
         num_iterations=2,
-        num_repeats=2,
         compile=False,
     )
-    assert isinstance(measurement, Measurement)
+    assert isinstance(measurements, list) and len(measurements) == 1
+
+    measurement = measurements[0]
+    assert measurement["batch_size"] == 1
+    assert measurement["sequence_length"] == 3
+    assert measurement["duration_ms"] > 0
 
 
 def test_run_benchmark_for_framework_slowiterations(benchmark):
@@ -50,27 +55,29 @@ def test_run_benchmark_for_framework_slowiterations(benchmark):
 
     benchmark.run_torch = slow_run_torch
 
-    measurement = run_benchmark_for_framework(
+    measurements = run_benchmark_for_framework(
         benchmark=benchmark,
+        batch_sizes=(1,),
+        sequence_lengths=(3,),
         min_runtime_ms=0.1,
         framework="torch",
         backend="cpu",
         dtype="float16",
         num_warmup_iterations=1,
         num_iterations=2,
-        num_repeats=2,
         compile=False,
     )
-    assert isinstance(measurement, Measurement)
+    assert isinstance(measurements, list)
 
 
 def test_run_benchmark_on_cpu(benchmark):
     measurements_df = run_benchmark(
         benchmark=benchmark,
+        batch_sizes=(1,),
+        sequence_lengths=(3,),
         dtype="float16",
         num_warmup_iterations=1,
         num_iterations=2,
-        num_repeats=2,
         run_torch_cpu=True,
         run_mlx_cpu=True,
     )
@@ -84,10 +91,11 @@ def test_run_benchmark_on_cpu(benchmark):
 def test_run_benchmark_on_metal(benchmark):
     measurements_df = run_benchmark(
         benchmark=benchmark,
+        batch_sizes=(1,),
+        sequence_lengths=(3,),
         dtype="bfloat16",
         num_warmup_iterations=1,
         num_iterations=2,
-        num_repeats=2,
         run_torch_mps=True,
         run_mlx_metal=True,
         run_mlx_metal_compiled=True,
@@ -100,10 +108,11 @@ def test_run_benchmark_on_metal(benchmark):
 def test_run_benchmark_on_cuda(benchmark):
     measurements_df = run_benchmark(
         benchmark=benchmark,
+        batch_sizes=(1,),
+        sequence_lengths=(3,),
         dtype="bfloat16",
         num_warmup_iterations=1,
         num_iterations=2,
-        num_repeats=2,
         run_torch_cuda=True,
     )
     assert isinstance(measurements_df, pd.DataFrame)
@@ -111,11 +120,15 @@ def test_run_benchmark_on_cuda(benchmark):
 
 
 def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
-    mock_measurement = Measurement(measurements=[0.1, 0.2])
+    mock_measurements = [
+        dict(
+            duration_ms=1,
+        )
+    ]
 
     # Setup the monkeypatch to replace run_benchmark_for_framework
     mock_run_benchmark_for_framework = Mock(
-        return_value=mock_measurement,
+        return_value=mock_measurements,
     )
     monkeypatch.setattr(
         "mtb.run_layer_benchmark.run_benchmark_for_framework",
@@ -125,7 +138,6 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
     # Test parameters
     num_warmup_iterations = 1
     num_iterations = 1
-    num_repeats = 1
     min_runtime_ms = 500
     dtype = "float16"
 
@@ -174,10 +186,12 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
 
         kwargs = {
             "benchmark": benchmark,
+            "batch_sizes": (1,),
+            "sequence_lengths": (3,),
             "num_warmup_iterations": num_warmup_iterations,
             "num_iterations": num_iterations,
-            "num_repeats": num_repeats,
             "dtype": dtype,
+            "cooldown_time_fraction": 0.1,
         }
         kwargs[backend["option"]] = True
 
@@ -185,9 +199,11 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
 
         mock_run_benchmark_for_framework.assert_called_once_with(
             benchmark=benchmark,
+            batch_sizes=(1,),
+            sequence_lengths=(3,),
+            cooldown_time_fraction=0.1,
             num_warmup_iterations=num_warmup_iterations,
             num_iterations=num_iterations,
-            num_repeats=num_repeats,
             min_runtime_ms=min_runtime_ms,
             dtype=dtype,
             framework=backend["framework"],

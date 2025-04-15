@@ -1,22 +1,26 @@
+import itertools
 import time
+from typing import Dict, Iterable, List
 
 import pandas as pd
+from tqdm import tqdm
 
 from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
-from mtb.measurement import Measurement
 
 
 def run_benchmark_for_framework(
     benchmark: BaseLayerBenchmark,
+    batch_sizes: Iterable[int],
+    sequence_lengths: Iterable[int],
     framework: str,
     backend: str,
     dtype: str,
     num_warmup_iterations: int,
     num_iterations: int,
-    num_repeats: int,
     min_runtime_ms: int = 500,
+    cooldown_time_fraction: float = 0.2,
     compile: bool = False,
-) -> Measurement:
+) -> List[Dict]:
     """Run a specific benchmark for a specific framework.
 
     Args:
@@ -26,7 +30,6 @@ def run_benchmark_for_framework(
         dtype: Identifier for the data type.
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run inference for.
-        repeats: Number of times to repeat the benchmark.
         min_runtime_ms: Minimum runtime in milliseconds for the benchmark.
         compile: If true, compile the function before benchmarking.
 
@@ -34,6 +37,8 @@ def run_benchmark_for_framework(
         A measurement instance, containing the durations of each iteration.
 
     """
+    all_measurements = []
+
     benchmark.setup(
         framework=framework,
         backend=backend,
@@ -41,36 +46,58 @@ def run_benchmark_for_framework(
         compile=compile,
     )
 
-    start_time = time.perf_counter()
-    for warmup_iteration in range(num_warmup_iterations):
-        benchmark.run_once()
+    settings = list(itertools.product(batch_sizes, sequence_lengths))
+    with tqdm(settings) as iterator:
+        for batch_size, sequence_length in iterator:
+            benchmark.set_input_tensor(
+                batch_size=batch_size,
+                sequence_length=sequence_length,
+            )
+            iterator.set_description(f"  b={batch_size}, seqlen={sequence_length}")
 
-    iteration_time_ms = (time.perf_counter() - start_time) * 1e3 / num_warmup_iterations
-    if iteration_time_ms * num_iterations < min_runtime_ms:
-        # If iterations are fast, we need to increase the number of iterations
-        # for reliability. We set it so the benchmark will take at least some fixed time.
-        num_iterations = max(num_iterations, int(min_runtime_ms / iteration_time_ms))
+            start_time = time.perf_counter()
+            for warmup_iteration in range(num_warmup_iterations):
+                benchmark.run_once()
 
-    measurements = []
-    for repeat_index in range(num_repeats):
-        start_time = time.perf_counter()
+            iteration_time_ms = (
+                (time.perf_counter() - start_time) * 1e3 / num_warmup_iterations
+            )
+            if iteration_time_ms * num_iterations < min_runtime_ms:
+                # If iterations are fast, we need to increase the number of iterations
+                # for reliability. We set it so the benchmark will take at least some fixed time.
+                num_iterations = max(
+                    num_iterations, int(min_runtime_ms / iteration_time_ms)
+                )
 
-        for iteration in range(num_iterations):
-            benchmark.run_once()
+            start_time = time.perf_counter()
+            for iteration in range(num_iterations):
+                benchmark.run_once()
 
-        duration_ms = (time.perf_counter() - start_time) * 1e3 / num_iterations
-        measurements.append(duration_ms)
+            duration_ms = (time.perf_counter() - start_time) * 1e3 / num_iterations
+
+            row = dict(
+                batch_size=benchmark._batch_size,
+                sequence_length=benchmark._sequence_length,
+                duration_ms=duration_ms,
+            )
+            all_measurements.append(row)
+            iterator.update(1)
+
+            # cooldown
+            duration = time.perf_counter() - start_time
+            time.sleep(cooldown_time_fraction * duration)
 
     benchmark.teardown()
 
-    return Measurement(measurements=measurements)
+    return all_measurements
 
 
 def run_benchmark(
     benchmark: BaseLayerBenchmark,
+    batch_sizes: Iterable[int],
+    sequence_lengths: Iterable[int],
     num_warmup_iterations: int = 20,
     num_iterations: int = 50,
-    num_repeats: int = 1,
     min_runtime_ms: int = 500,
     cooldown_time_fraction: float = 0.2,
     dtype="float32",
@@ -86,9 +113,9 @@ def run_benchmark(
 
     Args:
         benchmark: The benchmark to run.
+        input_shapes: List of input shapes to use.
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run inference for.
-        num_repeats: Number of times to repeat the timing.
         min_runtime_ms: Minimum runtime in milliseconds for the benchmark.
         run_torch_cpu: Framework torch, on cpu.
         run_torch_mps: Framework torch, on gpu (mps backend).
@@ -103,10 +130,12 @@ def run_benchmark(
     """
     general_kwargs = dict(
         benchmark=benchmark,
+        batch_sizes=batch_sizes,
+        sequence_lengths=sequence_lengths,
         num_warmup_iterations=num_warmup_iterations,
         num_iterations=num_iterations,
-        num_repeats=num_repeats,
         min_runtime_ms=min_runtime_ms,
+        cooldown_time_fraction=cooldown_time_fraction,
         dtype=dtype,
     )
 
@@ -126,40 +155,29 @@ def run_benchmark(
 
     benchmark_measurements = []
     for framework_kwargs in benchmarks_to_run:
-        start_time = time.perf_counter()
-
-        measurement: Measurement = run_benchmark_for_framework(
+        measurements: List = run_benchmark_for_framework(
             **general_kwargs,
             **framework_kwargs,
         )
-        duration_seconds = time.perf_counter() - start_time
 
-        row = dict(
-            name=benchmark.name,
-            batch_size=benchmark.input_shape[0],
-            sequence_length=benchmark.input_shape[1],
-            **framework_kwargs,
-            median_ms=measurement.median,
-            mean_ms=measurement.mean,
-            std_ms=measurement.std,
-        )
-        benchmark_measurements.append(row)
-
-        # Cooldown is a fraction of the task duration -- let's not fry your chips
-        time.sleep(cooldown_time_fraction * duration_seconds)
+        for row in measurements:
+            row.update(
+                name=benchmark.name,
+                dtype=dtype,
+                **framework_kwargs,
+            )
+            benchmark_measurements.append(row)
 
     columns = [
         "name",
         "framework",
         "backend",
+        "dtype",
         "compile",
-        "batch_size",
-        "sequence_length",
         "num_warmup_iterations",
         "num_iterations",
-        "num_repeats",
-        "median_ms",
-        "mean_ms",
-        "std_ms",
+        "batch_size",
+        "sequence_length",
+        "duration_ms",
     ]
     return pd.DataFrame(benchmark_measurements, columns=columns)
