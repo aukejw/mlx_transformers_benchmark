@@ -48,34 +48,32 @@ def main(
     """
     # Set up benchmarks
     benchmarks = []
-    for batch_size, sequence_length in itertools.product(batch_sizes, sequence_lengths):
-        input_shape = (batch_size, sequence_length, feature_dim)
 
-        # add regular benchmarks
-        kwargs = dict(
-            input_shape=input_shape,
-        )
-        regular_benchmarks = [
-            mtb_bench.LayerNormBenchmark(**kwargs),
-            mtb_bench.LinearBenchmark(**kwargs),
-            mtb_bench.SoftmaxBenchmark(**kwargs),
+    # add regular benchmarks
+    kwargs = dict(
+        feature_dim=feature_dim,
+    )
+    regular_benchmarks = [
+        mtb_bench.LayerNormBenchmark(**kwargs),
+        mtb_bench.LinearBenchmark(**kwargs),
+        mtb_bench.SoftmaxBenchmark(**kwargs),
+    ]
+    benchmarks.extend(regular_benchmarks)
+
+    # add benchmarks with attention heads + masks
+    for num_heads, mask_type in itertools.product(num_attention_heads, mask_types):
+        kwargs["num_heads"] = num_heads
+        kwargs["mask_type"] = mask_type
+
+        attention_benchmarks = [
+            mtb_bench.MhsaBenchmark(**kwargs),
+            mtb_bench.MhsaBenchmark(**kwargs),
+            mtb_bench.TransformerEncoderLayerBenchmark(**kwargs),
+            mtb_bench.TransformerEncoderLayerBenchmark(**kwargs),
+            mtb_bench.TransformerDecoderLayerBenchmark(**kwargs),
+            mtb_bench.TransformerDecoderLayerBenchmark(**kwargs),
         ]
-        benchmarks.extend(regular_benchmarks)
-
-        # add benchmarks with attention heads + masks
-        for num_heads, mask_type in itertools.product(num_attention_heads, mask_types):
-            kwargs["num_heads"] = num_heads
-            kwargs["mask_type"] = mask_type
-
-            attention_benchmarks = [
-                mtb_bench.MhsaBenchmark(**kwargs),
-                mtb_bench.MhsaBenchmark(**kwargs),
-                mtb_bench.TransformerEncoderLayerBenchmark(**kwargs),
-                mtb_bench.TransformerEncoderLayerBenchmark(**kwargs),
-                mtb_bench.TransformerDecoderLayerBenchmark(**kwargs),
-                mtb_bench.TransformerDecoderLayerBenchmark(**kwargs),
-            ]
-            benchmarks.extend(attention_benchmarks)
+        benchmarks.extend(attention_benchmarks)
 
     # Filter benchmarks if specified
     if run_only_benchmarks is not None:
@@ -105,38 +103,37 @@ def main(
     print(f"Output directory: '{output_dir}'")
 
     # Run
-    iterator = tqdm(benchmarks)
-
     all_results = []
-    for benchmark in iterator:
-        iterator.set_description(
-            f"Timing {benchmark.name}, input_shape={benchmark.input_shape}"
-        )
-        try:
-            results: pd.DataFrame = run_benchmark(
-                benchmark=benchmark,
-                num_warmup_iterations=num_warmup_iterations,
-                num_iterations=num_iterations,
-                num_repeats=num_repeats,
-                cooldown_time_fraction=cooldown_time_fraction,
-                dtype=dtype,
-                run_torch_cpu=run_torch_cpu,
-                run_torch_mps=run_torch_mps,
-                run_torch_cuda=run_torch_cuda,
-                run_mlx_cpu=run_mlx_cpu,
-                run_mlx_metal=run_mlx_metal,
-                run_mlx_metal_compiled=run_mlx_metal_compiled,
-            )
-        except Exception as e:
-            print(f"Error running benchmark '{benchmark}': {e}")
-            continue
+    with tqdm(benchmarks, position=0) as iterator:
+        for benchmark in iterator:
+            iterator.set_description(f"Timing {benchmark.name}")
 
-        all_results.append(results)
+            try:
+                results: pd.DataFrame = run_benchmark(
+                    benchmark=benchmark,
+                    batch_sizes=batch_sizes,
+                    sequence_lengths=sequence_lengths,
+                    num_warmup_iterations=num_warmup_iterations,
+                    num_iterations=num_iterations,
+                    cooldown_time_fraction=cooldown_time_fraction,
+                    dtype=dtype,
+                    run_torch_cpu=run_torch_cpu,
+                    run_torch_mps=run_torch_mps,
+                    run_torch_cuda=run_torch_cuda,
+                    run_mlx_cpu=run_mlx_cpu,
+                    run_mlx_metal=run_mlx_metal,
+                    run_mlx_metal_compiled=run_mlx_metal_compiled,
+                )
+            except Exception as e:
+                print(f"Error running benchmark '{benchmark}': {e}")
+                continue
 
-        # Save measurements after each benchmark to avoid losing data on interruption
-        output_path = output_dir / "benchmark_results.csv"
-        save_header = not output_path.exists()
-        results.to_csv(output_path, index=False, mode="a", header=save_header)
+            all_results.append(results)
+
+            # Save measurements after each benchmark to avoid losing data on interruption
+            output_path = output_dir / "benchmark_results.csv"
+            save_header = not output_path.exists()
+            results.to_csv(output_path, index=False, mode="a", header=save_header)
 
     print(f"Saved measurements to '{output_path}'")
     return

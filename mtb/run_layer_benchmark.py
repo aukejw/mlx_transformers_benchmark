@@ -47,13 +47,15 @@ def run_benchmark_for_framework(
     )
 
     settings = list(itertools.product(batch_sizes, sequence_lengths))
-    with tqdm(settings) as iterator:
+    with tqdm(settings, position=1, leave=False) as iterator:
         for batch_size, sequence_length in iterator:
             benchmark.set_input_tensor(
                 batch_size=batch_size,
                 sequence_length=sequence_length,
             )
-            iterator.set_description(f"  b={batch_size}, seqlen={sequence_length}")
+            iterator.set_description(
+                f"  {framework}+{backend}, b={batch_size}, seqlen={sequence_length}"
+            )
 
             start_time = time.perf_counter()
             for warmup_iteration in range(num_warmup_iterations):
@@ -81,7 +83,6 @@ def run_benchmark_for_framework(
                 duration_ms=duration_ms,
             )
             all_measurements.append(row)
-            iterator.update(1)
 
             # cooldown
             duration = time.perf_counter() - start_time
