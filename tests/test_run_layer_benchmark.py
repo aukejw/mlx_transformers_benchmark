@@ -6,12 +6,12 @@ import pandas as pd
 import pytest
 import torch.nn
 
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 from mtb.measurement import Measurement
-from mtb.run_benchmark import run_benchmark, run_benchmark_for_framework
+from mtb.run_layer_benchmark import run_benchmark, run_benchmark_for_framework
 
 
-class MockBenchmark(BaseBenchmark):
+class MockBenchmark(BaseLayerBenchmark):
     def setup_torch(self):
         self.torch_function = torch.nn.Identity()
 
