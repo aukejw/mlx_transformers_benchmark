@@ -1,12 +1,12 @@
 import pytest
 
-from mtb.benchmarks.scaled_dot_product_attention import (
+from mtb.layer_benchmarks.scaled_dot_product_attention import (
     ScaledDotProductAttentionBenchmark,
 )
-from tests.benchmarks import BenchmarkTest
+from tests.layer_benchmarks import LayerBenchmarkTest
 
 
-class TestScaledDotProductAttentionBenchmark(BenchmarkTest):
+class TestScaledDotProductAttentionBenchmark(LayerBenchmarkTest):
     @pytest.fixture
     def benchmark(self):
         return ScaledDotProductAttentionBenchmark(

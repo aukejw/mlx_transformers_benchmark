@@ -4,10 +4,10 @@ import mlx.nn
 import pytest
 import torch.nn
 
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 
-class MockBenchmark(BaseBenchmark):
+class MockBenchmark(BaseLayerBenchmark):
     def run_torch(self):
         return self.input_tensor
 

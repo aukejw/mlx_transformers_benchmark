@@ -3,10 +3,10 @@ from typing import Tuple
 import mlx.core as mx
 import torch
 
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 
-class SoftmaxBenchmark(BaseBenchmark):
+class SoftmaxBenchmark(BaseLayerBenchmark):
     def __init__(
         self,
         input_shape: Tuple[int, int, int],

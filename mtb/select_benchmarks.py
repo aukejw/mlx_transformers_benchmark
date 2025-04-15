@@ -1,7 +1,7 @@
 import importlib
 from typing import List, Type
 
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 
 def benchmark_name_to_benchmark_class(
@@ -16,12 +16,12 @@ def benchmark_name_to_benchmark_class(
     original_benchmark_name = benchmark_name
     benchmark_name = benchmark_name.lower().replace("_", "")
 
-    from mtb.benchmarks import __all__ as operator_benchmark_names
+    from mtb.layer_benchmarks import __all__ as layer_benchmark_names
     from mtb.llm_benchmarks import __all__ as llm_benchmark_names
 
     name_to_benchmark_class = dict()
-    for name in operator_benchmark_names:
-        name_to_benchmark_class[name.lower()] = f"mtb.benchmarks.{name}"
+    for name in layer_benchmark_names:
+        name_to_benchmark_class[name.lower()] = f"mtb.layer_benchmarks.{name}"
     for name in llm_benchmark_names:
         name_to_benchmark_class[name.lower()] = f"mtb.llm_benchmarks.{name}"
 
@@ -43,9 +43,9 @@ def benchmark_name_to_benchmark_class(
 
 
 def filter_benchmarks(
-    benchmarks: List[BaseBenchmark],
+    benchmarks: List[BaseLayerBenchmark],
     run_only_benchmarks: List[str],
-) -> List[BaseBenchmark]:
+) -> List[BaseLayerBenchmark]:
     """Filter given benchmarks, return only the ones meeting the criterion.
 
     Args:

@@ -1,10 +1,10 @@
 import pytest
 
-from mtb.benchmarks.mhsa import MhsaBenchmark
-from tests.benchmarks import BenchmarkTest
+from mtb.layer_benchmarks.mhsa import MhsaBenchmark
+from tests.layer_benchmarks import LayerBenchmarkTest
 
 
-class TestMhsaBenchmark(BenchmarkTest):
+class TestMhsaBenchmark(LayerBenchmarkTest):
     @pytest.fixture
     def benchmark(self):
         return MhsaBenchmark(

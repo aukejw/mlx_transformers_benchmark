@@ -5,7 +5,7 @@ import mlx.core as mx
 import torch
 
 
-class BaseBenchmark:
+class BaseLayerBenchmark:
     """Benchmark class containing entrypoint functions.
 
     Each benchmark should implement setup and run four functions:

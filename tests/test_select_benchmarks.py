@@ -1,13 +1,17 @@
 import pytest
 
-from mtb.benchmarks.layer_norm import LayerNormBenchmark
-from mtb.benchmarks.linear import LinearBenchmark
-from mtb.benchmarks.mhsa import MhsaBenchmark
-from mtb.benchmarks.scaled_dot_product_attention import (
+from mtb.layer_benchmarks.layer_norm import LayerNormBenchmark
+from mtb.layer_benchmarks.linear import LinearBenchmark
+from mtb.layer_benchmarks.mhsa import MhsaBenchmark
+from mtb.layer_benchmarks.scaled_dot_product_attention import (
     ScaledDotProductAttentionBenchmark,
 )
-from mtb.benchmarks.transformer_decoder_layer import TransformerDecoderLayerBenchmark
-from mtb.benchmarks.transformer_encoder_layer import TransformerEncoderLayerBenchmark
+from mtb.layer_benchmarks.transformer_decoder_layer import (
+    TransformerDecoderLayerBenchmark,
+)
+from mtb.layer_benchmarks.transformer_encoder_layer import (
+    TransformerEncoderLayerBenchmark,
+)
 from mtb.select_benchmarks import benchmark_name_to_benchmark_class, filter_benchmarks
 
 

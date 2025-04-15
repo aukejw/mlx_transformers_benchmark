@@ -2,12 +2,12 @@ import time
 
 import pandas as pd
 
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 from mtb.measurement import Measurement
 
 
 def run_benchmark_for_framework(
-    benchmark: BaseBenchmark,
+    benchmark: BaseLayerBenchmark,
     framework: str,
     backend: str,
     dtype: str,
@@ -67,7 +67,7 @@ def run_benchmark_for_framework(
 
 
 def run_benchmark(
-    benchmark: BaseBenchmark,
+    benchmark: BaseLayerBenchmark,
     num_warmup_iterations: int = 20,
     num_iterations: int = 50,
     num_repeats: int = 1,

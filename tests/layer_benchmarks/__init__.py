@@ -3,7 +3,7 @@ import mlx.nn
 import pytest
 import torch
 
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 try:
     # Check if MLX compilation is available
@@ -13,16 +13,16 @@ except RuntimeError:
     MLX_COMPILATION_UNAVAILABLE = True
 
 
-class BenchmarkTest:
-    """Define common tests for benchmarks."""
+class LayerBenchmarkTest:
+    """Define common tests for layer benchmarks."""
 
     @pytest.fixture
-    def benchmark(self) -> BaseBenchmark:
+    def benchmark(self) -> BaseLayerBenchmark:
         raise NotImplementedError
 
     def benchmark_setup_run_teardown(  # Renamed from setup_run_teardown
         self,
-        benchmark: BaseBenchmark,
+        benchmark: BaseLayerBenchmark,
         framework: str,
         backend: str,
         dtype: str = "float32",

@@ -1,14 +1,16 @@
 import pytest
 
 from mtb import FLAG_ON_MAC
-from mtb.benchmarks.transformer_decoder_layer import TransformerDecoderLayerBenchmark
-from tests.benchmarks import BenchmarkTest
+from mtb.layer_benchmarks.transformer_encoder_layer import (
+    TransformerEncoderLayerBenchmark,
+)
+from tests.layer_benchmarks import LayerBenchmarkTest
 
 
-class TestTransformerDecoderLayerBenchmark(BenchmarkTest):
+class TestTransformerEncoderLayerBenchmark(LayerBenchmarkTest):
     @pytest.fixture
     def benchmark(self):
-        return TransformerDecoderLayerBenchmark(
+        return TransformerEncoderLayerBenchmark(
             input_shape=(1, 3, 16),
             num_heads=8,
             dropout=0.1,

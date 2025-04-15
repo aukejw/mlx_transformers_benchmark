@@ -6,10 +6,10 @@ import mlx.nn
 import torch
 import torch.nn
 
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 
-class LayerNormBenchmark(BaseBenchmark):
+class LayerNormBenchmark(BaseLayerBenchmark):
     def __init__(self, input_shape: Tuple[int, int, int]):
         super().__init__(
             name=f"LayerNorm(dim={input_shape[2]})",

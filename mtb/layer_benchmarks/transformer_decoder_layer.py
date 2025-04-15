@@ -11,10 +11,10 @@ from mtb.attention_mask import (
     create_torch_attention_mask,
     validate_attention_kwargs,
 )
-from mtb.benchmarks.base_benchmark import BaseBenchmark
+from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
 
-class TransformerDecoderLayerBenchmark(BaseBenchmark):
+class TransformerDecoderLayerBenchmark(BaseLayerBenchmark):
     def __init__(
         self,
         input_shape: Tuple[int, int, int],

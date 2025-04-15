@@ -7,9 +7,9 @@ import pandas as pd
 from tqdm import tqdm
 
 import mtb as mtb
-import mtb.benchmarks as mtb_bench
+import mtb.layer_benchmarks as mtb_bench
 from mtb.file_io import create_benchmark_output_dir
-from mtb.run_benchmark import run_benchmark
+from mtb.run_operator_benchmark import run_benchmark
 from mtb.select_benchmarks import filter_benchmarks
 
 DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements"
