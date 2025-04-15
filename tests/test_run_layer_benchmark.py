@@ -118,7 +118,7 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
         return_value=mock_measurement,
     )
     monkeypatch.setattr(
-        "mtb.run_benchmark.run_benchmark_for_framework",
+        "mtb.run_layer_benchmark.run_benchmark_for_framework",
         mock_run_benchmark_for_framework,
     )
 
