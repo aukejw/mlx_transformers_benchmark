@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import mlx.core as mx
 import mlx.nn
 import pytest
 import torch.nn
@@ -17,7 +18,7 @@ class MockBenchmark(BaseLayerBenchmark):
 
 @pytest.fixture
 def benchmark():
-    return MockBenchmark(name="mock", input_shape=(1, 3, 5))
+    return MockBenchmark(name="mock", feature_dim=8)
 
 
 def test_base_benchmark_illegal_inputs(benchmark):
@@ -50,18 +51,24 @@ def test_syncs_are_called(benchmark: MockBenchmark):
     with patch("torch.mps.synchronize") as mock_mps_sync:
         benchmark._framework = "torch"
         benchmark._backend = "mps"
+        benchmark._dtype = torch.float32
+        benchmark.set_input_tensor(batch_size=1, sequence_length=3)
         benchmark.run_once()
         mock_mps_sync.assert_called_once()
 
     with patch("torch.cuda.synchronize") as mock_cuda_sync:
         benchmark._framework = "torch"
         benchmark._backend = "cuda"
+        benchmark._dtype = torch.float32
+        benchmark.set_input_tensor(batch_size=1, sequence_length=3)
         benchmark.run_once()
         mock_cuda_sync.assert_called_once()
 
     with patch("mlx.core.eval") as mock_mx_eval:
         benchmark._framework = "mlx"
         benchmark._backend = "metal"
+        benchmark._dtype = mx.float32
+        benchmark.set_input_tensor(batch_size=1, sequence_length=3)
         benchmark.run_once()
         mock_mx_eval.assert_called_once()
 
