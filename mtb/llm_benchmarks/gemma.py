@@ -1,5 +1,5 @@
 import time
-from typing import Any
+from typing import Any, Dict
 
 import mlx.core as mx
 import mlx.nn
@@ -8,32 +8,7 @@ import mlx_lm.tokenizer_utils
 import torch
 from transformers import AutoTokenizer, BatchEncoding, Gemma3ForCausalLM
 
-from mtb.hf_utils import set_hf_home
-
-# from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
-
-
-class BaseLLMBenchmark:
-    def __init__(self, name: str):
-        self.name = name
-
-        self.input_tensor = None
-        self.model = None
-        self.tokenizer = None
-
-        set_hf_home()
-
-    def setup_torch(self):
-        raise NotImplementedError
-
-    def setup_mlx(self):
-        raise NotImplementedError
-
-    def run_torch(self):
-        raise NotImplementedError
-
-    def run_mlx(self):
-        raise NotImplementedError
+from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 
 
 class GemmaBenchmark(BaseLLMBenchmark):
@@ -44,11 +19,19 @@ class GemmaBenchmark(BaseLLMBenchmark):
 
     def __init__(
         self,
+        batch_size: int = 1,
+        max_num_tokens: int = 100,
+        prompt_string="Write a story about Einstein",
     ):
         model_name = "gemma-3-4b-it"
-        name = f"GemmaBencmark(model_name={model_name})"
+        name = f"GemmaBenchmark({model_name})"
 
-        super().__init__(name=name)
+        super().__init__(
+            name=name,
+            batch_size=batch_size,
+            max_num_tokens=max_num_tokens,
+            prompt_string=prompt_string,
+        )
 
     def setup_torch(self):
         self._dtype = torch.bfloat16
@@ -64,9 +47,6 @@ class GemmaBenchmark(BaseLLMBenchmark):
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
 
-        self.model_input: BatchEncoding = self._get_model_input(tensor_type="pt")
-        self.model_input.to(self._device)
-
     def setup_mlx(self):
         self._dtype = mx.bfloat16
         self._device = mx.Device(mx.DeviceType.gpu)
@@ -77,65 +57,10 @@ class GemmaBenchmark(BaseLLMBenchmark):
         self.model: mlx.nn.Module = model
         self.tokenizer: mlx_lm.tokenizer_utils.TokenizerWrapper = tokenizer
 
-        self.model_input: mx.array = self._get_model_input(tensor_type="mlx")
+    def get_model_input(self, tensor_type: str) -> BatchEncoding:
+        assert tensor_type in ["pt", "mlx"], tensor_type
 
-    @torch.inference_mode()
-    def run_torch_generate(self):
-        input_ids = self.model_input["input_ids"]
-        num_prompt_tokens = input_ids.shape[1]
-
-        max_num_tokens = 100
-
-        # Time processing of prompt, initializing kv cache
-        tic = time.perf_counter()
-        # TODO
-        time.sleep(0.1)
-
-        prompt_seconds = time.perf_counter() - tic
-        prompt_tps = num_prompt_tokens / prompt_seconds
-
-        # Generate tokens
-        tic = time.perf_counter()
-        generation = self.model.generate(
-            **self.model_input,
-            max_new_tokens=max_num_tokens,
-            do_sample=False,
-            top_k=None,
-            top_p=None,
-        )
-        generation = self.tokenizer.batch_decode(generation[0, num_prompt_tokens:])
-        generation = "".join(generation)
-
-        generation_seconds = time.perf_counter() - tic
-        generation_tps = max_num_tokens / generation_seconds
-
-        return dict(
-            generation=generation,
-            prompt_tps=prompt_tps,
-            generation_tps=generation_tps,
-        )
-
-    def run_mlx_generate(self):
-        # use stream_generate instead of generate, its response is more useful
-        generation = ""
-        for response in mlx_lm.stream_generate(
-            self.model,
-            self.tokenizer,
-            max_tokens=100,
-            prompt=self.model_input["input_ids"][0],
-        ):
-            generation += response.text
-
-        return dict(
-            generation=generation,
-            prompt_tps=response.prompt_tps,
-            generation_tps=response.generation_tps,
-            peak_memory=response.peak_memory,
-        )
-
-    def _get_model_input(self, tensor_type: str) -> Any:
         # Input-finetuned models ('-pi' suffix) expect a specific format
-        prompt_string = "Write a story about Einstein"
         messages = [
             {
                 "role": "system",
@@ -143,7 +68,7 @@ class GemmaBenchmark(BaseLLMBenchmark):
             },
             {
                 "role": "user",
-                "content": [{"type": "text", "text": prompt_string}],
+                "content": [{"type": "text", "text": self.prompt_string}],
             },
         ]
 
@@ -154,5 +79,61 @@ class GemmaBenchmark(BaseLLMBenchmark):
             return_dict=True,
             return_tensors=tensor_type,
         )
-
         return model_input
+
+    @torch.inference_mode()
+    def run_torch_generate(self) -> Dict[str, Any]:
+        input_ids = self.model_input["input_ids"]
+        num_prompt_tokens = input_ids.shape[1]
+
+        # Time processing of prompt, initializing kv cache.
+        # It is challenging to handle inference with kv cache in a general way,
+        # instead, we time the model processing the prompt, and call generate later.
+        tic = time.perf_counter()
+        outputs = self.model(**self.model_input, use_cache=True)
+        prompt_seconds = time.perf_counter() - tic
+        prompt_tps = num_prompt_tokens / prompt_seconds
+        del outputs
+
+        # Generate tokens (from scratch, no previous kv cache)
+        tic = time.perf_counter()
+        generation = self.model.generate(
+            **self.model_input,
+            max_new_tokens=self.max_num_tokens,
+            do_sample=False,
+            top_k=None,
+            top_p=None,
+        )
+        generation = self.tokenizer.batch_decode(generation[0, num_prompt_tokens:])
+        generation = "".join(generation)
+
+        generation_seconds = time.perf_counter() - tic
+        generation_seconds -= prompt_seconds
+        generation_tps = self.max_num_tokens / generation_seconds
+
+        peak_memory_gb = torch.mps.current_allocated_memory() / 1024**2
+
+        return dict(
+            generation=generation,
+            prompt_tps=prompt_tps,
+            generation_tps=generation_tps,
+            peak_memory_gb=peak_memory_gb,
+        )
+
+    def run_mlx_generate(self) -> Dict[str, Any]:
+        # use stream_generate instead of generate, its response is more useful
+        generation = ""
+        for response in mlx_lm.stream_generate(
+            self.model,
+            self.tokenizer,
+            max_tokens=self.max_num_tokens,
+            prompt=self.model_input["input_ids"],
+        ):
+            generation += response.text
+
+        return dict(
+            generation=generation,
+            prompt_tps=response.prompt_tps,
+            generation_tps=response.generation_tps,
+            peak_memory_gb=response.peak_memory,
+        )
