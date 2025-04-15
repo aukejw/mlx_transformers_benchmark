@@ -61,4 +61,11 @@ def filter_benchmarks(
         for benchmark in benchmarks
         if benchmark.__class__ in valid_benchmark_classes
     ]
+
+    if len(filtered_benchmarks) == 0:
+        raise ValueError(
+            f"No benchmarks to run after filtering! "
+            f"Check the filter criterion: {run_only_benchmarks}."
+        )
+
     return filtered_benchmarks
