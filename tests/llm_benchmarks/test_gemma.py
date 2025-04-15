@@ -6,20 +6,21 @@ from mlx_lm.tokenizer_utils import TokenizerWrapper
 from transformers import BatchEncoding, GemmaTokenizerFast
 from transformers.models.gemma3.modeling_gemma3 import Gemma3PreTrainedModel
 
+from mtb import FLAG_ON_MAC
 from mtb.llm_benchmarks.gemma import GemmaBenchmark
 
 
 @pytest.fixture(scope="session")
 def benchmark_torch():
-    benchmark = GemmaBenchmark()
-    benchmark.setup_torch()
+    benchmark = GemmaBenchmark(max_num_tokens=30)
+    benchmark.setup(framework="torch", backend="mps", dtype="bfloat16")
     return benchmark
 
 
 @pytest.fixture(scope="session")
 def benchmark_mlx():
-    benchmark = GemmaBenchmark()
-    benchmark.setup_mlx()
+    benchmark = GemmaBenchmark(max_num_tokens=30)
+    benchmark.setup(framework="mlx", backend="metal", dtype="bfloat16")
     return benchmark
 
 
@@ -27,6 +28,8 @@ bfloat16_response = "Okay, here’s a story about Albert Einstein, aiming for a 
 
 
 class TestGemmaBenchmark:
+    @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
+    @pytest.mark.skipif(not torch.mps.is_available(), reason="Must run on MPS backend")
     def test_setup_generate_torch(self, benchmark_torch):
         assert isinstance(benchmark_torch.model, Gemma3PreTrainedModel)
         assert isinstance(benchmark_torch.tokenizer, GemmaTokenizerFast)
@@ -35,10 +38,12 @@ class TestGemmaBenchmark:
 
         timing = benchmark_torch.run_torch_generate()
         assert isinstance(timing["generation"], str)
-        assert isinstance(timing["prompt_tps"], float)
-        assert isinstance(timing["generation_tps"], float)
+        assert timing["prompt_tps"] > 0
+        assert timing["generation_tps"] > 0
         assert timing["generation"].startswith(bfloat16_response)
+        assert timing["peak_memory_gb"] > 0
 
+    @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
     def test_setup_generate_mlx(self, benchmark_mlx):
         assert isinstance(benchmark_mlx.model, mlx.nn.Module)
         assert isinstance(benchmark_mlx.tokenizer, TokenizerWrapper)
@@ -46,7 +51,7 @@ class TestGemmaBenchmark:
         assert isinstance(benchmark_mlx.model_input["input_ids"], mx.array)
 
         timing = benchmark_mlx.run_mlx_generate()
-        assert isinstance(timing["generation"], str)
-        assert isinstance(timing["prompt_tps"], float)
-        assert isinstance(timing["generation_tps"], float)
+        assert timing["prompt_tps"] > 0
+        assert timing["generation_tps"] > 0
         assert timing["generation"].startswith(bfloat16_response)
+        assert timing["peak_memory_gb"] > 0
