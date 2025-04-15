@@ -136,17 +136,17 @@ class BaseBenchmark:
         elif self._framework is None:
             raise ValueError("Framework not set. Call setup() first!")
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Unknown framework {self._framework}")
 
     def teardown(self):
-        """Cleanup."""
+        """Teardown the benchmark."""
         del self.input_tensor
 
         if self._framework == "torch":
             del self.torch_function
             if self._backend == "mps":
                 torch.mps.empty_cache()
-            if self._backend == "cuda":
+            elif self._backend == "cuda":
                 torch.cuda.empty_cache()
 
         if self._framework == "mlx":
