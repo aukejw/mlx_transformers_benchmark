@@ -19,18 +19,14 @@ class GemmaBenchmark(BaseLLMBenchmark):
 
     def __init__(
         self,
-        batch_size: int = 1,
         max_num_tokens: int = 100,
-        prompt_string="Write a story about Einstein",
     ):
         model_name = "gemma-3-4b-it"
         name = f"GemmaBenchmark({model_name})"
 
         super().__init__(
             name=name,
-            batch_size=batch_size,
             max_num_tokens=max_num_tokens,
-            prompt_string=prompt_string,
         )
 
     def setup_torch(self):
@@ -57,8 +53,8 @@ class GemmaBenchmark(BaseLLMBenchmark):
         self.model: mlx.nn.Module = model
         self.tokenizer: mlx_lm.tokenizer_utils.TokenizerWrapper = tokenizer
 
-    def get_model_input(self, tensor_type: str) -> BatchEncoding:
-        assert tensor_type in ["pt", "mlx"], tensor_type
+    def set_prompt(self, prompt: str, batch_size: int) -> BatchEncoding:
+        assert batch_size == 1, "mlx_lm only supports B=1 inference currently "
 
         # Input-finetuned models ('-pi' suffix) expect a specific format
         messages = [
@@ -68,18 +64,23 @@ class GemmaBenchmark(BaseLLMBenchmark):
             },
             {
                 "role": "user",
-                "content": [{"type": "text", "text": self.prompt_string}],
+                "content": [{"type": "text", "text": prompt}],
             },
         ]
 
-        model_input = self.tokenizer.apply_chat_template(
+        tensor_type = {
+            "torch": "pt",
+            "mlx": "mlx",
+        }[self._framework]
+
+        self.model_input = self.tokenizer.apply_chat_template(
             messages,
             add_generation_prompt=True,
             tokenize=True,
             return_dict=True,
             return_tensors=tensor_type,
         )
-        return model_input
+        return self.model_input
 
     @torch.inference_mode()
     def run_torch_generate(self) -> Dict[str, Any]:
@@ -130,7 +131,7 @@ class GemmaBenchmark(BaseLLMBenchmark):
             self.model,
             self.tokenizer,
             max_tokens=self.max_num_tokens,
-            prompt=self.model_input["input_ids"],
+            prompt=prompt,
         ):
             generation += response.text
 

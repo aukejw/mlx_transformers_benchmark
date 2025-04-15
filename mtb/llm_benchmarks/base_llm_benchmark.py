@@ -3,7 +3,6 @@ from typing import Any, Dict
 
 import mlx.core as mx
 import torch
-from transformers import BatchEncoding
 
 from mtb.hf_utils import set_hf_home
 
@@ -15,9 +14,9 @@ class BaseLLMBenchmark:
 
       1. `setup_torch`
       2. `setup_mlx`
-      3. `get_model_input`
-      4. `run_torch`
-      5. `run_mlx`:
+      3. `set_prompt`
+      4. `run_torch_generate`
+      5. `run_mlx_generate`:
 
     We can then call the following three functions in order:
 
@@ -30,16 +29,10 @@ class BaseLLMBenchmark:
     def __init__(
         self,
         name: str,
-        batch_size: int,
-        prompt_string: str,
         max_num_tokens: int,
     ):
         self.name = name
-        self.batch_size = batch_size
-        self.prompt_string = prompt_string
         self.max_num_tokens = max_num_tokens
-
-        assert batch_size == 1, "mlx_lm only supports batch-size 1 generation currently"
 
         self.input_tensor = None
         self.model = None
@@ -50,7 +43,7 @@ class BaseLLMBenchmark:
     @property
     def num_prompt_tokens(self):
         if self.model_input is None:
-            raise ValueError("Model input not set. Call setup() first!")
+            raise ValueError("Model input not set. Call set_prompt() first!")
         return self.model_input["input_ids"].shape[1]
 
     def setup(
@@ -97,27 +90,21 @@ class BaseLLMBenchmark:
         else:
             raise NotImplementedError(f"Unknown framework {framework}")
 
-        # Set up model input (e.g. a prompt) for the given framework
-        tensor_type = {
-            "torch": "pt",
-            "mlx": "mlx",
-        }[framework]
-
-        self.model_input: BatchEncoding = self.get_model_input(tensor_type=tensor_type)
-        if framework == "torch":
-            self.model_input.to(self._device)
-
     def setup_torch(self):
         raise NotImplementedError
 
     def setup_mlx(self):
         raise NotImplementedError
 
+    def set_prompt(self, prompt: str, batch_size: int):
+        """Set the model_input attribute for this benchmark"""
+        raise NotImplementedError
+
     def run_once(self) -> Dict[str, Any]:
         if self._framework == "torch":
-            to_return = self.run_torch()
+            to_return = self.run_torch_generate()
         elif self._framework == "mlx":
-            to_return = self.run_mlx()
+            to_return = self.run_mlx_generate()
         elif self._framework is None:
             raise ValueError("Framework not set. Call setup() first!")
         else:
@@ -125,11 +112,11 @@ class BaseLLMBenchmark:
 
         return to_return
 
-    def run_torch(self) -> Dict[str, Any]:
+    def run_torch_generate(self) -> Dict[str, Any]:
         """Run the torch benchmark once."""
         raise NotImplementedError
 
-    def run_mlx(self) -> Dict[str, Any]:
+    def run_mlx_generate(self) -> Dict[str, Any]:
         """Run the mlx benchmark once."""
         raise NotImplementedError
 

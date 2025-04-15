@@ -14,6 +14,7 @@ from mtb.llm_benchmarks.gemma import GemmaBenchmark
 def benchmark_torch():
     benchmark = GemmaBenchmark(max_num_tokens=30)
     benchmark.setup(framework="torch", backend="mps", dtype="bfloat16")
+    benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
 
 
@@ -21,6 +22,7 @@ def benchmark_torch():
 def benchmark_mlx():
     benchmark = GemmaBenchmark(max_num_tokens=30)
     benchmark.setup(framework="mlx", backend="metal", dtype="bfloat16")
+    benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
 
 
