@@ -1,43 +1,45 @@
+import importlib
 from typing import List, Type
 
-from mtb.benchmarks import (
-    LayerNormBenchmark,
-    LinearBenchmark,
-    MhsaBenchmark,
-    ScaledDotProductAttentionBenchmark,
-    SoftmaxBenchmark,
-    TransformerDecoderLayerBenchmark,
-    TransformerEncoderLayerBenchmark,
-)
 from mtb.benchmarks.base_benchmark import BaseBenchmark
 
 
-def layer_name_to_benchmark_class(
-    layer_name: str,
+def benchmark_name_to_benchmark_class(
+    benchmark_name: str,
 ) -> Type:
     """Get a benchmark class from a vague string identifier.
 
     Args:
-        layer_name: String identifier for a layer class.
+        benchmark_name: String identifier for a benchmark.
 
     """
-    layer_name = layer_name.lower()
-    if layer_name in ("layernorm", "layer_norm"):
-        return LayerNormBenchmark
-    elif layer_name in ("linear",):
-        return LinearBenchmark
-    elif layer_name in ("mhsa", "multiheadattention"):
-        return MhsaBenchmark
-    elif layer_name in ("softmax"):
-        return SoftmaxBenchmark
-    elif layer_name in ("scaled_dot_product_attention", "sdpa"):
-        return ScaledDotProductAttentionBenchmark
-    elif layer_name in ("transformerencoderlayer", "transformer_encoder_layer"):
-        return TransformerEncoderLayerBenchmark
-    elif layer_name in ("transformerdecoderlayer", "transformer_decoder_layer"):
-        return TransformerDecoderLayerBenchmark
-    else:
-        raise ValueError(f"Unknown layer_name '{layer_name}'")
+    original_benchmark_name = benchmark_name
+    benchmark_name = benchmark_name.lower().replace("_", "")
+
+    from mtb.benchmarks import __all__ as operator_benchmark_names
+    from mtb.llm_benchmarks import __all__ as llm_benchmark_names
+
+    name_to_benchmark_class = dict()
+    for name in operator_benchmark_names:
+        name_to_benchmark_class[name.lower()] = f"mtb.benchmarks.{name}"
+    for name in llm_benchmark_names:
+        name_to_benchmark_class[name.lower()] = f"mtb.llm_benchmarks.{name}"
+
+    if not benchmark_name.endswith("benchmark"):
+        benchmark_name += "benchmark"
+
+    try:
+        benchmark_class_name = name_to_benchmark_class[benchmark_name]
+    except KeyError:
+        raise ValueError(
+            f"Could not find benchmark class for name '{original_benchmark_name}'"
+        )
+
+    module_name, class_name = benchmark_class_name.rsplit(".", 1)
+    module = importlib.import_module(module_name)
+    class_type = getattr(module, class_name)
+
+    return class_type
 
 
 def filter_benchmarks(
@@ -52,7 +54,7 @@ def filter_benchmarks(
 
     """
     valid_benchmark_classes = set(
-        layer_name_to_benchmark_class(name) for name in run_only_benchmarks
+        benchmark_name_to_benchmark_class(name) for name in run_only_benchmarks
     )
     filtered_benchmarks = [
         benchmark

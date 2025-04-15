@@ -8,32 +8,30 @@ from mtb.benchmarks.scaled_dot_product_attention import (
 )
 from mtb.benchmarks.transformer_decoder_layer import TransformerDecoderLayerBenchmark
 from mtb.benchmarks.transformer_encoder_layer import TransformerEncoderLayerBenchmark
-from mtb.select_benchmarks import filter_benchmarks, layer_name_to_benchmark_class
+from mtb.select_benchmarks import benchmark_name_to_benchmark_class, filter_benchmarks
 
 
 @pytest.mark.parametrize(
-    "layer_name, expected_class",
+    "benchmark_name, expected_class",
     [
         ("layernorm", LayerNormBenchmark),
-        ("layer_norm", LayerNormBenchmark),
         ("linear", LinearBenchmark),
         ("mhsa", MhsaBenchmark),
-        ("multiheadattention", MhsaBenchmark),
         ("scaled_dot_product_attention", ScaledDotProductAttentionBenchmark),
-        ("sdpa", ScaledDotProductAttentionBenchmark),
         ("transformerencoderlayer", TransformerEncoderLayerBenchmark),
-        ("transformer_encoder_layer", TransformerEncoderLayerBenchmark),
         ("transformerdecoderlayer", TransformerDecoderLayerBenchmark),
-        ("transformer_decoder_layer", TransformerDecoderLayerBenchmark),
     ],
 )
-def test_layer_name_to_benchmark_class(layer_name, expected_class):
-    assert layer_name_to_benchmark_class(layer_name) == expected_class
+def test_benchmark_name_to_benchmark_class(benchmark_name, expected_class):
+    assert benchmark_name_to_benchmark_class(benchmark_name) == expected_class
 
 
-def test_layer_name_to_benchmark_class_valueerror():
-    with pytest.raises(ValueError, match="Unknown layer_name 'invalid_layer'"):
-        layer_name_to_benchmark_class("invalid_layer")
+def test_benchmark_name_to_benchmark_class_valueerror():
+    with pytest.raises(
+        ValueError,
+        match="Could not find benchmark class for name 'invalid_benchmark'",
+    ):
+        benchmark_name_to_benchmark_class("invalid_benchmark")
 
 
 def test_filter_benchmarks():
