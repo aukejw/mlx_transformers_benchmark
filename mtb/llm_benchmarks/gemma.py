@@ -121,6 +121,9 @@ class GemmaBenchmark(BaseLLMBenchmark):
         )
 
     def run_mlx_generate(self) -> Dict[str, Any]:
+        # TODO mlx_lm generation only supports a single prompt, not batch-of-prompt (2025-04-15)
+        prompt = self.model_input["input_ids"][0]
+
         # use stream_generate instead of generate, its response is more useful
         generation = ""
         for response in mlx_lm.stream_generate(

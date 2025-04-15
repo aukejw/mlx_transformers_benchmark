@@ -30,18 +30,28 @@ class BaseLLMBenchmark:
     def __init__(
         self,
         name: str,
-        max_num_tokens: int,
+        batch_size: int,
         prompt_string: str,
+        max_num_tokens: int,
     ):
         self.name = name
-        self.max_num_tokens = max_num_tokens
+        self.batch_size = batch_size
         self.prompt_string = prompt_string
+        self.max_num_tokens = max_num_tokens
+
+        assert batch_size == 1, "mlx_lm only supports batch-size 1 generation currently"
 
         self.input_tensor = None
         self.model = None
         self.tokenizer = None
 
         set_hf_home()
+
+    @property
+    def num_prompt_tokens(self):
+        if self.model_input is None:
+            raise ValueError("Model input not set. Call setup() first!")
+        return self.model_input["input_ids"].shape[1]
 
     def setup(
         self,
@@ -105,15 +115,15 @@ class BaseLLMBenchmark:
 
     def run_once(self) -> Dict[str, Any]:
         if self._framework == "torch":
-            return self.run_torch()
-
+            to_return = self.run_torch()
         elif self._framework == "mlx":
-            return self.run_mlx()
-
+            to_return = self.run_mlx()
         elif self._framework is None:
             raise ValueError("Framework not set. Call setup() first!")
         else:
             raise NotImplementedError(f"Unknown framework {self._framework}")
+
+        return to_return
 
     def run_torch(self) -> Dict[str, Any]:
         """Run the torch benchmark once."""
@@ -140,7 +150,7 @@ class BaseLLMBenchmark:
                 torch.cuda.empty_cache()
 
         elif self._framework == "mlx":
-            mx.empty_cache()
+            mx.clear_cache()
 
         # Reset indicators
         self._framework = None
