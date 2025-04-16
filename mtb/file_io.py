@@ -119,7 +119,6 @@ def aggregate_measurements(
             "dtype",
             "num_warmup_iterations",
             "num_iterations",
-            "num_repeats",
         ]:
             measurements[key] = settings["benchmark_settings"][key]
 
@@ -140,10 +139,6 @@ def aggregate_measurements(
         axis=1,
     ).astype("category")
 
-    relevant_measurements = relevant_measurements.sort_values(
-        by=["framework_backend", "name", "batch_size", "sequence_length"],
-        ignore_index=True,
-    )
     return relevant_measurements
 
 
@@ -170,7 +165,7 @@ def _convert_row_to_framework_backend(row: pd.Series) -> str:
 
     name += "_" + row["backend"]
 
-    if row["compile"]:
+    if row.get("compile", False):
         name += "_compiled"
 
     return name

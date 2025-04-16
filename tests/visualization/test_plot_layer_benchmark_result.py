@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import pytest
 
-from mtb.visualization.plot_benchmark_result import show_benchmark_data
+from mtb.visualization.plot_layer_benchmark_result import show_layer_benchmark_data
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def sample_benchmark_data() -> pd.DataFrame:
 def test_show_benchmark_data_returns_figure(
     sample_benchmark_data, do_average_measurements
 ):
-    fig = show_benchmark_data(
+    fig = show_layer_benchmark_data(
         title="Title",
         measurements=sample_benchmark_data,
         do_average_measurements=do_average_measurements,
@@ -49,7 +49,7 @@ def test_show_benchmark_data_with_specific_params(sample_benchmark_data):
     custom_dtypes = ("float32", "float16")
     custom_batch_sizes = (1, 16, 64)
 
-    fig = show_benchmark_data(
+    fig = show_layer_benchmark_data(
         title="Title",
         measurements=sample_benchmark_data,
         dtypes=custom_dtypes,

@@ -6,12 +6,12 @@ import fire
 import mtb as mtb
 from mtb.file_io import aggregate_measurements
 from mtb.visualization.create_index import create_index
-from mtb.visualization.plot_layer_benchmark_result import show_layer_benchmark_data
+from mtb.visualization.plot_llm_benchmark_result import show_llm_benchmark_data
 
 DEFAULT_MEASUREMENTS_FOLDER = (
-    mtb.REPO_ROOT / "measurements" / "layer_benchmarks" / "Apple_M4_Pro__arm"
+    mtb.REPO_ROOT / "measurements" / "llm_benchmarks" / "Apple_M4_Pro__arm"
 )
-VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations"
+VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations" / "llm_benchmarks"
 
 
 def main(
@@ -25,7 +25,6 @@ def main(
         show_all_measurements: If True, show all individual measurements.
 
     """
-
     measurements_folder = Path(measurements_folder)
     chip_name = measurements_folder.stem
 
@@ -34,7 +33,7 @@ def main(
 
     relevant_measurements = aggregate_measurements(measurements_folder)
     relevant_measurements = relevant_measurements.sort_values(
-        by=["framework_backend", "name", "batch_size", "sequence_length"],
+        by=["framework_backend", "name", "batch_size", "num_prompt_tokens"],
         ignore_index=True,
     )
 
@@ -53,7 +52,7 @@ def main(
             f" datapoints for {benchmark_task}"
         )
 
-        fig = show_layer_benchmark_data(
+        fig = show_llm_benchmark_data(
             title=benchmark_task,
             measurements=relevant_measurements_benchmark,
             do_average_measurements=(not show_all_measurements),
@@ -71,10 +70,11 @@ def main(
         relative_fig_path = fig_path.relative_to(VISUALIZATIONS_FOLDER)
         benchmark_to_figurefile[(chip_name, benchmark_task)] = relative_fig_path
 
-    create_index(
+    index_path = create_index(
         output_folder=VISUALIZATIONS_FOLDER,
         benchmark_to_figurefile=benchmark_to_figurefile,
     )
+    print(f"See '{index_path}'")
     return
 
 

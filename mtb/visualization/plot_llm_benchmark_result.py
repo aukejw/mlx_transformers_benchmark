@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List
 
 import pandas as pd
 import plotly.express as px
@@ -6,11 +6,11 @@ import plotly.graph_objects as go
 import plotly.subplots as sp
 
 
-def show_benchmark_data(
+def show_llm_benchmark_data(
     title: str,
     measurements: pd.DataFrame,
-    dtypes: Tuple[str] = ("float32", "float16", "bfloat16"),
-    batch_sizes: Tuple[int] = (1, 8, 16, 32, 64),
+    dtypes: List[str] = ("float32", "float16", "bfloat16"),
+    batch_sizes: List[int] = (1,),
     do_average_measurements: bool = True,
 ) -> go.Figure:
     """Visualize benchmark data in a single page.
@@ -26,21 +26,27 @@ def show_benchmark_data(
         The created figure.
 
     """
+    y_metrics = {
+        "prompt_time_sec": "Prompt time (s)",
+        "generation_tps": "Gen. speed (tokens/s)",
+        "current_memory_gb": "Memory (GB)",
+    }
 
     fig = sp.make_subplots(
         rows=len(dtypes),
-        cols=len(batch_sizes),
+        cols=len(batch_sizes) * 3,
         subplot_titles=[
-            f"{dtype}, batch_size={batch_size}"
+            f"{title} B={batch_size}"
             for dtype in dtypes
+            for title in y_metrics.values()
             for batch_size in batch_sizes
         ],
         horizontal_spacing=0.05,
         vertical_spacing=0.075,
     )
 
-    for row, dtype in enumerate(dtypes, start=1):
-        for col, batch_size in enumerate(batch_sizes, start=1):
+    for row, dtype in enumerate(dtypes):
+        for col, batch_size in enumerate(batch_sizes):
             # Select data
             filtered_data = measurements[
                 (measurements["dtype"] == dtype)
@@ -51,13 +57,15 @@ def show_benchmark_data(
                     [
                         "framework_backend",
                         "batch_size",
-                        "sequence_length",
-                        "duration_ms",
+                        "num_prompt_tokens",
+                        "prompt_time_sec",
+                        "generation_tps",
+                        "current_memory_gb",
                     ]
                 ]
                 filtered_data = (
                     filtered_data.groupby(
-                        ["framework_backend", "batch_size", "sequence_length"],
+                        ["framework_backend", "batch_size", "num_prompt_tokens"],
                         observed=True,
                     )
                     .mean()
@@ -66,36 +74,41 @@ def show_benchmark_data(
 
             # Show
             if not filtered_data.empty:
-                scatter = px.scatter(
-                    filtered_data,
-                    x="sequence_length",
-                    y="duration_ms",
-                    color="framework_backend",
-                    symbol="framework_backend",
-                    custom_data=["batch_size"],
-                    title=f"dtype: {dtype}, batch_size: {batch_size}",
-                )
+                for col_offset, y_metric_name in enumerate(y_metrics):
+                    scatter = px.scatter(
+                        filtered_data,
+                        x="num_prompt_tokens",
+                        y=y_metric_name,
+                        color="framework_backend",
+                        symbol="framework_backend",
+                        custom_data=["batch_size"] + list(y_metrics.keys()),
+                        title=f"dtype: {dtype}, batch_size: {batch_size}",
+                    )
 
-                for trace in scatter["data"]:
-                    fig.add_trace(trace, row=row, col=col)
+                    row_index = row + 1
+                    column_index = col * len(y_metrics) + col_offset + 1
+
+                    for trace in scatter["data"]:
+                        fig.add_trace(trace, row=row_index, col=column_index)
+                        fig.update_yaxes(
+                            row=row_index,
+                            col=column_index,
+                            title_text=y_metrics[y_metric_name],
+                        )
 
     # Update x and y axes layouts for all subplots
     fig.update_xaxes(
         type="log",
-        tickvals=[512, 256, 128, 64],
-        ticktext=["512", "256", "128", "64"],
+        tickvals=[4096, 2048, 1028, 512, 256, 128, 64, 32, 16],
+        ticktext=["4096", "2048", "1028", "512", "256", "128", "64", "32", "16"],
     )
     fig.update_xaxes(
         row=len(dtypes),
-        title_text="Sequence length (tokens)",
+        title_text="Num prompt tokens",
     )
     fig.update_yaxes(
         type="log",
         tickformat=".2g",
-    )
-    fig.update_yaxes(
-        col=1,
-        title_text="Runtime (ms)",
     )
 
     # Optimize legend entries, layout
@@ -140,9 +153,11 @@ def show_benchmark_data(
     # Add a hover template, already shows framework_backend by default
     fig.update_traces(
         hovertemplate=(
-            "<b>Batch size:</b>  %{customdata[0]:.0f}<br>"
-            "<b>Seq. length:</b> %{x:.0f}<br>"
-            "<b>Runtime:</b>     %{y:.4f} ms"
+            "<b>Batch size:</b>           %{customdata[0]:.0f}<br>"
+            "<b>Num prompt tokens:</b>    %{x:.0f}<br>"
+            "<b>Prompt time (s):</b>      %{customdata[1]:.4f}<br>"
+            "<b>Gen.speed (tokens/s):</b> %{customdata[2]:.4f}<br>"
+            "<b>Memory (GB):</b>          %{customdata[3]:.4f}<br>"
         ),
         mode="markers",
     )
