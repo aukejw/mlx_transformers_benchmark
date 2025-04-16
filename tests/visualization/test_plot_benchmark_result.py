@@ -18,7 +18,7 @@ def sample_benchmark_data() -> pd.DataFrame:
     for framework, dtype, batch_size, seq_len in itertools.product(
         frameworks, dtypes, batch_sizes, sequence_lengths
     ):
-        mean_ms = (seq_len * batch_size) / 1e3
+        duration_ms = (seq_len * batch_size) / 1e3
 
         data.append(
             {
@@ -26,7 +26,7 @@ def sample_benchmark_data() -> pd.DataFrame:
                 "dtype": dtype,
                 "batch_size": batch_size,
                 "sequence_length": seq_len,
-                "mean_ms": mean_ms,
+                "duration_ms": duration_ms,
             }
         )
 
