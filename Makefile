@@ -19,9 +19,13 @@ run:
 	poetry run python scripts/run_benchmarks.py --num_iterations 20 --num_warmup_iterations 10 --dtype float16
 	poetry run python scripts/run_benchmarks.py --num_iterations 20 --num_warmup_iterations 10 --dtype bfloat16
 
-show:
+show-layer-benchmarks:
 	poetry run python scripts/visualize_layer_benchmarks.py --show_all_measurements
-	open visualizations/index.html 
+	open visualizations/layer_benchmarks/index.html 
+
+show-llm-benchmarks:
+	poetry run python scripts/visualize_llm_benchmarks.py --show_all_measurements
+	open visualizations/llm_benchmarks/index.html 
 
 test:
 	poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
