@@ -39,9 +39,9 @@ def main(
 
     """
     prompts = [
-        "Repeat 100 times: " + ",".join(str(i) for i in range(1_000)),
-        "Repeat 100 times: " + ",".join(str(i) for i in range(500)),
-        "Repeat 100 times: " + ",".join(str(i) for i in range(100)),
+        "Repeat the following sequence: " + ", ".join(str(i) for i in range(1_000)),
+        "Repeat the following sequence: " + ", ".join(str(i) for i in range(500)),
+        "Repeat the following sequence: " + ", ".join(str(i) for i in range(100)),
         "Write a story about Einstein",
     ]
 
@@ -49,7 +49,10 @@ def main(
     kwargs = dict(
         max_num_tokens=max_num_tokens,
     )
-    benchmarks = [mtb_bench.GemmaBenchmark(**kwargs)]
+    benchmarks = [
+        mtb_bench.Gemma3FourBillionBenchmark(**kwargs),
+        mtb_bench.Gemma3OneBillionBenchmark(**kwargs),
+    ]
 
     # Filter benchmarks if specified
     if run_only_benchmarks is not None:

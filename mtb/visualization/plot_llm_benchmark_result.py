@@ -36,12 +36,12 @@ def show_llm_benchmark_data(
         rows=len(dtypes),
         cols=len(batch_sizes) * 3,
         subplot_titles=[
-            f"{title} B={batch_size}"
+            f"{title}, B={batch_size}"
             for dtype in dtypes
             for title in y_metrics.values()
             for batch_size in batch_sizes
         ],
-        horizontal_spacing=0.05,
+        horizontal_spacing=0.075,
         vertical_spacing=0.075,
     )
 
@@ -153,11 +153,11 @@ def show_llm_benchmark_data(
     # Add a hover template, already shows framework_backend by default
     fig.update_traces(
         hovertemplate=(
-            "<b>Batch size:</b>           %{customdata[0]:.0f}<br>"
-            "<b>Num prompt tokens:</b>    %{x:.0f}<br>"
-            "<b>Prompt time (s):</b>      %{customdata[1]:.4f}<br>"
-            "<b>Gen.speed (tokens/s):</b> %{customdata[2]:.4f}<br>"
-            "<b>Memory (GB):</b>          %{customdata[3]:.4f}<br>"
+            "<b>Batch size:</b>           %{customdata[0]:>9.0f}<br>"
+            "<b>Num prompt tokens:</b>    %{x:>9.0f}<br>"
+            "<b>Prompt time (s):</b>      %{customdata[1]:>9.4f}<br>"
+            "<b>Gen.speed (tokens/s):</b> %{customdata[2]:>9.4f}<br>"
+            "<b>Memory (GB):</b>          %{customdata[3]:>9.4f}<br>"
         ),
         mode="markers",
     )

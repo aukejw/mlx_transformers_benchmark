@@ -10,19 +10,21 @@ from transformers import AutoTokenizer, BatchEncoding, Gemma3ForCausalLM
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 
+__all__ = [
+    "GemmaBenchmark",
+    "Gemma3OneBillionBenchmark",
+    "Gemma3FourBillionBenchmark",
+]
+
 
 class GemmaBenchmark(BaseLLMBenchmark):
-    dtype_to_model_id = {
-        torch.bfloat16: "google/gemma-3-1b-it",
-        mx.bfloat16: "mlx-community/gemma-3-1b-it-bf16",
-    }
+    model_name: str = None
 
     def __init__(
         self,
         max_num_tokens: int = 100,
     ):
-        model_name = "gemma-3-1b-it"
-        name = f"GemmaBenchmark({model_name})"
+        name = f"GemmaBenchmark({self.model_name})"
 
         super().__init__(
             name=name,
@@ -92,6 +94,9 @@ class GemmaBenchmark(BaseLLMBenchmark):
         elif self._backend == "mps":
             torch.mps.synchronize()
 
+        # get total size of model + kv cache in GB
+        current_memory_gb = torch.mps.current_allocated_memory() / 1024**3
+
         prompt_time_sec = time.perf_counter() - tic
         prompt_tps = num_prompt_tokens / prompt_time_sec
         del outputs
@@ -111,7 +116,7 @@ class GemmaBenchmark(BaseLLMBenchmark):
 
         generation_seconds = time.perf_counter() - tic
         generation_seconds -= prompt_time_sec
-        generation_tps = self.max_num_tokens / generation_seconds
+        generation_tps = num_generated_tokens / generation_seconds
 
         return dict(
             generation=generation,
@@ -119,13 +124,15 @@ class GemmaBenchmark(BaseLLMBenchmark):
             prompt_time_sec=prompt_time_sec,
             num_generated_tokens=num_generated_tokens,
             generation_tps=generation_tps,
-            current_memory_gb=torch.mps.current_allocated_memory() / 1024**3,
+            current_memory_gb=current_memory_gb,
         )
 
     def run_mlx_generate(self) -> Dict[str, Any]:
         # TODO mlx_lm generation only supports a single prompt, not batch-of-prompt (2025-04-15)
         assert self.model_input["input_ids"].shape[0] == 1, "mlx_lm only supports B=1"
         prompt = self.model_input["input_ids"][0]
+
+        current_memory_gb = mx.get_active_memory() / 1024**3
 
         # use stream_generate instead of generate, its response is more useful
         generation = ""
@@ -137,6 +144,10 @@ class GemmaBenchmark(BaseLLMBenchmark):
         ):
             generation += response.text
 
+            if response.generation_tokens == self.max_num_tokens:
+                # get total size of model + kv cache in GB
+                current_memory_gb = mx.get_active_memory() / 1024**3
+
         return dict(
             generation=generation,
             prompt_tps=response.prompt_tps,
@@ -144,5 +155,21 @@ class GemmaBenchmark(BaseLLMBenchmark):
             num_generated_tokens=response.generation_tokens,
             generation_tps=response.generation_tps,
             peak_memory_gb=response.peak_memory,
-            current_memory_gb=mx.get_active_memory() / 1024**3,
+            current_memory_gb=current_memory_gb,
         )
+
+
+class Gemma3OneBillionBenchmark(GemmaBenchmark):
+    dtype_to_model_id = {
+        torch.bfloat16: "google/gemma-3-1b-it",
+        mx.bfloat16: "mlx-community/gemma-3-1b-it-bf16",
+    }
+    model_name = "gemma-3-1b-it"
+
+
+class Gemma3FourBillionBenchmark(GemmaBenchmark):
+    dtype_to_model_id = {
+        torch.bfloat16: "google/gemma-3-4b-it",
+        mx.bfloat16: "mlx-community/gemma-3-4b-it-bf16",
+    }
+    model_name = "gemma-3-4b-it"
