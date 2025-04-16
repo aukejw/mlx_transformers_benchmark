@@ -140,7 +140,7 @@ class GemmaBenchmark(BaseLLMBenchmark):
         return dict(
             generation=generation,
             prompt_tps=response.prompt_tps,
-            prompt_time_sec=response.prompt_tps * response.prompt_tokens,
+            prompt_time_sec=response.prompt_tokens / response.prompt_tps,
             num_generated_tokens=response.generation_tokens,
             generation_tps=response.generation_tps,
             peak_memory_gb=response.peak_memory,
