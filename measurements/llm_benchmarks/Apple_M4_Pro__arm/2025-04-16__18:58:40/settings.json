@@ -1,0 +1,23 @@
+{
+  "datetime": "2025-04-16__18:58:40",
+  "git_commit": "cf2d96885742f3ba2e41b2296bd549ccc1141834",
+  "benchmark_settings": {
+    "num_warmup_iterations": 1,
+    "num_iterations": 5,
+    "dtype": "bfloat16",
+    "run_only_benchmarks": null
+  },
+  "hardware_info": {
+    "processor": "arm",
+    "model_name": "MacBook Pro",
+    "chip": "Apple M4 Pro",
+    "total_cores": "14 (10 performance and 4 efficiency)",
+    "memory": "24 GB"
+  },
+  "software_info": {
+    "platform": "macOS-15.1-arm64-arm-64bit",
+    "python_version": "3.11.11",
+    "torch_version": "2.6.0",
+    "mlx_version": "0.24.1"
+  }
+}

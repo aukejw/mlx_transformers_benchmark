@@ -9,7 +9,7 @@ import plotly.subplots as sp
 def show_llm_benchmark_data(
     title: str,
     measurements: pd.DataFrame,
-    dtypes: List[str] = ("float32", "float16", "bfloat16"),
+    dtypes: List[str] = ("bfloat16",),
     batch_sizes: List[int] = (1,),
     do_average_measurements: bool = True,
 ) -> go.Figure:

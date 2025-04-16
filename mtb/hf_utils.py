@@ -14,8 +14,7 @@ def set_hf_home(path: Union[str, Path] = "./hf_cache"):
         hf_home = str(path)
         os.environ["HF_HOME"] = hf_home
         print(f"HF_HOME set to {hf_home}")
-
-        disable_progress_bar()
+    disable_progress_bar()
 
 
 def get_hf_home() -> str:

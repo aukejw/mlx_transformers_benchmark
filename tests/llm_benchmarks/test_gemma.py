@@ -20,7 +20,7 @@ def benchmark_torch():
 
 @pytest.fixture(scope="session")
 def benchmark_mlx():
-    benchmark = Gemma3OneBillionBenchmark(max_num_tokens=300)
+    benchmark = Gemma3OneBillionBenchmark(max_num_tokens=30)
     benchmark.setup(framework="mlx", backend="metal", dtype="bfloat16")
     benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
