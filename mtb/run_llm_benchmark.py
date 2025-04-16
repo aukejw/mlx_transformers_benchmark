@@ -171,6 +171,7 @@ def run_benchmark(
         "num_prompt_tokens",
         "num_generated_tokens",
         "prompt_tps",  # tokens/sec for processing the prompt
+        "prompt_time_sec",  # total time needed to parse prompt, init kv cache
         "generation_tps",  # tokens/sec for generation
         "current_memory_gb",  # memory usage when model and cache are in memory
     ]
