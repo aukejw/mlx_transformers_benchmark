@@ -846,27 +846,22 @@ psutil = "*"
 
 [[package]]
 name = "mlx"
-version = "0.24.2"
+version = "0.24.1"
 description = "A framework for machine learning on Apple silicon."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "mlx-0.24.2-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:ab5fa100f4875d2293f1a765e2c8ff29044da48111ddcd3e20d24a172df410ac"},
-    {file = "mlx-0.24.2-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:3ee6487231aa6f06f93a292bbedd4255f8c914fba05c6127318501f055fd025e"},
-    {file = "mlx-0.24.2-cp310-cp310-macosx_15_0_arm64.whl", hash = "sha256:a00fd1ba8a8215836b8ceb88d536e9105c351cddba77b0fffbf6567f2954cb16"},
-    {file = "mlx-0.24.2-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:9c2ac87d993cfbaaba124e1bb67448cb91de912b7c0224997c7086ae4b13ca3e"},
-    {file = "mlx-0.24.2-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:ecfdd587612f00c58fe618c5c8c49c9ab9de58f7cc533f38995177fa8ed1daaa"},
-    {file = "mlx-0.24.2-cp311-cp311-macosx_15_0_arm64.whl", hash = "sha256:a4af06b05e548b444869affeceb367da65d5fde65d5d07b52da6289eeee0ff74"},
-    {file = "mlx-0.24.2-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:3a855809e06becb76ff225dbdea72bed7c8f68dd91d9fa27b8afa8cf949872c6"},
-    {file = "mlx-0.24.2-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:4a5d97a8bde8eaab5d889262be0734234921d4e24c5ab309a74a2d676bb3fb6f"},
-    {file = "mlx-0.24.2-cp312-cp312-macosx_15_0_arm64.whl", hash = "sha256:225c876c9335127e3ddbd3feac926c5bb3cbfe5e6503535c80aecebc6d6d7859"},
-    {file = "mlx-0.24.2-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:1359bae501e4afd378e921d99db1f8307de9084b34eefb1ade2dfef27b92755a"},
-    {file = "mlx-0.24.2-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:9507725ec550d4a3efcace1143d4333133820a84b0190fddd8dbe0a34cbab967"},
-    {file = "mlx-0.24.2-cp313-cp313-macosx_15_0_arm64.whl", hash = "sha256:67a5fc246bbde8fb11ca1523e5c6e8143c12efaa561b5820f45af359bf1c5669"},
-    {file = "mlx-0.24.2-cp39-cp39-macosx_13_0_arm64.whl", hash = "sha256:503d5dc8893c3ac470492536447d380945b4f23bb67ff36b6465621f5427b6e6"},
-    {file = "mlx-0.24.2-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:c90495b605e59e0ae0e5ccbf16a35cae7bd42fca721c8a06efbb874a834e7e3a"},
-    {file = "mlx-0.24.2-cp39-cp39-macosx_15_0_arm64.whl", hash = "sha256:81dbdf11b48734ee046c2f12db3cb8ea77e2299d06c53a235d70935bcef9e101"},
+    {file = "mlx-0.24.1-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:892794665b16bed172957793e3b293cb8f4d61b603243a3a850bf31454d3d77d"},
+    {file = "mlx-0.24.1-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:d6980a3e5a1783eb3c090904f9bba1a6a3d65b79757e6f5e637335b936591b44"},
+    {file = "mlx-0.24.1-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:1af5f1ad9c50a3cb6cb18ad05d65dc89b300e5de000b5d249e1f611520f87fba"},
+    {file = "mlx-0.24.1-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:e86b7e08b51b0ff2f0b27a3dc67d5e57186cbaf2d2d4b22295a99a180d53c278"},
+    {file = "mlx-0.24.1-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:57fd625ff90dab5dbc31678401fed761511b0e376a45b7d5d0fcbe834d3901ca"},
+    {file = "mlx-0.24.1-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:8c42bfaf7cf5083b5a439c8adcae1fc1b8d037b4d40fd36f25fa7708cb5f7271"},
+    {file = "mlx-0.24.1-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:b4e09379d5fed3178abe070ed408dba477efa727da4799451db8a89e271941f1"},
+    {file = "mlx-0.24.1-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:cc97e4a571f37f34abe373aba94b8d67a53e8e32753bd988e9f4c8b68ffa0ee6"},
+    {file = "mlx-0.24.1-cp39-cp39-macosx_13_0_arm64.whl", hash = "sha256:4de93ee42d93fdeb8390c0aa3ce4c89a5871bee072c8708e9acd6de9abcdf1d7"},
+    {file = "mlx-0.24.1-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:3740a6a4fea33596760b0ba6d938e37cb499deb6804e5bd9b9de1af40f9fbd03"},
 ]
 
 [package.extras]
@@ -874,19 +869,19 @@ dev = ["nanobind (==2.4.0)", "numpy", "pre-commit", "setuptools (>=42)", "torch"
 
 [[package]]
 name = "mlx-lm"
-version = "0.22.5"
+version = "0.22.3"
 description = "LLMs on Apple silicon with MLX and the Hugging Face Hub"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "mlx_lm-0.22.5-py3-none-any.whl", hash = "sha256:3ab678651473ce8be1987bfaaa03955cf853dbf5d6bae518e12ea293d34e531e"},
-    {file = "mlx_lm-0.22.5.tar.gz", hash = "sha256:4021a75b686ab6ea50785255fe31da708c8d796b97f32f7d2f9c3c2ff315754e"},
+    {file = "mlx_lm-0.22.3-py3-none-any.whl", hash = "sha256:6bc6617df277f872632bb08e3beffdef562e738bcca373c03fbd71677af42fc6"},
+    {file = "mlx_lm-0.22.3.tar.gz", hash = "sha256:4933f131cab59d7690f73c797449c98b8fae1f1ceb7c52be80660c3d6d118c61"},
 ]
 
 [package.dependencies]
 jinja2 = "*"
-mlx = ">=0.24.2"
+mlx = ">=0.24.1"
 numpy = "*"
 protobuf = "*"
 pyyaml = "*"
@@ -2212,4 +2207,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "a9e1a9117047f2ed3f54dbebc87e591d9b3a7ce6e1dbec27571bf2f1b4e000c1"
+content-hash = "4fbb330f6889fb814cb9649a69ced9658af23b8e34aa0ed9eeda0f9daf777258"
