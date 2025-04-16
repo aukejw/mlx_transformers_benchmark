@@ -4,6 +4,7 @@ from typing import Any, Dict
 import mlx.core as mx
 import torch
 
+from mtb.dtypes import get_mlx_dtype, get_torch_dtype
 from mtb.hf_utils import set_hf_home
 
 
@@ -25,6 +26,8 @@ class BaseLLMBenchmark:
       3. `teardown`: Cleanup.
 
     """
+
+    dtype_to_model_id = dict()
 
     def __init__(
         self,
@@ -58,11 +61,12 @@ class BaseLLMBenchmark:
 
         if framework == "torch":
             self._device = torch.device(backend)
-            self._dtype = {
-                "float16": torch.float16,
-                "bfloat16": torch.bfloat16,
-                "float32": torch.float32,
-            }[dtype]
+            self._dtype = get_torch_dtype(dtype)
+
+            if self._dtype not in self.dtype_to_model_id:
+                raise ValueError(
+                    f"For benchmark '{self.name}', we do not know the model for dtype {self._dtype}"
+                )
 
             torch.manual_seed(0)
             torch.set_default_device(self._device)
@@ -76,11 +80,12 @@ class BaseLLMBenchmark:
                 "metal": mx.Device(mx.DeviceType.gpu),
             }[backend]
 
-            self._dtype = {
-                "float16": mx.float16,
-                "bfloat16": mx.bfloat16,
-                "float32": mx.float32,
-            }[dtype]
+            self._dtype = get_mlx_dtype(dtype)
+
+            if self._dtype not in self.dtype_to_model_id:
+                raise ValueError(
+                    f"For benchmark '{self.name}', we do not know the model for dtype {self._dtype}"
+                )
 
             mx.random.seed(0)
             mx.set_default_device(self._device)
@@ -97,7 +102,7 @@ class BaseLLMBenchmark:
         raise NotImplementedError
 
     def set_prompt(self, prompt: str, batch_size: int):
-        """Set the model_input attribute for this benchmark"""
+        """Set the model_input attribute for this benchmark."""
         raise NotImplementedError
 
     def run_once(self) -> Dict[str, Any]:

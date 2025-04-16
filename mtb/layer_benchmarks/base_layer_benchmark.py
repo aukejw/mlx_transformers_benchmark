@@ -3,6 +3,8 @@ import gc
 import mlx.core as mx
 import torch
 
+from mtb.dtypes import get_mlx_dtype, get_torch_dtype
+
 
 class BaseLayerBenchmark:
     """Benchmark class containing entrypoint functions.
@@ -73,12 +75,7 @@ class BaseLayerBenchmark:
 
         if framework == "torch":
             self._device = torch.device(backend)
-
-            self._dtype = dict(
-                float32=torch.float32,
-                bfloat16=torch.bfloat16,
-                float16=torch.float16,
-            )[dtype]
+            self._dtype = get_torch_dtype(dtype)
 
             torch.manual_seed(0)
             torch.set_default_device(self._device)
@@ -87,18 +84,14 @@ class BaseLayerBenchmark:
             self.setup_torch()
 
         elif framework == "mlx":
-            if backend == "metal":
-                self._device = mx.Device(mx.DeviceType.gpu)
-            elif backend == "cpu":
+            if backend == "cpu":
                 self._device = mx.Device(mx.DeviceType.cpu)
+            elif backend == "metal":
+                self._device = mx.Device(mx.DeviceType.gpu)
             else:
-                raise NotImplementedError(backend)
+                raise NotImplementedError(f"Unknown backend {backend}")
 
-            self._dtype = dict(
-                float32=mx.float32,
-                bfloat16=mx.bfloat16,
-                float16=mx.float16,
-            )[dtype]
+            self._dtype = get_mlx_dtype(dtype)
 
             mx.random.seed(0)
             mx.set_default_device(self._device)
