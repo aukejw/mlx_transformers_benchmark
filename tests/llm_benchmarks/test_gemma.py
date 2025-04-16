@@ -26,7 +26,10 @@ def benchmark_mlx():
     return benchmark
 
 
-bfloat16_response = "Okay, here’s a story about Albert Einstein, aiming for a balance of his brilliance, his struggles"
+bfloat16_response = (
+    "Okay, here’s a story about Albert Einstein, aiming for a balance of his brilliance, "
+    "his struggles, and a touch of his quiet humanity."
+)
 
 
 class TestGemmaBenchmark:
@@ -41,9 +44,9 @@ class TestGemmaBenchmark:
         timing = benchmark_torch.run_torch_generate()
         assert isinstance(timing["generation"], str)
         assert timing["prompt_tps"] > 0
+        assert timing["prompt_time_sec"] > 0
         assert timing["generation_tps"] > 0
         assert timing["generation"].startswith(bfloat16_response)
-        assert timing["peak_memory_gb"] > 0
 
     @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
     def test_setup_generate_mlx(self, benchmark_mlx):
@@ -54,6 +57,6 @@ class TestGemmaBenchmark:
 
         timing = benchmark_mlx.run_mlx_generate()
         assert timing["prompt_tps"] > 0
+        assert timing["prompt_time_sec"] > 0
         assert timing["generation_tps"] > 0
         assert timing["generation"].startswith(bfloat16_response)
-        assert timing["peak_memory_gb"] > 0

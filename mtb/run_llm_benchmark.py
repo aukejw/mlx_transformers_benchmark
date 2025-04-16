@@ -1,6 +1,7 @@
 import itertools
 import time
-from typing import Dict, List, Tuple
+from pathlib import Path
+from typing import Dict, List, Tuple, Union
 
 import pandas as pd
 from tqdm import tqdm
@@ -42,24 +43,26 @@ def run_benchmark_for_framework(
         dtype=dtype,
     )
 
-    for batch_size, prompt in itertools.product(batch_sizes, prompts):
-        benchmark.set_prompt(prompt=prompt, batch_size=batch_size)
-        num_prompt_tokens = benchmark.num_prompt_tokens
-        measurements_container = Measurements()
+    settings = list(itertools.product(batch_sizes, prompts))
+    total_num_iterations = len(settings) * (num_iterations + num_warmup_iterations)
 
-        start_time = time.perf_counter()
+    with tqdm(total=total_num_iterations, position=1, leave=False) as iterator:
+        for batch_size, prompt in settings:
+            benchmark.set_prompt(prompt=prompt, batch_size=batch_size)
+            num_prompt_tokens = benchmark.num_prompt_tokens
 
-        # let us know where we are
-        with tqdm(total=num_iterations + num_warmup_iterations) as iterator:
+            # let us know where we are
             desc = (
-                f"  b={batch_size}, num_prompt_tokens={num_prompt_tokens}, "
+                f"  {framework}+{backend}, b={batch_size}, num_prompt_tokens={num_prompt_tokens}, "
                 + "warmup {warmup_it} / "
                 + f"{num_warmup_iterations}, "
                 + "benchmark {it} / "
                 + f"{num_iterations}"
             )
 
+            # Run warmup
             iterator.set_description(desc.format(warmup_it=0, it=0))
+            start_time = time.perf_counter()
             for warmup_iteration in range(num_warmup_iterations):
                 benchmark.run_once()
 
@@ -68,29 +71,37 @@ def run_benchmark_for_framework(
                     desc.format(warmup_it=warmup_iteration + 1, it=0)
                 )
 
+            # Run the benchmark
             iterator.set_description(desc.format(warmup_it=num_warmup_iterations, it=0))
+            container = Measurements()
             for iteration in range(num_iterations):
                 measurement: Dict = benchmark.run_once()
-                measurements_container.add(measurement)
+                container.add(measurement)
 
                 iterator.update(1)
                 iterator.set_description(
                     desc.format(warmup_it=num_warmup_iterations, it=iteration + 1)
                 )
 
-        # Save the measurements
-        measurement = dict(
-            batch_size=batch_size,
-            num_prompt_tokens=num_prompt_tokens,
-            generation_tps=measurements_container.get_mean("generation_tps"),
-            prompt_tps=measurements_container.get_mean("prompt_tps"),
-            peak_memory_gb=measurements_container.get_mean("peak_memory_gb"),
-        )
-        all_measurements.append(measurement)
+            # Save the measurements
+            measurement = dict(
+                batch_size=batch_size,
+                num_prompt_tokens=num_prompt_tokens,
+            )
+            for metric in [
+                "prompt_tps",
+                "prompt_time_sec",
+                "num_generated_tokens",
+                "generation_tps",
+                "current_memory_gb",
+            ]:
+                measurement[metric] = container.get_mean(metric)
 
-        # cooldown - don't fry our chip
-        total_time = time.perf_counter() - start_time
-        time.sleep(cooldown_time_fraction * total_time)
+            all_measurements.append(measurement)
+
+            # cooldown - don't fry our chip
+            total_time = time.perf_counter() - start_time
+            time.sleep(cooldown_time_fraction * total_time)
 
     benchmark.teardown()
 
@@ -101,6 +112,7 @@ def run_benchmark(
     benchmark: BaseLLMBenchmark,
     batch_sizes: Tuple[int],
     prompts: List[str],
+    output_path: Union[Path, str],
     num_warmup_iterations: int = 1,
     num_iterations: int = 10,
     cooldown_time_fraction: float = 0.2,
@@ -151,29 +163,34 @@ def run_benchmark(
     if run_mlx_metal:
         benchmarks_to_run.append(dict(framework="mlx", backend="metal"))
 
-    benchmark_measurements = []
-    for framework_kwargs in benchmarks_to_run:
-        measurements: List[Dict] = run_benchmark_for_framework(
-            **general_kwargs,
-            **framework_kwargs,
-        )
-        for row in measurements:
-            row.update(
-                name=benchmark.name,
-                **framework_kwargs,
-            )
-            benchmark_measurements.append(row)
-
     columns = [
         "name",
         "framework",
         "backend",
         "batch_size",
         "num_prompt_tokens",
-        "num_warmup_iterations",
-        "num_iterations",
+        "num_generated_tokens",
         "prompt_tps",  # tokens/sec for processing the prompt
         "generation_tps",  # tokens/sec for generation
-        "peak_memory_gb",  # peak memory usage
+        "current_memory_gb",  # memory usage when model and cache are in memory
     ]
-    return pd.DataFrame(benchmark_measurements, columns=columns)
+
+    for framework_kwargs in benchmarks_to_run:
+        try:
+            measurements: List[Dict] = run_benchmark_for_framework(
+                **general_kwargs,
+                **framework_kwargs,
+            )
+        except Exception as e:
+            print(f"\n  Exception for '{benchmark.name}': {e}")
+            continue
+
+        measurements = pd.DataFrame(measurements, columns=columns)
+        measurements["name"] = benchmark.name
+        for key in framework_kwargs:
+            measurements[key] = framework_kwargs[key]
+
+        save_header = not output_path.exists()
+        measurements.to_csv(output_path, index=False, mode="a", header=save_header)
+
+    return

@@ -21,7 +21,7 @@ class GemmaBenchmark(BaseLLMBenchmark):
         self,
         max_num_tokens: int = 100,
     ):
-        model_name = "gemma-3-4b-it"
+        model_name = "gemma-3-1b-it"
         name = f"GemmaBenchmark({model_name})"
 
         super().__init__(
@@ -30,10 +30,6 @@ class GemmaBenchmark(BaseLLMBenchmark):
         )
 
     def setup_torch(self):
-        self._dtype = torch.bfloat16
-        self._device = torch.device("mps")
-        torch.set_default_device(self._device)
-
         model_id = self.dtype_to_model_id[self._dtype]
 
         self.model = Gemma3ForCausalLM.from_pretrained(
@@ -44,9 +40,6 @@ class GemmaBenchmark(BaseLLMBenchmark):
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
 
     def setup_mlx(self):
-        self._dtype = mx.bfloat16
-        self._device = mx.Device(mx.DeviceType.gpu)
-        mx.set_default_device(self._device)
         model_id = self.dtype_to_model_id[self._dtype]
 
         model, tokenizer = mlx_lm.load(model_id)
@@ -88,41 +81,50 @@ class GemmaBenchmark(BaseLLMBenchmark):
         num_prompt_tokens = input_ids.shape[1]
 
         # Time processing of prompt, initializing kv cache.
-        # It is challenging to handle inference with kv cache in a general way,
-        # instead, we time the model processing the prompt, and call generate later.
+        # It is challenging to handle inference with kv caching in a general way,
+        # as each model handles position indices and cache indices differently.
+        # Instead, we time the model processing the prompt once, and call generate later.
         tic = time.perf_counter()
         outputs = self.model(**self.model_input, use_cache=True)
-        prompt_seconds = time.perf_counter() - tic
-        prompt_tps = num_prompt_tokens / prompt_seconds
+
+        if self._backend == "cuda":
+            torch.cuda.synchronize()
+        elif self._backend == "mps":
+            torch.mps.synchronize()
+
+        prompt_time_sec = time.perf_counter() - tic
+        prompt_tps = num_prompt_tokens / prompt_time_sec
         del outputs
 
         # Generate tokens (from scratch, no previous kv cache)
         tic = time.perf_counter()
-        generation = self.model.generate(
+        generation: torch.Tensor = self.model.generate(
             **self.model_input,
             max_new_tokens=self.max_num_tokens,
             do_sample=False,
             top_k=None,
             top_p=None,
         )
+        num_generated_tokens = generation.shape[1] - num_prompt_tokens
         generation = self.tokenizer.batch_decode(generation[0, num_prompt_tokens:])
         generation = "".join(generation)
 
         generation_seconds = time.perf_counter() - tic
-        generation_seconds -= prompt_seconds
+        generation_seconds -= prompt_time_sec
         generation_tps = self.max_num_tokens / generation_seconds
-
-        peak_memory_gb = torch.mps.current_allocated_memory() / 1024**2
 
         return dict(
             generation=generation,
             prompt_tps=prompt_tps,
+            prompt_time_sec=prompt_time_sec,
+            num_generated_tokens=num_generated_tokens,
             generation_tps=generation_tps,
-            peak_memory_gb=peak_memory_gb,
+            current_memory_gb=torch.mps.current_allocated_memory() / 1024**3,
         )
 
     def run_mlx_generate(self) -> Dict[str, Any]:
         # TODO mlx_lm generation only supports a single prompt, not batch-of-prompt (2025-04-15)
+        assert self.model_input["input_ids"].shape[0] == 1, "mlx_lm only supports B=1"
         prompt = self.model_input["input_ids"][0]
 
         # use stream_generate instead of generate, its response is more useful
@@ -138,6 +140,9 @@ class GemmaBenchmark(BaseLLMBenchmark):
         return dict(
             generation=generation,
             prompt_tps=response.prompt_tps,
+            prompt_time_sec=response.prompt_tps * response.prompt_tokens,
+            num_generated_tokens=response.generation_tokens,
             generation_tps=response.generation_tps,
             peak_memory_gb=response.peak_memory,
+            current_memory_gb=mx.get_active_memory() / 1024**3,
         )

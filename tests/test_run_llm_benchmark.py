@@ -2,8 +2,10 @@ import time
 from typing import Dict, List
 from unittest.mock import Mock
 
+import mlx.core as mx
 import pandas as pd
 import pytest
+import torch
 from transformers import BatchEncoding
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
@@ -11,6 +13,11 @@ from mtb.run_llm_benchmark import run_benchmark, run_benchmark_for_framework
 
 
 class MockBenchmark(BaseLLMBenchmark):
+    dtype_to_model_id = {
+        torch.float16: "mock_model_id",
+        mx.float16: "mock_model_id",
+    }
+
     def setup_torch(self):
         pass
 
@@ -29,17 +36,21 @@ class MockBenchmark(BaseLLMBenchmark):
     def run_torch_generate(self):
         time.sleep(0.01)
         return dict(
+            num_generated_tokens=10,
             generation_tps=1,
             prompt_tps=2,
-            peak_memory_gb=3,
+            prompt_time_sec=0.1,
+            current_memory_gb=3,
         )
 
     def run_mlx_generate(self):
         time.sleep(0.01)
         return dict(
+            num_generated_tokens=10,
             generation_tps=4,
             prompt_tps=5,
-            peak_memory_gb=6,
+            prompt_time_sec=0.1,
+            current_memory_gb=6,
         )
 
 
@@ -69,15 +80,17 @@ def test_run_benchmark_for_framework(benchmark):
     for key in [
         "generation_tps",
         "prompt_tps",
-        "peak_memory_gb",
+        "current_memory_gb",
         "num_prompt_tokens",
     ]:
         assert key in measurements[0]
 
 
-def test_run_benchmark(benchmark):
+def test_run_benchmark(benchmark, tmp_path):
+    output_path = tmp_path / "benchmark_results.csv"
     measurements_df = run_benchmark(
         benchmark=benchmark,
+        output_path=output_path,
         batch_sizes=(1,),
         prompts=["prompt"],
         cooldown_time_fraction=0.1,
@@ -87,13 +100,15 @@ def test_run_benchmark(benchmark):
         run_torch_cpu=True,
         run_mlx_cpu=True,
     )
-    assert isinstance(measurements_df, pd.DataFrame)
+    assert output_path.exists()
 
     # one for torch, one for mlx
+    measurements_df = pd.read_csv(output_path)
+    assert isinstance(measurements_df, pd.DataFrame)
     assert len(measurements_df) == 2
 
 
-def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
+def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path):
     mock_measurements = [
         dict(
             generation_tps=1,
@@ -146,11 +161,13 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark):
         },
     ]
 
+    output_path = tmp_path / "benchmark_results.csv"
     for backend in backend_options:
         mock_run_benchmark_for_framework.reset_mock()
 
         kwargs = {
             "benchmark": benchmark,
+            "output_path": output_path,
             "batch_sizes": (1,),
             "prompts": ["prompt"],
             "cooldown_time_fraction": 0.1,
