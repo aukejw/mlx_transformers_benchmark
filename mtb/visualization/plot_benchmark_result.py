@@ -52,7 +52,7 @@ def show_benchmark_data(
                         "framework_backend",
                         "batch_size",
                         "sequence_length",
-                        "mean_ms",
+                        "duration_ms",
                     ]
                 ]
                 filtered_data = (
@@ -69,7 +69,7 @@ def show_benchmark_data(
                 scatter = px.scatter(
                     filtered_data,
                     x="sequence_length",
-                    y="mean_ms",
+                    y="duration_ms",
                     color="framework_backend",
                     symbol="framework_backend",
                     custom_data=["batch_size"],

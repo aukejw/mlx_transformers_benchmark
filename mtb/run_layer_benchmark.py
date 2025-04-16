@@ -175,8 +175,6 @@ def run_benchmark(
         "backend",
         "dtype",
         "compile",
-        "num_warmup_iterations",
-        "num_iterations",
         "batch_size",
         "sequence_length",
         "duration_ms",

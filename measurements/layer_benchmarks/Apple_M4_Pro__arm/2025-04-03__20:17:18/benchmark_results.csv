@@ -1,4 +1,4 @@
-name,framework,backend,compile,batch_size,sequence_length,num_warmup_iterations,num_iterations,num_repeats,median_ms,mean_ms,std_ms
+name,framework,backend,compile,batch_size,sequence_length,num_warmup_iterations,num_iterations,num_repeats,median_ms,duration_ms,std_ms
 LayerNorm(dim=768),torch,mps,False,64,512,,,,2.7511403234658407,2.7511403234658407,0.0
 LayerNorm(dim=768),mlx,metal,False,64,512,,,,1.0604743851266953,1.0604743851266953,0.0
 LayerNorm(dim=768),mlx,metal,True,64,512,,,,1.0851967429478233,1.0851967429478233,0.0
