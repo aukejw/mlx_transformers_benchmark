@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
 import fire
-import pandas as pd
 from tqdm import tqdm
 
 import mtb as mtb
@@ -40,8 +39,10 @@ def main(
 
     """
     prompts = [
+        "Repeat 100 times: " + ",".join(str(i) for i in range(1_000)),
+        "Repeat 100 times: " + ",".join(str(i) for i in range(500)),
+        "Repeat 100 times: " + ",".join(str(i) for i in range(100)),
         "Write a story about Einstein",
-        "Recite the first few paragraphs of the odyssey using only words that start with 'a'",
     ]
 
     # Set up benchmarks
@@ -69,16 +70,15 @@ def main(
             run_only_benchmarks=run_only_benchmarks,
         ),
     )
+    output_path = output_dir / "benchmark_results.csv"
     print(f"Output directory: '{output_dir}'")
 
     # Run
-    iterator = tqdm(benchmarks)
+    with tqdm(benchmarks, position=0) as iterator:
+        for benchmark in iterator:
+            iterator.set_description(f"Timing {benchmark.name}")
 
-    all_results = []
-    for benchmark in iterator:
-        iterator.set_description(f"Timing {benchmark.name}")
-        try:
-            results: pd.DataFrame = run_benchmark(
+            run_benchmark(
                 benchmark=benchmark,
                 batch_sizes=batch_sizes,
                 prompts=prompts,
@@ -91,18 +91,8 @@ def main(
                 run_torch_cuda=run_torch_cuda,
                 run_mlx_cpu=run_mlx_cpu,
                 run_mlx_metal=run_mlx_metal,
+                output_path=output_path,
             )
-        except Exception as e:
-            print(f"Error running benchmark '{benchmark}': {e}")
-            raise
-            continue
-
-        all_results.append(results)
-
-        # Save measurements after each benchmark to avoid losing data on interruption
-        output_path = output_dir / "benchmark_results.csv"
-        save_header = not output_path.exists()
-        results.to_csv(output_path, index=False, mode="a", header=save_header)
 
     print(f"Saved measurements to '{output_path}'")
     return
