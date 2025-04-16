@@ -8,8 +8,10 @@ import mtb as mtb
 from mtb.file_io import aggregate_measurements
 from mtb.visualization.plot_benchmark_result import show_benchmark_data
 
-DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "Apple_M4_Pro__arm"
-VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "benchmark_visualizations"
+DEFAULT_MEASUREMENTS_FOLDER = (
+    mtb.REPO_ROOT / "measurements" / "layer_benchmarks" / "Apple_M4_Pro__arm"
+)
+VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations"
 
 
 def main(
@@ -64,21 +66,15 @@ def main(
         relative_fig_path = fig_path.relative_to(VISUALIZATIONS_FOLDER)
         benchmark_to_figurefile[(chip_name, benchmark_task)] = relative_fig_path
 
-    create_index(
-        visualizations_folder=visualizations_folder,
-        benchmark_to_figurefile=benchmark_to_figurefile,
-    )
+    create_index(benchmark_to_figurefile=benchmark_to_figurefile)
     return
 
 
 def create_index(
-    visualizations_folder: Path,
     benchmark_to_figurefile: Dict[str, Path],
 ):
     """Create an index file."""
-
-    benchmark_folder = mtb.REPO_ROOT / "benchmark_visualizations"
-    template_path = benchmark_folder / "index_template.html"
+    template_path = VISUALIZATIONS_FOLDER / "index_template.html"
     with template_path.open() as file:
         template = Template(file.read())
 
@@ -86,7 +82,7 @@ def create_index(
         visualizations=benchmark_to_figurefile,
     )
 
-    index_path = benchmark_folder / "index.html"
+    index_path = VISUALIZATIONS_FOLDER / "index.html"
     with index_path.open("w") as f:
         f.write(index_content)
 

@@ -20,8 +20,8 @@ run:
 	poetry run python scripts/run_benchmarks.py --num_iterations 20 --num_warmup_iterations 10 --dtype bfloat16
 
 show:
-	poetry run python scripts/visualize_measurements.py --show_all_measurements
-	open benchmark_visualizations/index.html 
+	poetry run python scripts/visualize_layer_benchmarks.py --show_all_measurements
+	open visualizations/index.html 
 
 test:
 	poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
