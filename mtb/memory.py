@@ -6,8 +6,6 @@ import torch
 
 from mtb import FLAG_ON_LINUX, FLAG_ON_MAC
 
-process = None
-
 
 class MemoryTracker:
     """Track memory in a separate process."""
@@ -58,10 +56,8 @@ def bytes_to_gb(bytes: int) -> float:
 
 def get_process_memory_gb() -> float:
     """Return the current process' allocated memory in GB."""
-    global process
-    if process is None:
-        pid = os.getpid()
-        process = psutil.Process(pid)
+    pid = os.getpid()
+    process = psutil.Process(pid)
     memory_info = process.memory_info()
     return bytes_to_gb(memory_info.rss)
 

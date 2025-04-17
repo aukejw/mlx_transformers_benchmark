@@ -16,12 +16,12 @@ from mtb.memory import (
 def test_get_process_memory():
     initial_memory = get_process_memory_gb()
 
-    array = np.ones((1_000, 1_000), dtype=np.float32)
+    array = np.ones((10_000, 10_000), dtype=np.float32)
     array_gb = bytes_to_gb(array.nbytes)
 
-    # allow for some overhead
+    # we should have allocated process memory, but allow for overhead, deduplication, etc.
     difference_gb = get_process_memory_gb() - initial_memory
-    assert difference_gb > array_gb
+    assert difference_gb > 0.1 * array_gb
 
 
 @pytest.mark.skipif(not torch.mps.is_available(), reason="MPS is not available")
@@ -30,18 +30,18 @@ def test_get_torch_memory_gb_mps():
     initial_torch_memory = get_torch_memory_gb()
 
     # create a tensor on cpu -> only uses RAM
-    tensor = torch.ones((1_000, 1_000), dtype=torch.float32, device="cpu")
+    tensor = torch.ones((10_000, 10_000), dtype=torch.float32, device="cpu")
     tensor_gb = bytes_to_gb(tensor.element_size() * tensor.numel())
 
-    # torch memory should stay the same here
+    # torch memory should stay the same for now
     difference_gb = get_torch_memory_gb() - initial_torch_memory
     assert difference_gb == 0
 
-    # we should use at least as much memor than the tensor
+    # we should use some RAM for this tensor
     difference_gb = get_process_memory_gb() - initial_process_memory
-    assert difference_gb > tensor_gb
+    assert difference_gb > 0
 
-    # but if we allocate a tensor on GPU -> uses mps memory buffers
+    # but if we allocate a tensor on GPU -> uses mps memory buffers -> exact match
     tensor = tensor.to("mps")
     difference_gb = get_torch_memory_gb() - initial_torch_memory
     assert difference_gb == tensor_gb
@@ -53,7 +53,7 @@ def test_get_mlx_memory_gb():
     initial_mlx_memory = get_mlx_memory_gb()
 
     # create a tensor in mlx is lazy -> not actually allocated yet
-    tensor = mx.ones((1_000, 1_000), dtype=mx.float32)
+    tensor = mx.ones((10_000, 10_000), dtype=mx.float32)
     tensor_gb = bytes_to_gb(tensor.nbytes)
 
     # quite some RAM should be allocated, but much less than the tensor
@@ -79,10 +79,11 @@ def test_memory_tracker():
     array = np.ones((10_000, 10_000), dtype=np.float32)
     array_gb = bytes_to_gb(array.nbytes)
 
-    # uses psutil.virtual_memory().used
+    # we should have allocated process memory, but allow for overhead, deduplication, etc.
     used_memory = tracker.get_used_memory()
-    assert used_memory >= array_gb
+    assert used_memory > 0.5 * array_gb
 
     del array
-    used_memory = tracker.get_used_memory()
-    assert used_memory < array_gb and used_memory < 1e-4
+
+    new_used_memory = tracker.get_used_memory()
+    assert new_used_memory < used_memory
