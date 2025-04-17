@@ -82,27 +82,23 @@ class GemmaBenchmark(BaseLLMBenchmark):
         input_ids = self.model_input["input_ids"]
         num_prompt_tokens = input_ids.shape[1]
 
-        # Time processing of prompt, initializing kv cache.
-        # It is challenging to handle inference with kv caching in a general way,
-        # as each model handles position indices and cache indices differently.
-        # Instead, we time the model processing the prompt once, and call generate later.
-        tic = time.perf_counter()
-        outputs = self.model(**self.model_input, use_cache=True)
+        # Time processing of prompt, initializing kv cache via a forward hook
+        # for the very first forward pass.
+        stats_after_first_forward = dict()
+        memory_tracker = self.memory_tracker
 
-        if self._backend == "cuda":
-            torch.cuda.synchronize()
-        elif self._backend == "mps":
-            torch.mps.synchronize()
+        def log_memory_hook(module, input, output):
+            nonlocal stats_after_first_forward, memory_tracker
+            if not len(stats_after_first_forward):
+                stats_after_first_forward = dict(
+                    ram_used_gb=memory_tracker.get_used_memory(),
+                    end_time=time.time_ns(),
+                )
 
-        # get total size of model + kv cache in GB
-        current_memory_gb = torch.mps.current_allocated_memory() / 1024**3
-
-        prompt_time_sec = time.perf_counter() - tic
-        prompt_tps = num_prompt_tokens / prompt_time_sec
-        del outputs
+        self.model.register_forward_hook(log_memory_hook)
 
         # Generate tokens (from scratch, no previous kv cache)
-        tic = time.perf_counter()
+        start_time = time.time_ns()
         generation: torch.Tensor = self.model.generate(
             **self.model_input,
             max_new_tokens=self.max_num_tokens,
@@ -114,17 +110,23 @@ class GemmaBenchmark(BaseLLMBenchmark):
         generation = self.tokenizer.batch_decode(generation[0, num_prompt_tokens:])
         generation = "".join(generation)
 
-        generation_seconds = time.perf_counter() - tic
-        generation_seconds -= prompt_time_sec
+        # collect metrics
+        end_time = time.time_ns()
+        prompt_seconds = (stats_after_first_forward["end_time"] - start_time) / 1e9
+        generation_seconds = (end_time - start_time) / 1e9 - prompt_seconds
+
+        prompt_tps = num_prompt_tokens / prompt_seconds
         generation_tps = num_generated_tokens / generation_seconds
+
+        memory_gb = stats_after_first_forward["ram_used_gb"]
 
         return dict(
             generation=generation,
             prompt_tps=prompt_tps,
-            prompt_time_sec=prompt_time_sec,
+            prompt_time_sec=prompt_seconds,
             num_generated_tokens=num_generated_tokens,
             generation_tps=generation_tps,
-            current_memory_gb=current_memory_gb,
+            ram_used_gb=memory_gb,
         )
 
     def run_mlx_generate(self) -> Dict[str, Any]:
@@ -132,7 +134,8 @@ class GemmaBenchmark(BaseLLMBenchmark):
         assert self.model_input["input_ids"].shape[0] == 1, "mlx_lm only supports B=1"
         prompt = self.model_input["input_ids"][0]
 
-        current_memory_gb = mx.get_active_memory() / 1024**3
+        # track stats after first forward, when memory pressure is highest (kv cache init)
+        stats_after_first_forward = None
 
         # use stream_generate instead of generate, its response is more useful
         generation = ""
@@ -144,9 +147,10 @@ class GemmaBenchmark(BaseLLMBenchmark):
         ):
             generation += response.text
 
-            if response.generation_tokens == self.max_num_tokens:
-                # get total size of model + kv cache in GB
-                current_memory_gb = mx.get_active_memory() / 1024**3
+            if stats_after_first_forward is None:
+                stats_after_first_forward = dict(
+                    ram_used_gb=self.memory_tracker.get_used_memory(),
+                )
 
         return dict(
             generation=generation,
@@ -155,7 +159,7 @@ class GemmaBenchmark(BaseLLMBenchmark):
             num_generated_tokens=response.generation_tokens,
             generation_tps=response.generation_tps,
             peak_memory_gb=response.peak_memory,
-            current_memory_gb=current_memory_gb,
+            ram_used_gb=stats_after_first_forward["ram_used_gb"],
         )
 
 
