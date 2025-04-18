@@ -23,7 +23,6 @@ def sample_benchmark_data() -> pd.DataFrame:
     ):
         generation_tps = batch_size
         prompt_time_sec = num_prompt_tokens * 0.1
-        current_memory_gb = batch_size / 1e3
 
         data.append(
             {
@@ -33,7 +32,6 @@ def sample_benchmark_data() -> pd.DataFrame:
                 "num_prompt_tokens": num_prompt_tokens,
                 "generation_tps": generation_tps,
                 "prompt_time_sec": prompt_time_sec,
-                "current_memory_gb": current_memory_gb,
             }
         )
 
@@ -77,4 +75,3 @@ def test_show_benchmark_data_with_specific_params(sample_benchmark_data):
             assert "Num prompt tokens" in trace.hovertemplate
             assert "Prompt time" in trace.hovertemplate
             assert "Gen.speed" in trace.hovertemplate
-            assert "Memory" in trace.hovertemplate

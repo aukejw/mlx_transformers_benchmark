@@ -42,11 +42,10 @@ class TestGemmaBenchmark:
         assert isinstance(benchmark_torch.model_input["input_ids"], torch.Tensor)
 
         timing = benchmark_torch.run_torch_generate()
-        assert isinstance(timing["generation"], str)
-        assert timing["prompt_tps"] > 0
-        assert timing["prompt_time_sec"] > 0
-        assert timing["generation_tps"] > 0
-        assert timing["generation"].startswith(bfloat16_response)
+        assert timing.prompt_tps > 0
+        assert timing.prompt_time_sec > 0
+        assert timing.generation_tps > 0
+        assert timing.response.startswith(bfloat16_response)
 
     @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
     def test_setup_generate_mlx(self, benchmark_mlx):
@@ -56,7 +55,7 @@ class TestGemmaBenchmark:
         assert isinstance(benchmark_mlx.model_input["input_ids"], mx.array)
 
         timing = benchmark_mlx.run_mlx_generate()
-        assert timing["prompt_tps"] > 0
-        assert timing["prompt_time_sec"] > 0
-        assert timing["generation_tps"] > 0
-        assert timing["generation"].startswith(bfloat16_response)
+        assert timing.prompt_tps > 0
+        assert timing.prompt_time_sec > 0
+        assert timing.generation_tps > 0
+        assert timing.response.startswith(bfloat16_response)

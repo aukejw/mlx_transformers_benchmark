@@ -29,12 +29,11 @@ def show_llm_benchmark_data(
     y_metrics = {
         "prompt_time_sec": "Prompt time (s)",
         "generation_tps": "Gen. speed (tokens/s)",
-        "current_memory_gb": "Memory (GB)",
     }
 
     fig = sp.make_subplots(
         rows=len(dtypes),
-        cols=len(batch_sizes) * 3,
+        cols=len(batch_sizes) * len(y_metrics),
         subplot_titles=[
             f"{title}, B={batch_size}"
             for dtype in dtypes
@@ -58,10 +57,8 @@ def show_llm_benchmark_data(
                         "framework_backend",
                         "batch_size",
                         "num_prompt_tokens",
-                        "prompt_time_sec",
-                        "generation_tps",
-                        "current_memory_gb",
                     ]
+                    + list(y_metrics.keys())
                 ]
                 filtered_data = (
                     filtered_data.groupby(
@@ -157,7 +154,6 @@ def show_llm_benchmark_data(
             "<b>Num prompt tokens:</b>    %{x:>9.0f}<br>"
             "<b>Prompt time (s):</b>      %{customdata[1]:>9.4f}<br>"
             "<b>Gen.speed (tokens/s):</b> %{customdata[2]:>9.4f}<br>"
-            "<b>Memory (GB):</b>          %{customdata[3]:>9.4f}<br>"
         ),
         mode="markers",
     )

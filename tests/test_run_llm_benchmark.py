@@ -1,4 +1,3 @@
-import time
 from typing import Dict, List
 from unittest.mock import Mock
 
@@ -9,6 +8,7 @@ import torch
 from transformers import BatchEncoding
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
+from mtb.measurement import LlmBenchmarkMeasurement
 from mtb.run_llm_benchmark import run_benchmark, run_benchmark_for_framework
 
 
@@ -34,23 +34,27 @@ class MockBenchmark(BaseLLMBenchmark):
         )
 
     def run_torch_generate(self):
-        time.sleep(0.01)
-        return dict(
-            num_generated_tokens=10,
-            generation_tps=1,
-            prompt_tps=2,
-            prompt_time_sec=0.1,
-            current_memory_gb=3,
+        return LlmBenchmarkMeasurement(
+            response="response",
+            num_prompt_tokens=1,
+            num_generated_tokens=2,
+            generation_tps=3,
+            prompt_tps=4,
+            prompt_time_sec=5,
+            generation_time_sec=6,
+            current_memory_gb=7,
         )
 
     def run_mlx_generate(self):
-        time.sleep(0.01)
-        return dict(
-            num_generated_tokens=10,
-            generation_tps=4,
-            prompt_tps=5,
-            prompt_time_sec=0.1,
-            current_memory_gb=6,
+        return LlmBenchmarkMeasurement(
+            response="response",
+            num_prompt_tokens=1,
+            num_generated_tokens=2,
+            generation_tps=3,
+            prompt_tps=4,
+            prompt_time_sec=5,
+            generation_time_sec=6,
+            current_memory_gb=7,
         )
 
 

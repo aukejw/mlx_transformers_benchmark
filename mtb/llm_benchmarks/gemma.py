@@ -1,5 +1,4 @@
 import time
-from typing import Any, Dict
 
 import mlx.core as mx
 import mlx.nn
@@ -9,6 +8,7 @@ import torch
 from transformers import AutoTokenizer, BatchEncoding, Gemma3ForCausalLM
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
+from mtb.measurement import LlmBenchmarkMeasurement
 
 __all__ = [
     "GemmaBenchmark",
@@ -78,24 +78,20 @@ class GemmaBenchmark(BaseLLMBenchmark):
         return self.model_input
 
     @torch.inference_mode()
-    def run_torch_generate(self) -> Dict[str, Any]:
+    def run_torch_generate(self) -> LlmBenchmarkMeasurement:
         input_ids = self.model_input["input_ids"]
         num_prompt_tokens = input_ids.shape[1]
 
         # Time processing of prompt, initializing kv cache via a forward hook
         # for the very first forward pass.
-        stats_after_first_forward = dict()
-        memory_tracker = self.memory_tracker
+        stats_after_first_forward = None
 
-        def log_memory_hook(module, input, output):
-            nonlocal stats_after_first_forward, memory_tracker
-            if not len(stats_after_first_forward):
-                stats_after_first_forward = dict(
-                    ram_used_gb=memory_tracker.get_used_memory(),
-                    end_time=time.time_ns(),
-                )
+        def log_time_hook(module, input, output):
+            nonlocal stats_after_first_forward
+            if stats_after_first_forward is None:
+                stats_after_first_forward = dict(end_time=time.time_ns())
 
-        self.model.register_forward_hook(log_memory_hook)
+        self.model.register_forward_hook(log_time_hook)
 
         # Generate tokens (from scratch, no previous kv cache)
         start_time = time.time_ns()
@@ -112,30 +108,26 @@ class GemmaBenchmark(BaseLLMBenchmark):
 
         # collect metrics
         end_time = time.time_ns()
-        prompt_seconds = (stats_after_first_forward["end_time"] - start_time) / 1e9
-        generation_seconds = (end_time - start_time) / 1e9 - prompt_seconds
 
+        prompt_seconds = (stats_after_first_forward["end_time"] - start_time) / 1e9
         prompt_tps = num_prompt_tokens / prompt_seconds
+        generation_seconds = (end_time - start_time) / 1e9 - prompt_seconds
         generation_tps = num_generated_tokens / generation_seconds
 
-        memory_gb = stats_after_first_forward["ram_used_gb"]
-
-        return dict(
-            generation=generation,
+        return LlmBenchmarkMeasurement(
+            response=generation,
             prompt_tps=prompt_tps,
             prompt_time_sec=prompt_seconds,
-            num_generated_tokens=num_generated_tokens,
             generation_tps=generation_tps,
-            ram_used_gb=memory_gb,
+            generation_time_sec=generation_seconds,
+            num_prompt_tokens=num_prompt_tokens,
+            num_generated_tokens=num_generated_tokens,
         )
 
-    def run_mlx_generate(self) -> Dict[str, Any]:
+    def run_mlx_generate(self) -> LlmBenchmarkMeasurement:
         # TODO mlx_lm generation only supports a single prompt, not batch-of-prompt (2025-04-15)
         assert self.model_input["input_ids"].shape[0] == 1, "mlx_lm only supports B=1"
         prompt = self.model_input["input_ids"][0]
-
-        # track stats after first forward, when memory pressure is highest (kv cache init)
-        stats_after_first_forward = None
 
         # use stream_generate instead of generate, its response is more useful
         generation = ""
@@ -147,19 +139,14 @@ class GemmaBenchmark(BaseLLMBenchmark):
         ):
             generation += response.text
 
-            if stats_after_first_forward is None:
-                stats_after_first_forward = dict(
-                    ram_used_gb=self.memory_tracker.get_used_memory(),
-                )
-
-        return dict(
-            generation=generation,
+        return LlmBenchmarkMeasurement(
+            response=generation,
             prompt_tps=response.prompt_tps,
             prompt_time_sec=response.prompt_tokens / response.prompt_tps,
-            num_generated_tokens=response.generation_tokens,
+            generation_time_sec=response.generation_tokens / response.generation_tps,
             generation_tps=response.generation_tps,
-            peak_memory_gb=response.peak_memory,
-            ram_used_gb=stats_after_first_forward["ram_used_gb"],
+            num_prompt_tokens=response.prompt_tokens,
+            num_generated_tokens=response.generation_tokens,
         )
 
 

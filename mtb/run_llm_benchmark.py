@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
-from mtb.measurement import Measurements
+from mtb.measurement import LlmBenchmarkMeasurement, Measurements
 
 
 def run_benchmark_for_framework(
@@ -75,8 +75,8 @@ def run_benchmark_for_framework(
             iterator.set_description(desc.format(warmup_it=num_warmup_iterations, it=0))
             container = Measurements()
             for iteration in range(num_iterations):
-                measurement: Dict = benchmark.run_once()
-                container.add(measurement)
+                measurement: LlmBenchmarkMeasurement = benchmark.run_once()
+                container.add(measurement.to_dict())
 
                 iterator.update(1)
                 iterator.set_description(
@@ -88,14 +88,8 @@ def run_benchmark_for_framework(
                 batch_size=batch_size,
                 num_prompt_tokens=num_prompt_tokens,
             )
-            for metric in [
-                "prompt_tps",
-                "prompt_time_sec",
-                "num_generated_tokens",
-                "generation_tps",
-                "current_memory_gb",
-            ]:
-                measurement[metric] = container.get_mean(metric)
+            for metric_name in container.keys:
+                measurement[metric_name] = container.get_mean(metric_name)
 
             all_measurements.append(measurement)
 
@@ -173,7 +167,7 @@ def run_benchmark(
         "prompt_tps",  # tokens/sec for processing the prompt
         "prompt_time_sec",  # total time needed to parse prompt, init kv cache
         "generation_tps",  # tokens/sec for generation
-        "current_memory_gb",  # memory usage when model and cache are in memory
+        "generation_time_sec",  # total time needed for generation, excl. prompting
     ]
 
     for framework_kwargs in benchmarks_to_run:

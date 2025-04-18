@@ -1,11 +1,11 @@
 import gc
-from typing import Any, Dict
 
 import mlx.core as mx
 import torch
 
 from mtb.dtypes import get_mlx_dtype, get_torch_dtype
 from mtb.hf_utils import set_hf_home
+from mtb.measurement import LlmBenchmarkMeasurement
 from mtb.memory import MemoryTracker
 
 
@@ -109,7 +109,7 @@ class BaseLLMBenchmark:
         """Set the model_input attribute for this benchmark."""
         raise NotImplementedError
 
-    def run_once(self) -> Dict[str, Any]:
+    def run_once(self) -> LlmBenchmarkMeasurement:
         if self._framework == "torch":
             to_return = self.run_torch_generate()
         elif self._framework == "mlx":
@@ -121,11 +121,11 @@ class BaseLLMBenchmark:
 
         return to_return
 
-    def run_torch_generate(self) -> Dict[str, Any]:
+    def run_torch_generate(self) -> LlmBenchmarkMeasurement:
         """Run the torch benchmark once."""
         raise NotImplementedError
 
-    def run_mlx_generate(self) -> Dict[str, Any]:
+    def run_mlx_generate(self) -> LlmBenchmarkMeasurement:
         """Run the mlx benchmark once."""
         raise NotImplementedError
 
