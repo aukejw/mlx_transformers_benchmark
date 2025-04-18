@@ -1,26 +1,33 @@
+from dataclasses import asdict, dataclass
 from typing import Dict, List
 
 import numpy as np
 
 
-class Measurement:
-    def __init__(self, measurements: List[float]):
-        self.measurements = np.array(measurements)
+@dataclass
+class LlmBenchmarkMeasurement:
+    """Measurement for LLM benchmarks, for one prompt."""
 
-        self.num_measurements = len(self.measurements)
-        self.median = np.median(self.measurements)
-        self.mean = np.mean(self.measurements)
-        self.std = np.std(self.measurements)
+    # generated text
+    response: str
 
-    def __repr__(self):
-        return (
-            f"{self.__class__.__name__}("
-            f"\n  num_measurements={self.num_measurements}, "
-            f"\n  median={self.median:.4f}, "
-            f"\n  mean={self.mean:.4f}, "
-            f"\n  std={self.std:.4f}, "
-            f"\n)"
-        )
+    # time needed to parse prompt, init kv cache
+    prompt_time_sec: float
+    prompt_tps: float  # tokens/sec
+
+    # time needed for generation
+    generation_time_sec: float
+    generation_tps: float  # tokens/sec
+
+    # number of tokens
+    num_prompt_tokens: int
+    num_generated_tokens: int
+
+    def to_dict(self, include_reponse: bool = False) -> Dict:
+        dictionary = asdict(self)
+        if not include_reponse:
+            dictionary.pop("response")
+        return dictionary
 
 
 class Measurements:
@@ -29,6 +36,13 @@ class Measurements:
     def __init__(self):
         self._measurements = None
         self._num_measurements = 0
+
+    @property
+    def keys(self) -> List[str]:
+        if self._measurements is None:
+            return []
+        else:
+            return list(self._measurements.keys())
 
     def add(self, measurement: Dict):
         # initialize container if needed
