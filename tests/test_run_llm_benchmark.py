@@ -42,7 +42,6 @@ class MockBenchmark(BaseLLMBenchmark):
             prompt_tps=4,
             prompt_time_sec=5,
             generation_time_sec=6,
-            current_memory_gb=7,
         )
 
     def run_mlx_generate(self):
@@ -54,7 +53,6 @@ class MockBenchmark(BaseLLMBenchmark):
             prompt_tps=4,
             prompt_time_sec=5,
             generation_time_sec=6,
-            current_memory_gb=7,
         )
 
 
@@ -84,7 +82,6 @@ def test_run_benchmark_for_framework(benchmark):
     for key in [
         "generation_tps",
         "prompt_tps",
-        "current_memory_gb",
         "num_prompt_tokens",
     ]:
         assert key in measurements[0]
@@ -117,7 +114,6 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path)
         dict(
             generation_tps=1,
             prompt_tps=2,
-            peak_memory_gb=3,
             num_prompt_tokens=4,
         )
     ]

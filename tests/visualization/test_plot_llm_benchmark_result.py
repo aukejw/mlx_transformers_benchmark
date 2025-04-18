@@ -65,7 +65,7 @@ def test_show_benchmark_data_with_specific_params(sample_benchmark_data):
 
     # Check that the figure has the correct number of subplots
     assert (
-        len(fig.layout.annotations) == len(custom_dtypes) * len(custom_batch_sizes) * 3
+        len(fig.layout.annotations) == len(custom_dtypes) * len(custom_batch_sizes) * 2
     )
 
     # Check that all traces have the correct hovertemplate
