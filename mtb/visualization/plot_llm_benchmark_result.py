@@ -26,8 +26,16 @@ def show_llm_benchmark_data(
         The created figure.
 
     """
+    metrics_of_interest = [
+        "prompt_time_sec",
+        "generation_time_sec",
+        "total_time_sec",
+        "prompt_tps",
+        "generation_tps",
+    ]
     y_metrics = {
         "prompt_time_sec": "Prompt time (s)",
+        "total_time_sec": "Prompt + 100 tokens time (s)",
         "generation_tps": "Gen. speed (tokens/s)",
     }
 
@@ -78,7 +86,7 @@ def show_llm_benchmark_data(
                         y=y_metric_name,
                         color="framework_backend",
                         symbol="framework_backend",
-                        custom_data=["batch_size"] + list(y_metrics.keys()),
+                        custom_data=["batch_size"] + metrics_of_interest,
                         title=f"dtype: {dtype}, batch_size: {batch_size}",
                     )
 
@@ -150,10 +158,13 @@ def show_llm_benchmark_data(
     # Add a hover template, already shows framework_backend by default
     fig.update_traces(
         hovertemplate=(
-            "<b>Batch size:</b>           %{customdata[0]:>9.0f}<br>"
-            "<b>Num prompt tokens:</b>    %{x:>9.0f}<br>"
-            "<b>Prompt time (s):</b>      %{customdata[1]:>9.4f}<br>"
-            "<b>Gen.speed (tokens/s):</b> %{customdata[2]:>9.4f}<br>"
+            "<b>Batch size:</b>              %{customdata[0]:>9.0f}<br>"
+            "<b>Num prompt tokens:</b>       %{x:>9.0f}<br>"
+            "<b>Prompt time (s):</b>         %{customdata[1]:>9.4f}<br>"
+            "<b>Gen time (s):</b>            %{customdata[2]:>9.4f}<br>"
+            "<b>Gen.speed (tokens/s):</b>    %{customdata[3]:>9.4f}<br>"
+            "<b>Prompt.speed (tokens/s):</b> %{customdata[4]:>9.4f}<br>"
+            "<b>Total time (s):</b>          %{customdata[5]:>9.4f}<br>"
         ),
         mode="markers",
     )

@@ -38,6 +38,13 @@ def main(
         measurements_folder,
         is_llm_benchmark=True,
     )
+
+    # add columns of interest combining existing ones
+    relevant_measurements["total_time_sec"] = (
+        relevant_measurements["prompt_time_sec"]
+        + relevant_measurements["generation_time_sec"]
+    )
+
     relevant_measurements = relevant_measurements.sort_values(
         by=["framework_backend", "name", "batch_size", "num_prompt_tokens"],
         ignore_index=True,
