@@ -94,9 +94,11 @@ jobs:
 
   # Visualization
   visualize-measurements:
-    needs: check-measurements-changed
-    if: needs.check-measurements-changed.outputs.measurements_changed == 'true'
-    runs-on: ubuntu-latest
+    needs: [check-measurements-changed, tests-mac]
+    if: |
+      needs.check-measurements-changed.outputs.measurements_changed == 'true' || 
+      (github.event_name == 'workflow_dispatch' && needs.tests-mac.result == 'success')
+    runs-on: [self-hosted, macOS]
 
     steps:
       - name: Checkout repository
@@ -137,4 +139,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: visualization 
           folder: visualizations
-          clean: true 
+          clean: true
