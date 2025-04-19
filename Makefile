@@ -21,11 +21,11 @@ run:
 
 show-layer-benchmarks:
 	poetry run python scripts/visualize_layer_benchmarks.py --show_all_measurements
-	open visualizations/layer_benchmarks/index.html 
+	open visualizations/index.html 
 
 show-llm-benchmarks:
 	poetry run python scripts/visualize_llm_benchmarks.py --show_all_measurements
-	open visualizations/llm_benchmarks/index.html 
+	open visualizations/index.html 
 
 test:
 	poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v

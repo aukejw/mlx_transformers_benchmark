@@ -7,10 +7,10 @@ on:
   pull_request:  
     branches:
       - main
-  workflow_dispatch: # Enable manual trigger for local runner
+  workflow_dispatch:
 
 jobs:
-  # Testing via githubs linux runner
+  # Testing via github Linux runner
   tests-linux:
     runs-on: ubuntu-latest  
     steps:
@@ -125,6 +125,7 @@ jobs:
       - name: Run visualization script
         run: |
           poetry run python scripts/visualize_layer_benchmarks.py
+          poetry run python scripts/visualize_llm_benchmarks.py
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4

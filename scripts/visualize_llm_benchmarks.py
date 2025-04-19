@@ -11,25 +11,28 @@ from mtb.visualization.plot_llm_benchmark_result import show_llm_benchmark_data
 DEFAULT_MEASUREMENTS_FOLDER = (
     mtb.REPO_ROOT / "measurements" / "llm_benchmarks" / "Apple_M4_Pro__arm"
 )
-VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations" / "llm_benchmarks"
+VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations"
+OUTPUT_FOLDER = VISUALIZATIONS_FOLDER / "llm_benchmarks"
 
 
 def main(
     measurements_folder: Union[str, Path] = DEFAULT_MEASUREMENTS_FOLDER,
     show_all_measurements: bool = False,
+    output_folder: Union[str, Path] = OUTPUT_FOLDER,
 ):
     """Visualize measurements. We create one page per benchmark task.
 
     Args:
         measurements_folder: Folder containing the measurements.
         show_all_measurements: If True, show all individual measurements.
+        output_folder: Folder to save the visualizations in.
 
     """
     measurements_folder = Path(measurements_folder)
     chip_name = measurements_folder.stem
 
-    visualizations_folder = VISUALIZATIONS_FOLDER / chip_name
-    visualizations_folder.mkdir(parents=True, exist_ok=True)
+    output_folder = Path(output_folder) / chip_name
+    output_folder.mkdir(parents=True, exist_ok=True)
 
     relevant_measurements = aggregate_measurements(measurements_folder)
     relevant_measurements = relevant_measurements.sort_values(
@@ -64,15 +67,14 @@ def main(
             .replace(")", "")
             .replace(", ", "_")
         )
-        fig_path = visualizations_folder / f"{benchmark_shortname}.html"
+        fig_path = output_folder / f"{benchmark_shortname}.html"
         fig.write_html(fig_path)
 
         relative_fig_path = fig_path.relative_to(VISUALIZATIONS_FOLDER)
         benchmark_to_figurefile[(chip_name, benchmark_task)] = relative_fig_path
 
     index_path = create_index(
-        output_folder=VISUALIZATIONS_FOLDER,
-        benchmark_to_figurefile=benchmark_to_figurefile,
+        visualizations_folder=VISUALIZATIONS_FOLDER,
     )
     print(f"See '{index_path}'")
     return
