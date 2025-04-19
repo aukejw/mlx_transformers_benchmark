@@ -25,7 +25,9 @@ jobs:
       - name: Cache the virtualenv
         uses: actions/cache@v4
         with:
-          path: ./.venv
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
           key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-venv-
@@ -108,7 +110,9 @@ jobs:
       - name: Cache the virtualenv
         uses: actions/cache@v4
         with:
-          path: ./.venv
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
           key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-venv-
