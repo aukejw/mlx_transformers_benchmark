@@ -61,6 +61,7 @@ jobs:
       - name: Install dependencies, assuming poetry is available
         run: |
           poetry config virtualenvs.in-project true
+          poetry lock 
           poetry install --with dev
 
       - name: Run tests with pytest
