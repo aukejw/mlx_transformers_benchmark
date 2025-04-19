@@ -1,7 +1,9 @@
+[![CI](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/ci.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/ci.yaml)
+
 # Benchmarking transformer operators on Apple silicon
 
-Let's say you're interested in performing LLM inference on Apple hardware. You do care about 
-speed, but want to interact with the model or finetune it, so ollama or LMStudio are out.
+Let's say you're interested in performing LLM inference on Apple hardware. You care about 
+speed, but want to interact with the model or finetune it -- ollama or LMStudio are out.
 
 This means you need to make an important choice: 
 
