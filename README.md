@@ -43,15 +43,10 @@ Before you start, you will need:
 
 3. Run benchmarking. By default, we will test multiple batch sizes and sequence lengths for each specified operator. 
    ```
-   python scripts/run_benchmarks.py \
-      --num_warmup_iterations 10 \
-      --num_iterations 30 \
-      --dtype float16 \
-      --run_torch_mps=True \
-      --run_mlx_metal=True \
-      --run_mlx_metal_compiled=True  \
-      --run_only_benchmarks "[linear, softmax]" \
-      --cooldown_time_fraction=0.1 
+   python scripts/run_llm_benchmarks.py \
+      --num_warmup_iterations 1 \
+      --num_iterations 3 \
+      --dtype bfloat16 
    ```
    This creates a new result in the `measurements` folder.
 
