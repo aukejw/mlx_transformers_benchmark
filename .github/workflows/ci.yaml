@@ -95,10 +95,7 @@ jobs:
 
   # Visualization
   visualize-measurements:
-    needs: [check-measurements-changed, tests-mac]
-    if: |
-      needs.check-measurements-changed.outputs.measurements_changed == 'true' || 
-      (github.event_name == 'workflow_dispatch' && needs.tests-mac.result == 'success')
+    needs: check-measurements-changed
     runs-on: [self-hosted, macOS]
 
     steps:
