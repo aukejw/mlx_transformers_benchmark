@@ -147,7 +147,7 @@ def aggregate_measurements(
 
 def _convert_row_to_framework_backend(
     row: pd.Series,
-    is_llm_benchmark: bool,
+    is_llm_benchmark: bool = False,
 ) -> str:
     """Combine framework and backend into a single string.
 
