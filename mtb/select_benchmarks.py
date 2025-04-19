@@ -1,5 +1,5 @@
 import importlib
-from typing import List, Type
+from typing import List, Type, Union
 
 from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 
@@ -44,7 +44,7 @@ def benchmark_name_to_benchmark_class(
 
 def filter_benchmarks(
     benchmarks: List[BaseLayerBenchmark],
-    run_only_benchmarks: List[str],
+    run_only_benchmarks: Union[str, List[str]],
 ) -> List[BaseLayerBenchmark]:
     """Filter given benchmarks, return only the ones meeting the criterion.
 
@@ -53,19 +53,29 @@ def filter_benchmarks(
         run_only_benchmarks: List of benchmark names to include.
 
     """
-    valid_benchmark_classes = set(
-        benchmark_name_to_benchmark_class(name) for name in run_only_benchmarks
-    )
-    filtered_benchmarks = [
-        benchmark
-        for benchmark in benchmarks
-        if benchmark.__class__ in valid_benchmark_classes
+    if isinstance(run_only_benchmarks, str):
+        run_only_benchmarks = [run_only_benchmarks]
+
+    run_only_benchmarks = [
+        benchmark_name.lower().replace("_", "")
+        for benchmark_name in run_only_benchmarks
     ]
 
-    if len(filtered_benchmarks) == 0:
+    benchmarks_to_keep = []
+    for benchmark in benchmarks:
+        benchmark_name = benchmark.name.lower().replace("_", "")
+
+        for match in run_only_benchmarks:
+            if benchmark_name.startswith(match):
+                benchmarks_to_keep.append(benchmark)
+                print(f"  keeping benchmark {benchmark.name}, matched {match}")
+                break
+
+    if len(benchmarks_to_keep) == 0:
         raise ValueError(
             f"No benchmarks to run after filtering! "
-            f"Check the filter criterion: {run_only_benchmarks}."
+            f"Check the filter criterion '{run_only_benchmarks}' "
+            f"and benchmarks {[b.name for b in benchmarks]}."
         )
 
-    return filtered_benchmarks
+    return benchmarks_to_keep
