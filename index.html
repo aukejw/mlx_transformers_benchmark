@@ -6,174 +6,496 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Benchmark results</title>
     <script>
-        // Available chips and benchmarks
-        let availableChips = [];
-        let availableBenchmarks = [];
-        // Mapping to keep track of valid combinations
-        let validCombinations = {};
+        // Track the options
+        let availableBenchmarkTypes = [];
+        let availableChipsAndBenchmarks = {};
+        let visualizationsToPage = {};
 
         function initializeData() {
-            // Extract unique chips and benchmarks and build valid combinations map
+            // Declare variables once outside the loop
+            let benchmarkType, chipName, benchmarkName, filePath;
+
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "gemmabenchmark__gemma-3-1b-it";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/gemmabenchmark__gemma-3-1b-it.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('LayerNorm(dim=768)')) {
-                availableBenchmarks.push('LayerNorm(dim=768)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_LayerNorm(dim=768)'] = 'Apple_M4_Pro__arm/layernorm__dim=768.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "gemmabenchmark__gemma-3-4b-it";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/gemmabenchmark__gemma-3-4b-it.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('Linear(in=768, out=768)')) {
-                availableBenchmarks.push('Linear(in=768, out=768)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_Linear(in=768, out=768)'] = 'Apple_M4_Pro__arm/linear__in=768_out=768.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "layernorm__dim=768";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/layernorm__dim=768.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=1, mask=None)')) {
-                availableBenchmarks.push('MHSA(dim=768, num_heads=1, mask=None)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=1, mask=None)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1_mask=none.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "linear__in=768_out=768";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/linear__in=768_out=768.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=1, mask=causal)')) {
-                availableBenchmarks.push('MHSA(dim=768, num_heads=1, mask=causal)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=1, mask=causal)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1_mask=causal.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "mhsa__dim=768_num_heads=1_mask=causal";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1_mask=causal.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=8, mask=None)')) {
-                availableBenchmarks.push('MHSA(dim=768, num_heads=8, mask=None)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=8, mask=None)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8_mask=none.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "mhsa__dim=768_num_heads=1_mask=none";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/mhsa__dim=768_num_heads=1_mask=none.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('MHSA(dim=768, num_heads=8, mask=causal)')) {
-                availableBenchmarks.push('MHSA(dim=768, num_heads=8, mask=causal)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_MHSA(dim=768, num_heads=8, mask=causal)'] = 'Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8_mask=causal.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "mhsa__dim=768_num_heads=8_mask=causal";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8_mask=causal.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('Softmax(dim=768)')) {
-                availableBenchmarks.push('Softmax(dim=768)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_Softmax(dim=768)'] = 'Apple_M4_Pro__arm/softmax__dim=768.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "mhsa__dim=768_num_heads=8_mask=none";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/mhsa__dim=768_num_heads=8_mask=none.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=1, mask=None)')) {
-                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=1, mask=None)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=1, mask=None)'] = 'Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=1_mask=none.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "softmax__dim=768";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/softmax__dim=768.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=1, mask=causal)')) {
-                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=1, mask=causal)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=1, mask=causal)'] = 'Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=1_mask=causal.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerdecoderlayer__dim=768_num_heads=1_mask=causal";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=1_mask=causal.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=8, mask=None)')) {
-                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=8, mask=None)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=8, mask=None)'] = 'Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=8_mask=none.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerdecoderlayer__dim=768_num_heads=1_mask=none";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=1_mask=none.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)')) {
-                availableBenchmarks.push('TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerDecoderLayer(dim=768, num_heads=8, mask=causal)'] = 'Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=8_mask=causal.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerdecoderlayer__dim=768_num_heads=8_mask=causal";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=8_mask=causal.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=1, mask=None)')) {
-                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=1, mask=None)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=1, mask=None)'] = 'Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=1_mask=none.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerdecoderlayer__dim=768_num_heads=8_mask=none";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerdecoderlayer__dim=768_num_heads=8_mask=none.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=1, mask=causal)')) {
-                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=1, mask=causal)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=1, mask=causal)'] = 'Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=1_mask=causal.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerencoderlayer__dim=768_num_heads=1_mask=causal";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=1_mask=causal.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=8, mask=None)')) {
-                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=8, mask=None)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=8, mask=None)'] = 'Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=8_mask=none.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
-            if (!availableChips.includes('Apple_M4_Pro__arm')) {
-                availableChips.push('Apple_M4_Pro__arm');
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerencoderlayer__dim=768_num_heads=1_mask=none";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=1_mask=none.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
             }
-            if (!availableBenchmarks.includes('TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)')) {
-                availableBenchmarks.push('TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)');
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
             }
-            validCombinations['Apple_M4_Pro__arm_TransformerEncoderLayer(dim=768, num_heads=8, mask=causal)'] = 'Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=8_mask=causal.html';
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
+            
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerencoderlayer__dim=768_num_heads=8_mask=causal";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=8_mask=causal.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
+            }
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
+            }
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
+            
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro__arm";
+            benchmarkName = "transformerencoderlayer__dim=768_num_heads=8_mask=none";
+            filePath = "llm_benchmarks/Apple_M4_Pro__arm/transformerencoderlayer__dim=768_num_heads=8_mask=none.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
+            }
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
+            }
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
             
 
             // Populate dropdowns
+            updateAllDropdowns();
+        }
+
+        function updateAllDropdowns() {
+            const typeSelector = document.getElementById("typeSelector");
             const chipSelector = document.getElementById("chipSelector");
-            availableChips.forEach(chip => {
+            const benchmarkSelector = document.getElementById("benchmarkSelector");
+
+            // Clear previous options
+            typeSelector.innerHTML = "";
+            chipSelector.innerHTML = "";
+            benchmarkSelector.innerHTML = "";
+
+            // Populate benchmark type dropdown
+            availableBenchmarkTypes.forEach(type => {
+                const option = document.createElement("option");
+                option.value = type;
+                option.textContent = type;
+                typeSelector.appendChild(option);
+            });
+
+            // Set the first benchmark type as default
+            if (availableBenchmarkTypes.length > 0) {
+                typeSelector.value = availableBenchmarkTypes[0];
+                updateChipDropdown();
+            }
+        }
+
+        function updateChipDropdown() {
+            const selectedBenchmarkType = document.getElementById("typeSelector").value;
+            const chipSelector = document.getElementById("chipSelector");
+            const benchmarkSelector = document.getElementById("benchmarkSelector");
+
+            // Clear previous options
+            chipSelector.innerHTML = "";
+            benchmarkSelector.innerHTML = "";
+
+            // Populate chip and benchmark dropdown based on selected benchmark type:
+            const chips = availableChipsAndBenchmarks[selectedBenchmarkType]['chips'];
+            const benchmarks = availableChipsAndBenchmarks[selectedBenchmarkType]['benchmarks'];
+            chips.forEach(chip => {
                 const option = document.createElement("option");
                 option.value = chip;
                 option.textContent = chip;
                 chipSelector.appendChild(option);
             });
-
-            const benchmarkSelector = document.getElementById("benchmarkSelector");
-            availableBenchmarks.forEach(benchmark => {
+            benchmarks.forEach(benchmark => {
                 const option = document.createElement("option");
                 option.value = benchmark;
                 option.textContent = benchmark;
                 benchmarkSelector.appendChild(option);
             });
 
-            // Load initial page
+            // Set the first chip and benchmark as default
+            if (chips.length > 0) {
+                chipSelector.value = chips[0];
+            }
+            if (benchmarks.length > 0) {
+                benchmarkSelector.value = benchmarks[0];
+            }
+
             loadPage();
         }
 
         function loadPage() {
+            const selectedBenchmarkType = document.getElementById("typeSelector").value;
             const selectedChip = document.getElementById("chipSelector").value;
             const selectedBenchmark = document.getElementById("benchmarkSelector").value;
-            const combinationKey = `${selectedChip}_${selectedBenchmark}`;
+
+            const combinationKey = `${selectedBenchmarkType}_${selectedChip}_${selectedBenchmark}`;
+            const page = visualizationsToPage[combinationKey];
+
             const viewer = document.getElementById("viewer");
             const noDataMessage = document.getElementById("noDataMessage");
 
             // Check if combination exists
-            if (validCombinations[combinationKey]) {
-                viewer.src = validCombinations[combinationKey];
-                viewer.style.display = "block";
-                noDataMessage.style.display = "none";
+            if (page) {
+                viewer.src = page;
             } else {
                 viewer.style.display = "none";
                 noDataMessage.style.display = "block";
-                noDataMessage.textContent = `No data available for ${selectedChip} with ${selectedBenchmark}`;
+                noDataMessage.textContent = `No data available for ${selectedChip}, ${selectedBenchmark}`;
             }
+        }
+
+        function updateDropdowns() {
+            updateChipDropdown();
         }
 
         window.onload = function () {
@@ -216,6 +538,9 @@
         for more information.
     </p>
     <div class="dropdown-container">
+        <label for="typeSelector">Benchmark type:</label>
+        <select id="typeSelector" onchange="updateDropdowns()"></select>
+
         <label for="chipSelector">Chip:</label>
         <select id="chipSelector" onchange="loadPage()"></select>
 
