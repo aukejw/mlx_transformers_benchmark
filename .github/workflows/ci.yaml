@@ -22,13 +22,13 @@ jobs:
         with:
           python-version: 3.11.11
     
-      - name: Cache the virtualenv
-        uses: actions/cache@v4
-        with:
-          path: ./.venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
+      #- name: Cache the virtualenv
+      #  uses: actions/cache@v4
+      #  with:
+      #    path: ./.venv
+      #    key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+      #    restore-keys: |
+      #      ${{ runner.os }}-venv-
     
       - name: Install poetry
         run: |
