@@ -1,9 +1,9 @@
 {
-  "datetime": "2025-04-16__18:58:40",
-  "git_commit": "cf2d96885742f3ba2e41b2296bd549ccc1141834",
+  "datetime": "2025-04-19__14:39:27",
+  "git_commit": "8443fc87e28fb229b2d80fb8b4dbd6e72b3a7895",
   "benchmark_settings": {
     "num_warmup_iterations": 1,
-    "num_iterations": 5,
+    "num_iterations": 3,
     "dtype": "bfloat16",
     "run_only_benchmarks": null
   },

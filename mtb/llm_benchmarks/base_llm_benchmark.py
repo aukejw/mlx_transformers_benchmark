@@ -6,7 +6,6 @@ import torch
 from mtb.dtypes import get_mlx_dtype, get_torch_dtype
 from mtb.hf_utils import set_hf_home
 from mtb.measurement import LlmBenchmarkMeasurement
-from mtb.memory import MemoryTracker
 
 
 class BaseLLMBenchmark:
@@ -41,7 +40,6 @@ class BaseLLMBenchmark:
         self.input_tensor = None
         self.model = None
         self.tokenizer = None
-        self.memory_tracker = None
 
         set_hf_home()
 
@@ -60,8 +58,6 @@ class BaseLLMBenchmark:
         """Setup the benchmark."""
         self._framework = framework
         self._backend = backend
-
-        self.memory_tracker = MemoryTracker(framework=framework, backend=backend)
 
         if framework == "torch":
             self._device = torch.device(backend)

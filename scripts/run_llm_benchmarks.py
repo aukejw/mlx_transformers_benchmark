@@ -50,6 +50,7 @@ def main(
         max_num_tokens=max_num_tokens,
     )
     benchmarks = [
+        mtb_bench.Qwen2p5ThreeBillionInstructBenchmark(**kwargs),
         mtb_bench.Gemma3FourBillionBenchmark(**kwargs),
         mtb_bench.Gemma3OneBillionBenchmark(**kwargs),
     ]
