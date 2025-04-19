@@ -1,15 +1,14 @@
 # Benchmarking transformer operators on Apple silicon
 
-Let's say you're interested in performing inference for small (unquantized) transformers on 
-Apple hardware. You do care about speed, but aren't ready to quantize just yet, and you do 
-not want to fry your machine.
+Let's say you're interested in performing LLM inference on Apple hardware. You do care about 
+speed, but want to interact with the model or finetune it, so ollama or LMStudio are out.
 
 This means you need to make an important choice: 
 
 - use [PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html),
 - or move to Apple's [MLX, built directly for Metal](https://github.com/ml-explore/mlx)?
 
-We aim to help make this choice by benchmarking inference for a few common operations and layers. 
+We aim to help make this choice by benchmarking inference for a few common models and operators. 
 Results can be found at 
 [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
@@ -64,6 +63,23 @@ Before you start, you will need:
    [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
 
+### Contributing
+
+If you have an Apple device, additional measurements are always welcome! 
+
+The easiest way to contribute is to set up the repo as described, and run benchmarks for common LLMs:
+```
+make run
+```
+Running benchmarks for Gemma and Qwen models should take around 8 minutes, excluding time-to-download. 
+
+This creates a new measurement folder and stores the platform info as well as the `mlx`, `mlx_lm`, and 
+`torch` versions in a settings file. You can view it and all previous measurements:
+```
+make show-llm-benchmarks
+```
+
+
 ### On reproducibility
 
 Apple's virtualization framework does not provide a GPU API for virtualized envionments, 
@@ -71,8 +87,8 @@ and using Metal from a Docker container is not supported yet. This makes exact r
 challenging, but the numbers should give a decent idea nevertheless. 
 
 Although the default parameters do not result in thermal throttling for a Macbook M4 Pro, older
-machines may have trouble with the heavier operators, or may have too little RAM and fall back on 
-swap space. If you see huge outliers, do take a closer look!
+machines may have trouble with the heavier models and operators, or may have too little RAM and 
+fall back on swap space. If you see huge memory pressure or outlier measurements, do take a closer look!
 
 > [!NOTE] 
 > For a large number of iterations, the GPU will certainly heat up. If needed, you can 
@@ -88,8 +104,8 @@ As LLM inference is mostly memory-bound for low batch sizes, devices with high m
 typically obtain 
 [high tokens/sec in inference benchmarks](https://github.com/ggml-org/llama.cpp/discussions/4167).
 
-This benchmark focuses on the runtime of unquantized transformer ops, primarily useful 
-when training small, custom models for (or on!) Apple devices. While speed is one factor,
+This benchmark focuses on the runtime of easy-to-run LLMs and unquantized transformer ops, primarily 
+useful when finetuning custom models for (or on!) Apple devices. While speed is one factor,
 do consider ecosystem and cross-platform support too - here, Nvidia+CUDA remain hard to beat!  
 
 You may also be interested in:
@@ -100,16 +116,3 @@ You may also be interested in:
 
 - [The work of Feng et al](https://arxiv.org/pdf/2501.14925) comparing training on Nvidia cards vs Apple Silicon. 
 
-
-### Contributing
-
-If you have an Apple device, additional measurements are always welcome! 
-
-The easiest way to contribute is to set up the repo as described, and run benchmarks for three dtypes:
-```
-make run
-```
-Running benchmarks for all operators should take around 20 minutes per dtype.
-
-This creates a new measurement folder for each dtype, and stores the platform info as well as the  
-`mlx` and `torch` versions in a settings file. Pull requests welcome!
