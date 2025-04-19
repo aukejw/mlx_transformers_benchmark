@@ -5,7 +5,6 @@ import torch
 
 from mtb import FLAG_ON_MAC
 from mtb.memory import (
-    MemoryTracker,
     bytes_to_gb,
     get_mlx_memory_gb,
     get_process_memory_gb,
@@ -69,21 +68,3 @@ def test_get_mlx_memory_gb():
     mx.eval(tensor)
     difference_gb = get_mlx_memory_gb() - initial_mlx_memory
     assert difference_gb > tensor_gb
-
-
-def test_memory_tracker():
-    # print(get_process_memory_gb())
-    tracker = MemoryTracker(framework="torch", backend="mps")
-    assert tracker.get_used_memory() == 0
-
-    array = np.ones((10_000, 10_000), dtype=np.float32)
-    array_gb = bytes_to_gb(array.nbytes)
-
-    # we should have allocated process memory, but allow for overhead, deduplication, etc.
-    used_memory = tracker.get_used_memory()
-    assert used_memory > 0.5 * array_gb
-
-    del array
-
-    new_used_memory = tracker.get_used_memory()
-    assert new_used_memory < used_memory

@@ -4,50 +4,6 @@ import mlx.core as mx
 import psutil
 import torch
 
-from mtb import FLAG_ON_LINUX, FLAG_ON_MAC
-
-
-class MemoryTracker:
-    """Track memory in a separate process."""
-
-    def __init__(self, framework: str, backend: str, sleep: float = 0.001):
-        self.framework = framework
-        self.backend = backend
-        self.sleep = sleep
-
-        # make sure torch is initialized, if possible, before doing any measurements
-        get_torch_memory_gb()
-
-        self.initial_memory = self.measure_fn()
-
-    def measure_fn(self):
-        if FLAG_ON_MAC:
-            # Unified memory: we just care about free vs used RAM. The problem
-            # is that tensors may live in GPU memory via MPS or Metal, but auxiliary
-            # info (e.g. KV cache) does not -- we then need to know RAM and GPU mem.
-            # Instead, we use psutil as an approximation of the total used memory.
-            ram = get_process_memory_gb()
-
-            if self.framework == "torch" and self.backend == "mps":
-                vram = get_torch_memory_gb()
-            elif self.framework == "mlx" and self.backend == "metal":
-                vram = get_mlx_memory_gb()
-            else:
-                vram = 0.0
-
-            return ram + vram
-
-        elif FLAG_ON_LINUX:
-            if self.framework == "torch" and self.backend == "cuda":
-                # only measure (dedicated) GPU VRAM - this is what's important
-                return get_torch_memory_gb
-            else:
-                # fall back on RAM
-                return get_process_memory_gb()
-
-    def get_used_memory(self):
-        return self.measure_fn() - self.initial_memory
-
 
 def bytes_to_gb(bytes: int) -> float:
     """Convert bytes to gigabytes."""
