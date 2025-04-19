@@ -21,6 +21,7 @@ def main(
     cooldown_time_fraction: float = 0.05,
     batch_sizes: Tuple = (1,),
     max_num_tokens: int = 100,
+    enable_hf_progressbar: bool = False,
     *,
     run_torch_mps: bool = True,
     run_mlx_metal: bool = True,
@@ -38,6 +39,10 @@ def main(
     By default, we run torch with MPS backend and MLX with Metal backend.
 
     """
+    from mtb.hf_utils import set_hf_home
+
+    set_hf_home(enable_hf_progressbar=enable_hf_progressbar)
+
     prompts = [
         "Repeat the following sequence: " + ", ".join(str(i) for i in range(1_000)),
         "Repeat the following sequence: " + ", ".join(str(i) for i in range(500)),
@@ -50,9 +55,10 @@ def main(
         max_num_tokens=max_num_tokens,
     )
     benchmarks = [
-        mtb_bench.Qwen2p5ThreeBillionInstructBenchmark(**kwargs),
-        mtb_bench.Gemma3FourBillionBenchmark(**kwargs),
-        mtb_bench.Gemma3OneBillionBenchmark(**kwargs),
+        mtb_bench.Gemma3_1B_it_Benchmark(**kwargs),
+        mtb_bench.Gemma3_4B_it_Benchmark(**kwargs),
+        mtb_bench.Qwen2p5_3B_it_Benchmark(**kwargs),
+        mtb_bench.Qwen2p5_Coder_3B_it_Benchmark(**kwargs),
     ]
 
     # Filter benchmarks if specified

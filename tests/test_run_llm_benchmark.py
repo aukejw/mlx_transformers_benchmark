@@ -13,6 +13,8 @@ from mtb.run_llm_benchmark import run_benchmark, run_benchmark_for_framework
 
 
 class MockBenchmark(BaseLLMBenchmark):
+    name = "mock"
+
     dtype_to_model_id = {
         torch.float16: "mock_model_id",
         mx.float16: "mock_model_id",
@@ -58,10 +60,7 @@ class MockBenchmark(BaseLLMBenchmark):
 
 @pytest.fixture
 def benchmark():
-    return MockBenchmark(
-        name="mock",
-        max_num_tokens=10,
-    )
+    return MockBenchmark(max_num_tokens=10)
 
 
 def test_run_benchmark_for_framework(benchmark):

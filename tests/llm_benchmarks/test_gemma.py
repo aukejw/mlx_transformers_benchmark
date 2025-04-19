@@ -7,12 +7,12 @@ from transformers import BatchEncoding, GemmaTokenizerFast
 from transformers.models.gemma3.modeling_gemma3 import Gemma3PreTrainedModel
 
 from mtb import FLAG_ON_MAC
-from mtb.llm_benchmarks.gemma import Gemma3OneBillionBenchmark
+from mtb.llm_benchmarks.gemma import Gemma3_1B_it_Benchmark
 
 
 @pytest.fixture(scope="session")
 def benchmark_torch():
-    benchmark = Gemma3OneBillionBenchmark(max_num_tokens=30)
+    benchmark = Gemma3_1B_it_Benchmark(max_num_tokens=30)
     benchmark.setup(framework="torch", backend="mps", dtype="bfloat16")
     benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
@@ -20,7 +20,7 @@ def benchmark_torch():
 
 @pytest.fixture(scope="session")
 def benchmark_mlx():
-    benchmark = Gemma3OneBillionBenchmark(max_num_tokens=30)
+    benchmark = Gemma3_1B_it_Benchmark(max_num_tokens=30)
     benchmark.setup(framework="mlx", backend="metal", dtype="bfloat16")
     benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
