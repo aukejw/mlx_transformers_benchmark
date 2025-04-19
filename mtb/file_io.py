@@ -2,6 +2,7 @@ import datetime
 import json
 import platform
 import subprocess
+from functools import partial
 from pathlib import Path
 from typing import Dict, Union
 
@@ -100,6 +101,7 @@ def _get_commit():
 
 def aggregate_measurements(
     measurements_folder: Union[str, Path],
+    is_llm_benchmark: bool = False,
 ):
     """Collect measurements for the given folder."""
     measurements_folder = Path(measurements_folder)
@@ -125,8 +127,9 @@ def aggregate_measurements(
         for key in [
             "torch_version",
             "mlx_version",
+            "mlx_lm_version",
         ]:
-            measurements[key] = settings["software_info"][key]
+            measurements[key] = settings["software_info"].get(key, None)
 
         relevant_measurements.append(measurements)
 
@@ -135,14 +138,17 @@ def aggregate_measurements(
     )
 
     relevant_measurements["framework_backend"] = relevant_measurements.apply(
-        _convert_row_to_framework_backend,
+        partial(_convert_row_to_framework_backend, is_llm_benchmark=is_llm_benchmark),
         axis=1,
     ).astype("category")
 
     return relevant_measurements
 
 
-def _convert_row_to_framework_backend(row: pd.Series) -> str:
+def _convert_row_to_framework_backend(
+    row: pd.Series,
+    is_llm_benchmark: bool,
+) -> str:
     """Combine framework and backend into a single string.
 
     For example:
@@ -164,6 +170,9 @@ def _convert_row_to_framework_backend(row: pd.Series) -> str:
         raise NotImplementedError(f"Unsupported framework {row['framework']}")
 
     name += "_" + row["backend"]
+
+    if is_llm_benchmark and row["framework"] == "mlx":
+        name += "__mlx_lm_" + row["mlx_lm_version"]
 
     if row.get("compile", False):
         name += "_compiled"

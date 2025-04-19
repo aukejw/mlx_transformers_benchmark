@@ -18,6 +18,7 @@
     "platform": "macOS-15.1-arm64-arm-64bit",
     "python_version": "3.11.11",
     "torch_version": "2.6.0",
-    "mlx_version": "0.24.1"
+    "mlx_version": "0.24.1",
+    "mlx_lm_version": "0.22.3"
   }
 }

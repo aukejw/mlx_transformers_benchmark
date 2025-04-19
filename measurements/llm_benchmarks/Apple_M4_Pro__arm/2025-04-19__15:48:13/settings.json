@@ -1,6 +1,6 @@
 {
-  "datetime": "2025-04-19__14:24:30",
-  "git_commit": "8443fc87e28fb229b2d80fb8b4dbd6e72b3a7895",
+  "datetime": "2025-04-19__15:48:13",
+  "git_commit": "a5ec3fbdff7104e0593172dc893c2f1c2544a3a6",
   "benchmark_settings": {
     "num_warmup_iterations": 1,
     "num_iterations": 3,
@@ -18,7 +18,7 @@
     "platform": "macOS-15.1-arm64-arm-64bit",
     "python_version": "3.11.11",
     "torch_version": "2.6.0",
-    "mlx_version": "0.24.1",
-    "mlx_lm_version": "0.22.3"
+    "mlx_version": "0.25.0",
+    "mlx_lm_version": "0.23.0"
   }
 }

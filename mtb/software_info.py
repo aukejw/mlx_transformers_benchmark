@@ -1,6 +1,7 @@
 from typing import Dict
 
 import mlx.core as mx
+import mlx_lm
 import torch
 
 
@@ -16,4 +17,5 @@ def get_mlx_version() -> Dict:
 
     return dict(
         mlx_version=mx.__version__,
+        mlx_lm_version=mlx_lm.__version__,
     )

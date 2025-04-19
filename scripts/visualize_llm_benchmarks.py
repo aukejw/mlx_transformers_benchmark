@@ -34,7 +34,10 @@ def main(
     output_folder = Path(output_folder) / chip_name
     output_folder.mkdir(parents=True, exist_ok=True)
 
-    relevant_measurements = aggregate_measurements(measurements_folder)
+    relevant_measurements = aggregate_measurements(
+        measurements_folder,
+        is_llm_benchmark=True,
+    )
     relevant_measurements = relevant_measurements.sort_values(
         by=["framework_backend", "name", "batch_size", "num_prompt_tokens"],
         ignore_index=True,
