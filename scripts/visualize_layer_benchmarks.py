@@ -12,7 +12,7 @@ DEFAULT_MEASUREMENTS_FOLDER = (
     mtb.REPO_ROOT / "measurements" / "layer_benchmarks" / "Apple_M4_Pro__arm"
 )
 VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations"
-OUTPUT_FOLDER = VISUALIZATIONS_FOLDER / "llm_benchmarks"
+OUTPUT_FOLDER = VISUALIZATIONS_FOLDER / "layer_benchmarks"
 
 
 def main(
