@@ -12,6 +12,13 @@ __all__ = [
 
 
 class GemmaBenchmark(BaseLLMBenchmark):
+    """Benchmarks for the Gemma class of models.
+
+    See https://huggingface.co/collections/mlx-community/gemma-3-67d14a10480a436ad478b0f9
+    for available models.
+
+    """
+
     def set_prompt(self, prompt: str, batch_size: int) -> BatchEncoding:
         assert batch_size == 1, "mlx_lm only supports B=1 inference currently "
 
@@ -46,6 +53,8 @@ class Gemma3_1B_it_Benchmark(GemmaBenchmark):
     dtype_to_model_id = {
         torch.bfloat16: "google/gemma-3-1b-it",
         mx.bfloat16: "mlx-community/gemma-3-1b-it-bf16",
+        mx.int8: "mlx-community/gemma-3-1b-it-8bit",
+        "mx_int4": "mlx-community/gemma-3-1b-pt-4bit",
     }
     name = "gemma-3-1b-it"
 
@@ -54,5 +63,7 @@ class Gemma3_4B_it_Benchmark(GemmaBenchmark):
     dtype_to_model_id = {
         torch.bfloat16: "google/gemma-3-4b-it",
         mx.bfloat16: "mlx-community/gemma-3-4b-it-bf16",
+        mx.int8: "mlx-community/gemma-3-4b-it-8bit",
+        "mx.int4": "mlx-community/gemma-3-4b-it-4bit",
     }
     name = "gemma-3-4b-it"
