@@ -6,12 +6,12 @@ from mlx_lm.tokenizer_utils import TokenizerWrapper
 from transformers import BatchEncoding, Qwen2ForCausalLM, Qwen2TokenizerFast
 
 from mtb import FLAG_ON_MAC
-from mtb.llm_benchmarks.qwen import Qwen2p5_3B_it_Benchmark
+from mtb.llm_benchmarks.qwen import Qwen2p5_0p5B_it_Benchmark
 
 
 @pytest.fixture(scope="session")
 def benchmark_torch():
-    benchmark = Qwen2p5_3B_it_Benchmark(max_num_tokens=30)
+    benchmark = Qwen2p5_0p5B_it_Benchmark(max_num_tokens=30)
     benchmark.setup(framework="torch", backend="mps", dtype="bfloat16")
     benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
@@ -19,7 +19,7 @@ def benchmark_torch():
 
 @pytest.fixture(scope="session")
 def benchmark_mlx():
-    benchmark = Qwen2p5_3B_it_Benchmark(max_num_tokens=30)
+    benchmark = Qwen2p5_0p5B_it_Benchmark(max_num_tokens=30)
     benchmark.setup(framework="mlx", backend="metal", dtype="bfloat16")
     benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark

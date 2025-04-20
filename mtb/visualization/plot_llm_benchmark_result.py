@@ -66,7 +66,7 @@ def show_llm_benchmark_data(
                         "batch_size",
                         "num_prompt_tokens",
                     ]
-                    + list(y_metrics.keys())
+                    + metrics_of_interest
                 ]
                 filtered_data = (
                     filtered_data.groupby(

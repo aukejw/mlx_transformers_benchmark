@@ -67,11 +67,11 @@ def test_run_benchmark_for_framework(benchmark):
     measurements = run_benchmark_for_framework(
         benchmark=benchmark,
         batch_sizes=(1,),
+        dtype="float16",
         prompts=["prompt"],
         cooldown_time_fraction=0.1,
         framework="torch",
         backend="cpu",
-        dtype="float16",
         num_warmup_iterations=1,
         num_iterations=2,
     )
@@ -94,7 +94,7 @@ def test_run_benchmark(benchmark, tmp_path):
         batch_sizes=(1,),
         prompts=["prompt"],
         cooldown_time_fraction=0.1,
-        dtype="float16",
+        dtypes=("float16",),
         num_warmup_iterations=1,
         num_iterations=1,
         run_torch_cpu=True,
@@ -129,7 +129,7 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path)
     # Test parameters
     num_warmup_iterations = 1
     num_iterations = 1
-    dtype = "float16"
+    dtypes = ("float16",)
 
     # Define all backend options and their expected arguments
     backend_options = [
@@ -168,11 +168,11 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path)
             "benchmark": benchmark,
             "output_path": output_path,
             "batch_sizes": (1,),
+            "dtypes": dtypes,
             "prompts": ["prompt"],
             "cooldown_time_fraction": 0.1,
             "num_warmup_iterations": num_warmup_iterations,
             "num_iterations": num_iterations,
-            "dtype": dtype,
         }
         kwargs[backend["option"]] = True
 
@@ -185,7 +185,7 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path)
             cooldown_time_fraction=0.1,
             num_warmup_iterations=num_warmup_iterations,
             num_iterations=num_iterations,
-            dtype=dtype,
+            dtype=dtypes[0],
             framework=backend["framework"],
             backend=backend["backend"],
         )

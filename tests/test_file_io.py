@@ -12,6 +12,15 @@ from mtb.file_io import (
     create_benchmark_output_dir,
 )
 
+mlx_version_return_value = {
+    "mlx_version": "1.0.0",
+    "mlx_lm_version": "1.0.0",
+}
+
+torch_version_return_value = {
+    "torch_version": "2.0.0",
+}
+
 
 @pytest.fixture
 def benchmark_settings():
@@ -35,8 +44,8 @@ def test_create_benchmark_output_dir(output_root, benchmark_settings):
 
 @patch("platform.system", return_value="Darwin")
 @patch("mtb.file_io.get_mac_hardware_info", return_value={"chip": "M1"})
-@patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
-@patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
+@patch("mtb.file_io.get_mlx_version", return_value=mlx_version_return_value)
+@patch("mtb.file_io.get_torch_version", return_value=torch_version_return_value)
 def test_create_benchmark_config_mac(
     mock_platform,
     mock_torch,
@@ -47,14 +56,15 @@ def test_create_benchmark_config_mac(
     config = create_benchmark_config(benchmark_settings)
     assert config["benchmark_settings"] == benchmark_settings
     assert config["software_info"]["mlx_version"] == "1.0.0"
+    assert config["software_info"]["mlx_lm_version"] == "1.0.0"
     assert config["software_info"]["torch_version"] == "2.0.0"
     assert config["hardware_info"]["chip"] == "M1"
 
 
 @patch("platform.system", return_value="Linux")
 @patch("mtb.file_io.get_linux_hardware_info", return_value={"chip": "aarch64"})
-@patch("mtb.file_io.get_mlx_version", return_value={"mlx_version": "1.0.0"})
-@patch("mtb.file_io.get_torch_version", return_value={"torch_version": "2.0.0"})
+@patch("mtb.file_io.get_mlx_version", return_value=mlx_version_return_value)
+@patch("mtb.file_io.get_torch_version", return_value=torch_version_return_value)
 def test_create_benchmark_config_linux(
     mock_platform,
     mock_torch,
@@ -66,6 +76,7 @@ def test_create_benchmark_config_linux(
     assert config["benchmark_settings"] == benchmark_settings
     assert config["hardware_info"]["chip"] == "aarch64"
     assert config["software_info"]["mlx_version"] == "1.0.0"
+    assert config["software_info"]["mlx_lm_version"] == "1.0.0"
     assert config["software_info"]["torch_version"] == "2.0.0"
 
 
@@ -94,6 +105,7 @@ def test_aggregate_measurements(tmp_path):
         "framework": ["torch"],
         "backend": ["cpu"],
         "batch_size": [1],
+        "dtype": "bfloat16",
         "sequence_length": [16],
         "compile": [False],
         "mean_ms": [1.5],
@@ -104,7 +116,6 @@ def test_aggregate_measurements(tmp_path):
     settings_file = run_dir / "settings.json"
     mock_settings = {
         "benchmark_settings": {
-            "dtype": "float32",
             "num_warmup_iterations": 5,
             "num_iterations": 10,
             "num_repeats": 3,

@@ -23,15 +23,21 @@ def sample_benchmark_data() -> pd.DataFrame:
     ):
         generation_tps = batch_size
         prompt_time_sec = num_prompt_tokens * 0.1
+        generation_time_sec = generation_tps * 0.1
 
         data.append(
             {
                 "framework_backend": framework,
                 "dtype": dtype,
                 "batch_size": batch_size,
+                "dtype": dtype,
                 "num_prompt_tokens": num_prompt_tokens,
-                "generation_tps": generation_tps,
+                "num_generated_tokens": 100,
                 "prompt_time_sec": prompt_time_sec,
+                "generation_time_sec": generation_time_sec,
+                "total_time_sec": prompt_time_sec + generation_time_sec,
+                "prompt_tps": prompt_time_sec,
+                "generation_tps": generation_tps,
             }
         )
 
@@ -64,9 +70,9 @@ def test_show_benchmark_data_with_specific_params(sample_benchmark_data):
     assert isinstance(fig, go.Figure)
 
     # Check that the figure has the correct number of subplots
-    assert (
-        len(fig.layout.annotations) == len(custom_dtypes) * len(custom_batch_sizes) * 2
-    )
+    num_y_metrics = 3  # prompt_time_sec, total_time_sec, generation_tps
+    expected_num_figures = len(custom_dtypes) * len(custom_batch_sizes) * num_y_metrics
+    assert len(fig.layout.annotations) == expected_num_figures
 
     # Check that all traces have the correct hovertemplate
     for trace in fig.data:
