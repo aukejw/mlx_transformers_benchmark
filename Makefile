@@ -15,7 +15,7 @@ activate-venv:
 ## Targets for running benchmarks
 
 run:
-	poetry run python scripts/run_llm_benchmarks.py --num_iterations 3 --dtype bfloat16
+	poetry run python scripts/run_llm_benchmarks.py --num_iterations 3
 
 show-layer-benchmarks:
 	poetry run python scripts/visualize_layer_benchmarks.py --show_all_measurements
