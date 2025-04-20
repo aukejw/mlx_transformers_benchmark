@@ -68,7 +68,7 @@ def filter_benchmarks(
         for match in run_only_benchmarks:
             if benchmark_name.startswith(match):
                 benchmarks_to_keep.append(benchmark)
-                print(f"  keeping benchmark {benchmark.name}, matched {match}")
+                print(f"  keeping benchmark '{benchmark.name}', matched '{match}'")
                 break
 
     if len(benchmarks_to_keep) == 0:

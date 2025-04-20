@@ -53,7 +53,7 @@ def run_benchmark_for_framework(
 
             # let us know where we are
             desc = (
-                f"  {framework}+{backend}, b={batch_size}, num_prompt_tokens={num_prompt_tokens}, "
+                f"  {framework}+{backend}, {dtype}, b={batch_size}, num_prompt_tokens={num_prompt_tokens}, "
                 + "warmup {warmup_it} / "
                 + f"{num_warmup_iterations}, "
                 + "benchmark {it} / "
@@ -86,6 +86,7 @@ def run_benchmark_for_framework(
             # Save the measurements
             measurement = dict(
                 batch_size=batch_size,
+                dtype=dtype,
                 num_prompt_tokens=num_prompt_tokens,
             )
             for metric_name in container.keys:
@@ -104,13 +105,13 @@ def run_benchmark_for_framework(
 
 def run_benchmark(
     benchmark: BaseLLMBenchmark,
-    batch_sizes: Tuple[int],
-    prompts: List[str],
     output_path: Union[Path, str],
+    batch_sizes: Tuple[int],
+    dtypes: Tuple[str],
+    prompts: List[str],
     num_warmup_iterations: int = 1,
-    num_iterations: int = 10,
-    cooldown_time_fraction: float = 0.2,
-    dtype="float32",
+    num_iterations: int = 5,
+    cooldown_time_fraction: float = 0.1,
     *,
     run_torch_cpu: bool = False,
     run_torch_mps: bool = False,
@@ -120,9 +121,14 @@ def run_benchmark(
 ):
     """Run a benchmark for specific frameworks.
 
+    Each combination of batchsize, prompt, dtype results in one measurement.
+
     Args:
         benchmark: The benchmark to run.
-        prompts: List of prompts to run. Each prompt results in one measurement.
+        output_path: Path to save the benchmark results.
+        batch_sizes: List of batch sizes to run.
+        dtypes: List of dtypes to run.
+        prompts: List of prompts to run.
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run generation for.
         run_torch_cpu: Framework torch, on cpu.
@@ -142,26 +148,27 @@ def run_benchmark(
         num_warmup_iterations=num_warmup_iterations,
         num_iterations=num_iterations,
         cooldown_time_fraction=cooldown_time_fraction,
-        dtype=dtype,
     )
 
-    benchmarks_to_run = []
-    if run_torch_cpu:
-        benchmarks_to_run.append(dict(framework="torch", backend="cpu"))
-    if run_torch_mps:
-        benchmarks_to_run.append(dict(framework="torch", backend="mps"))
-    if run_torch_cuda:
-        benchmarks_to_run.append(dict(framework="torch", backend="cuda"))
-    if run_mlx_cpu:
-        benchmarks_to_run.append(dict(framework="mlx", backend="cpu"))
-    if run_mlx_metal:
-        benchmarks_to_run.append(dict(framework="mlx", backend="metal"))
+    settings = []
+    for dtype in dtypes:
+        if run_torch_cpu:
+            settings.append(dict(framework="torch", backend="cpu", dtype=dtype))
+        if run_torch_mps:
+            settings.append(dict(framework="torch", backend="mps", dtype=dtype))
+        if run_torch_cuda:
+            settings.append(dict(framework="torch", backend="cuda", dtype=dtype))
+        if run_mlx_cpu:
+            settings.append(dict(framework="mlx", backend="cpu", dtype=dtype))
+        if run_mlx_metal:
+            settings.append(dict(framework="mlx", backend="metal", dtype=dtype))
 
     columns = [
         "name",
         "framework",
         "backend",
         "batch_size",
+        "dtype",
         "num_prompt_tokens",
         "num_generated_tokens",
         "prompt_tps",  # tokens/sec for processing the prompt
@@ -170,7 +177,7 @@ def run_benchmark(
         "generation_time_sec",  # total time needed for generation, excl. prompting
     ]
 
-    for framework_kwargs in benchmarks_to_run:
+    for framework_kwargs in settings:
         try:
             measurements: List[Dict] = run_benchmark_for_framework(
                 **general_kwargs,

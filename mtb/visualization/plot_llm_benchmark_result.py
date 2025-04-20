@@ -43,7 +43,7 @@ def show_llm_benchmark_data(
         rows=len(dtypes),
         cols=len(batch_sizes) * len(y_metrics),
         subplot_titles=[
-            f"{title}, B={batch_size}"
+            f"{title}, {dtype}, B={batch_size}"
             for dtype in dtypes
             for title in y_metrics.values()
             for batch_size in batch_sizes

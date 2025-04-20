@@ -17,18 +17,18 @@ def main(
     output_root: Union[str, Path] = DEFAULT_OUTPUT_ROOT,
     num_warmup_iterations: int = 1,
     num_iterations: int = 5,
-    dtype: str = "float32",
-    cooldown_time_fraction: float = 0.05,
     batch_sizes: Tuple = (1,),
+    dtypes: str = ("bfloat16", "int8", "int4"),
     max_num_tokens: int = 100,
     enable_hf_progressbar: bool = False,
+    cooldown_time_fraction: float = 0.05,
     *,
-    run_torch_mps: bool = True,
+    run_only_benchmarks: Optional[List[str]] = None,
     run_mlx_metal: bool = True,
+    run_torch_mps: bool = False,
     run_torch_cpu: bool = False,
     run_torch_cuda: bool = False,
     run_mlx_cpu: bool = False,
-    run_only_benchmarks: Optional[List[str]] = None,
 ):
     """Run LLM benchmarks.
 
@@ -36,7 +36,7 @@ def main(
     should (mostly) idle. A cooldown of 10% of the duration of the task results
     in a 95°C peak GPU temperature on a Macbook M4 Pro, but YMMV.
 
-    By default, we run torch with MPS backend and MLX with Metal backend.
+    By default, we run MLX with Metal backend only.
 
     """
     from mtb.hf_utils import set_hf_home
@@ -76,7 +76,7 @@ def main(
         benchmark_settings=dict(
             num_warmup_iterations=num_warmup_iterations,
             num_iterations=num_iterations,
-            dtype=dtype,
+            dtypes=dtypes,
             run_only_benchmarks=run_only_benchmarks,
         ),
     )
@@ -95,7 +95,7 @@ def main(
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
                 cooldown_time_fraction=cooldown_time_fraction,
-                dtype=dtype,
+                dtypes=dtypes,
                 run_torch_cpu=run_torch_cpu,
                 run_torch_mps=run_torch_mps,
                 run_torch_cuda=run_torch_cuda,

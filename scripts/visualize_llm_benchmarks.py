@@ -51,6 +51,7 @@ def main(
     )
 
     benchmark_tasks = sorted(relevant_measurements["name"].unique())
+    dtypes = sorted(relevant_measurements["dtype"].unique())
 
     # Create a mapping from (chip, benchmark) -> results html file
     benchmark_to_figurefile: Dict[Tuple[str, str], Path] = dict()
@@ -67,6 +68,7 @@ def main(
 
         fig = show_llm_benchmark_data(
             title=benchmark_task,
+            dtypes=dtypes,
             measurements=relevant_measurements_benchmark,
             do_average_measurements=(not show_all_measurements),
         )

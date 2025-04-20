@@ -118,7 +118,6 @@ def aggregate_measurements(
 
         # Copy some global settings to the dataframe
         for key in [
-            "dtype",
             "num_warmup_iterations",
             "num_iterations",
         ]:
