@@ -4,11 +4,15 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.subplots as sp
+from natsort import natsorted
+
+from mtb.visualization.symbol_and_color import get_symbol_and_color_map
 
 
 def show_llm_benchmark_data(
     title: str,
     measurements: pd.DataFrame,
+    frameworks: List[str] = None,
     dtypes: List[str] = ("bfloat16",),
     batch_sizes: List[int] = (1,),
     do_average_measurements: bool = True,
@@ -26,6 +30,9 @@ def show_llm_benchmark_data(
         The created figure.
 
     """
+    if frameworks is None:
+        frameworks = natsorted(measurements["framework_backend"].unique().tolist())
+
     metrics_of_interest = [
         "prompt_tps",
         "generation_tps",
@@ -51,6 +58,8 @@ def show_llm_benchmark_data(
         horizontal_spacing=0.075,
         vertical_spacing=0.075,
     )
+
+    color_map, symbol_map = get_symbol_and_color_map()
 
     for row, dtype in enumerate(dtypes):
         for col, batch_size in enumerate(batch_sizes):
@@ -86,6 +95,9 @@ def show_llm_benchmark_data(
                         y=y_metric_name,
                         color="framework_backend",
                         symbol="framework_backend",
+                        category_orders={"framework_backend": frameworks},
+                        color_discrete_map=color_map,
+                        symbol_map=symbol_map,
                         custom_data=["batch_size"] + metrics_of_interest,
                         title=f"dtype: {dtype}, batch_size: {batch_size}",
                     )

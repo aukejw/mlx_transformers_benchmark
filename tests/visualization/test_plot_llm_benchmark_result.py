@@ -80,4 +80,7 @@ def test_show_benchmark_data_with_specific_params(sample_benchmark_data):
             assert "Batch size" in trace.hovertemplate
             assert "Num prompt tokens" in trace.hovertemplate
             assert "Prompt time" in trace.hovertemplate
-            assert "Gen.speed" in trace.hovertemplate
+            assert "Gen. time" in trace.hovertemplate
+            assert "Total time" in trace.hovertemplate
+            assert "Prompt speed" in trace.hovertemplate
+            assert "Gen. speed" in trace.hovertemplate

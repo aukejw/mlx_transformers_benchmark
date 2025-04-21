@@ -2,8 +2,10 @@ from pathlib import Path
 from typing import Union
 
 import fire
+from natsort import natsort_keygen, natsorted
 
 import mtb as mtb
+import mtb.visualization.symbol_and_color
 from mtb.file_io import aggregate_measurements
 from mtb.visualization.create_index import create_index
 from mtb.visualization.plot_llm_benchmark_result import show_llm_benchmark_data
@@ -64,16 +66,22 @@ def visualize_chip_measurements(
     )
     relevant_measurements = relevant_measurements.sort_values(
         by=["framework_backend", "name", "batch_size", "dtype", "num_prompt_tokens"],
+        key=natsort_keygen(),
         ignore_index=True,
     )
 
     # Filter out measurements with no prompt time
-    benchmark_tasks = sorted(relevant_measurements["name"].unique())
+    benchmark_tasks = natsorted(relevant_measurements["name"].unique())
     dtypes = [
         dtype
         for dtype in ("float32", "float16", "bfloat16", "int8", "int4")
         if dtype in set(relevant_measurements["dtype"].unique())
     ]
+
+    # Define colors, symbols
+    frameworks = natsorted(relevant_measurements["framework_backend"].unique())
+    for framework in frameworks:
+        mtb.visualization.symbol_and_color.add_category(framework)
 
     print("Visualizing data per benchmark.")
     for benchmark_task in benchmark_tasks:
@@ -88,6 +96,7 @@ def visualize_chip_measurements(
         fig = show_llm_benchmark_data(
             title=benchmark_task,
             dtypes=dtypes,
+            frameworks=frameworks,
             measurements=relevant_measurements_benchmark,
             do_average_measurements=(not show_all_measurements),
         )

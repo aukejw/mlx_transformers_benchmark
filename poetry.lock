@@ -846,27 +846,22 @@ psutil = "*"
 
 [[package]]
 name = "mlx"
-version = "0.25.0"
+version = "0.24.1"
 description = "A framework for machine learning on Apple silicon."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "mlx-0.25.0-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:4dd7ce7a3a42aac82a297deed46a5b664384ad554ef1c632ec46bf2dc5d0ac6f"},
-    {file = "mlx-0.25.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:b066ae4893597548ed4a7ddb1c1727da812236b403068556f68f04a0901d4c84"},
-    {file = "mlx-0.25.0-cp310-cp310-macosx_15_0_arm64.whl", hash = "sha256:f60058c9cc3e3619e52e2aa3ba1fe2430595b1238586b0ed5b01eb97e9a87321"},
-    {file = "mlx-0.25.0-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:f3798f9e9a1c48c23e2c0280e6df8dfc54026e4fb30dd02f394cf5b8b1dfbd6e"},
-    {file = "mlx-0.25.0-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:7fc10639b79f4ededc90959313c4a5069f1f2e2b7057129b65ceec1c40ac7e30"},
-    {file = "mlx-0.25.0-cp311-cp311-macosx_15_0_arm64.whl", hash = "sha256:76504d09a02f13142f083607356395e577d2c7a06560ec7ae8591b2d98b1df41"},
-    {file = "mlx-0.25.0-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:97bbe2d180ecc644b1a4941f477966110d4aedca1bacf537660ad89ce0468db0"},
-    {file = "mlx-0.25.0-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:224409ad6c3246275565d148ef81a6ed159ec34005d09898fda04af19ffbae65"},
-    {file = "mlx-0.25.0-cp312-cp312-macosx_15_0_arm64.whl", hash = "sha256:f97d018ac5e500da97cf58631332f71a231f1fee9bf76e42af41771b1ea54149"},
-    {file = "mlx-0.25.0-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:62974c521f8affcf9472392c7c1f2bb481d105f383f2402175c93285b1059dc1"},
-    {file = "mlx-0.25.0-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:5c089c252d94d04a7cb60908f700a994649a0fbd8eeff52d9ebdc0b3c8578330"},
-    {file = "mlx-0.25.0-cp313-cp313-macosx_15_0_arm64.whl", hash = "sha256:d7221f0a8db967baaed0e88d8be23119bf085934bbb5c26ede4c54af0592973e"},
-    {file = "mlx-0.25.0-cp39-cp39-macosx_13_0_arm64.whl", hash = "sha256:606422cce1cbcebdca01f1701d52783b3b6549380ddd3ca0d1ccf9aedb164669"},
-    {file = "mlx-0.25.0-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:134e3d6e5e0e86e237700fc482b7ded3df3dbcfd21eeb6d45141e1fb9edd229d"},
-    {file = "mlx-0.25.0-cp39-cp39-macosx_15_0_arm64.whl", hash = "sha256:19424c55e7bf337adb6d6e2e837e4e05a04b454a452a7cd13bbb179ba0ed3d13"},
+    {file = "mlx-0.24.1-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:892794665b16bed172957793e3b293cb8f4d61b603243a3a850bf31454d3d77d"},
+    {file = "mlx-0.24.1-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:d6980a3e5a1783eb3c090904f9bba1a6a3d65b79757e6f5e637335b936591b44"},
+    {file = "mlx-0.24.1-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:1af5f1ad9c50a3cb6cb18ad05d65dc89b300e5de000b5d249e1f611520f87fba"},
+    {file = "mlx-0.24.1-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:e86b7e08b51b0ff2f0b27a3dc67d5e57186cbaf2d2d4b22295a99a180d53c278"},
+    {file = "mlx-0.24.1-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:57fd625ff90dab5dbc31678401fed761511b0e376a45b7d5d0fcbe834d3901ca"},
+    {file = "mlx-0.24.1-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:8c42bfaf7cf5083b5a439c8adcae1fc1b8d037b4d40fd36f25fa7708cb5f7271"},
+    {file = "mlx-0.24.1-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:b4e09379d5fed3178abe070ed408dba477efa727da4799451db8a89e271941f1"},
+    {file = "mlx-0.24.1-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:cc97e4a571f37f34abe373aba94b8d67a53e8e32753bd988e9f4c8b68ffa0ee6"},
+    {file = "mlx-0.24.1-cp39-cp39-macosx_13_0_arm64.whl", hash = "sha256:4de93ee42d93fdeb8390c0aa3ce4c89a5871bee072c8708e9acd6de9abcdf1d7"},
+    {file = "mlx-0.24.1-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:3740a6a4fea33596760b0ba6d938e37cb499deb6804e5bd9b9de1af40f9fbd03"},
 ]
 
 [package.extras]
@@ -874,19 +869,19 @@ dev = ["nanobind (==2.4.0)", "numpy", "pre-commit", "setuptools (>=42)", "torch"
 
 [[package]]
 name = "mlx-lm"
-version = "0.23.0"
+version = "0.22.3"
 description = "LLMs on Apple silicon with MLX and the Hugging Face Hub"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "mlx_lm-0.23.0-py3-none-any.whl", hash = "sha256:b491a178c296915555d3404ff0f8fa42e9684140ecacca63209c1deaf5938ea3"},
-    {file = "mlx_lm-0.23.0.tar.gz", hash = "sha256:8313914dd6aceab31280fac79ff0f049dde833fc65aad48a873e45b48b74ef0b"},
+    {file = "mlx_lm-0.22.3-py3-none-any.whl", hash = "sha256:6bc6617df277f872632bb08e3beffdef562e738bcca373c03fbd71677af42fc6"},
+    {file = "mlx_lm-0.22.3.tar.gz", hash = "sha256:4933f131cab59d7690f73c797449c98b8fae1f1ceb7c52be80660c3d6d118c61"},
 ]
 
 [package.dependencies]
 jinja2 = "*"
-mlx = ">=0.25.0"
+mlx = ">=0.24.1"
 numpy = "*"
 protobuf = "*"
 pyyaml = "*"
@@ -949,6 +944,22 @@ polars = ["polars (>=0.20.3)"]
 pyarrow = ["pyarrow (>=11.0.0)"]
 pyspark = ["pyspark (>=3.5.0)"]
 sqlframe = ["sqlframe (>=3.22.0)"]
+
+[[package]]
+name = "natsort"
+version = "8.4.0"
+description = "Simple yet flexible natural sorting in Python."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "natsort-8.4.0-py3-none-any.whl", hash = "sha256:4732914fb471f56b5cce04d7bae6f164a592c7712e1c85f9ef585e197299521c"},
+    {file = "natsort-8.4.0.tar.gz", hash = "sha256:45312c4a0e5507593da193dedd04abb1469253b601ecaf63445ad80f0a1ea581"},
+]
+
+[package.extras]
+fast = ["fastnumbers (>=2.0.0)"]
+icu = ["PyICU (>=1.0.0)"]
 
 [[package]]
 name = "networkx"
@@ -2212,4 +2223,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "e12f5b18cf5ae9ac8ac8a0cc7168e17e3d6b8aafe3fe7902ea3f0ac37cb7644e"
+content-hash = "f4269f30b1e73b78b37733699925f905cac1c6b50dc065c81677cab992dc5b2d"

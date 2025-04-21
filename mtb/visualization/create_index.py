@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Union
 
 from jinja2 import Template
+from natsort import natsorted
 
 import mtb
 
@@ -31,7 +32,7 @@ def create_index(
 
     # Create a mapping from (benchmark_type chip, benchmark) -> html file
     benchmark_to_figurefile = dict()
-    for benchmark_file in sorted(visualizations_folder.glob("./*/*/*.html")):
+    for benchmark_file in natsorted(visualizations_folder.glob("./*/*/*.html")):
         benchmark_file = benchmark_file.relative_to(visualizations_folder)
         benchmark_type = benchmark_file.parts[0]
         chip_name = benchmark_file.parts[1]
