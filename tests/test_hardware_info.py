@@ -7,9 +7,30 @@ from mtb.hardware_info import (
     _get_linux_cpu_info,
     _get_linux_memory_info,
     _get_nvidia_info,
+    get_hardware_info,
     get_linux_hardware_info,
     get_mac_hardware_info,
 )
+
+
+@patch("platform.system", return_value="Darwin")
+@patch("mtb.hardware_info.get_mac_hardware_info", return_value={"chip": "Apple M1"})
+def test_get_hardware_info_mac(mock_platform, mock_get_mac_hardware_info):
+    info = get_hardware_info()
+    assert info["chip"] == "Apple M1"
+
+
+@patch("platform.system", return_value="Linux")
+@patch("mtb.hardware_info.get_linux_hw_info", return_value={"chip": "Nvidia"})
+def test_get_hardware_info_linux(mock_platform, mock_get_linux_hw_info):
+    info = get_hardware_info()
+    assert info["chip"] == "Nvidia GeForce RTX 3080"
+
+
+@patch("platform.system", return_value="illegal_value")
+def test_get_hardware_info_linux(mock_platform):
+    with pytest.raises(NotImplementedError):
+        get_hardware_info()
 
 
 def test_get_mac_hardware_info_success():

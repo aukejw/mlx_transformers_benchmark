@@ -5,6 +5,7 @@ import warnings
 from typing import Dict
 
 __all__ = [
+    "get_hardware_info",
     "get_mac_hardware_info",
     "get_linux_hardware_info",
 ]
@@ -22,6 +23,22 @@ def _find_values_in_string(
         return match.group(1).strip()
     else:
         return default_value
+
+
+def get_hardware_info() -> Dict:
+    """Get hw info for this machine.
+
+    This is a wrapper function that calls the appropriate function depending on the OS.
+
+    """
+    if platform.system() == "Darwin":
+        return get_mac_hardware_info()
+    elif platform.system() == "Linux":
+        return get_linux_hardware_info()
+    else:
+        raise NotImplementedError(
+            f"Hardware info not implemented for {platform.system()}."
+        )
 
 
 def get_mac_hardware_info() -> Dict:
