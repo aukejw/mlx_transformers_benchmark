@@ -1,6 +1,6 @@
-[![CI](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/ci.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/ci.yaml)
-
 # Benchmarking transformer operators on Apple silicon
+
+[![tests](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests.yaml)
 
 Let's say you're interested in performing LLM inference on Apple hardware. You care about 
 speed, but want to interact with the model or finetune it -- ollama or LMStudio are out.
@@ -51,14 +51,14 @@ Before you start, you will need:
    ```
    This creates a new result in the `measurements` folder.
 
-   Optionally, to run a full benchmark on GPU for `float32`, `float16`, `bfloat16` datatypes, you can also use:
+   Optionally, to run a full benchmark for `bfloat16`, `int8`, `int4` datatypes, you can use:
    ``` 
-   make run
+   make run-llm-benchmarks
    ```
 
 4. To create a HTML report of all measurements and open the index page:
    ```
-   make show
+   make show-llm-benchmarks
    ```
 
    This should open a page similar to 
@@ -69,16 +69,29 @@ Before you start, you will need:
 
 If you have an Apple device, additional measurements are always welcome! 
 
-The easiest way to contribute is to set up the repo as described, and run benchmarks for common LLMs:
+The easiest way to contribute is to [fork the repo]( https://github.com/aukejw/mlx_transformers_benchmark/fork), and run benchmarks for common LLMs:
 ```
-make run
+git clone https://github.com/<your-username>/mlx_transformers_benchmark
+cd mlx_transformers_benchmark
 ```
-Running benchmarks for Gemma and Qwen models should take around 8 minutes, excluding time-to-download. 
+Then run benchmarks for common LLMs:
+```
+make create-venv
+source .venv/bin/activate
+make run-llm-benchmarks
+```
+Running benchmarks should take around 8 minutes, excluding model time-to-download. 
 
 This creates a new measurement folder and stores the platform info as well as the `mlx`, `mlx_lm`, and 
 `torch` versions in a settings file. You can view it and all previous measurements:
 ```
 make show-llm-benchmarks
+```
+
+Commit and push all new measurements, and create a pull request!
+```
+git commit -am "Adding measurements for <your-device>"
+git push
 ```
 
 
@@ -106,7 +119,7 @@ As LLM inference is mostly memory-bound for low batch sizes, devices with high m
 typically obtain 
 [high tokens/sec in inference benchmarks](https://github.com/ggml-org/llama.cpp/discussions/4167).
 
-This benchmark focuses on the runtime of easy-to-run LLMs and unquantized transformer ops, primarily 
+This benchmark focuses on the inference time of easy-to-run LLMs and unquantized transformer ops, primarily 
 useful when finetuning custom models for (or on!) Apple devices. While speed is one factor,
 do consider ecosystem and cross-platform support too - here, Nvidia+CUDA remain hard to beat!  
 
@@ -117,4 +130,3 @@ You may also be interested in:
   two, and we adopt the same strategy here.
 
 - [The work of Feng et al](https://arxiv.org/pdf/2501.14925) comparing training on Nvidia cards vs Apple Silicon. 
-
