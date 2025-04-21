@@ -1,0 +1,32 @@
+{
+  "datetime": "2025-04-21__22:32:56",
+  "git_commit": "cce0c99e547ca6936095e45e962473bb4708f8ea",
+  "benchmark_settings": {
+    "num_warmup_iterations": 1,
+    "num_iterations": 3,
+    "dtypes": [
+      "int4",
+      "int8",
+      "bfloat16"
+    ],
+    "run_only_benchmarks": null
+  },
+  "hardware_info": {
+    "processor": "arm",
+    "model_name": "MacBook Pro",
+    "chip": "Apple M4 Pro",
+    "memory": "24",
+    "total_cores": "14",
+    "performance_cores": "10",
+    "efficiency_cores": "4",
+    "gpu_cores": "20",
+    "hardware_string": "Apple_M4_Pro_10P+4E+20GPU_24GB"
+  },
+  "software_info": {
+    "platform": "macOS-15.1-arm64-arm-64bit",
+    "python_version": "3.11.11",
+    "torch_version": "2.6.0",
+    "mlx_version": "0.24.1",
+    "mlx_lm_version": "0.22.3"
+  }
+}
