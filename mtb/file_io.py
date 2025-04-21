@@ -33,15 +33,16 @@ def create_benchmark_output_dir(
         Output directory.
 
     """
+    output_root = Path(output_root)
+
     configuration: Dict = create_benchmark_config(
         benchmark_settings=benchmark_settings,
     )
+
     datetime_string = configuration["datetime"]
+    hardware_string = configuration["hardware_info"]["hardware_string"]
 
-    hw_info = configuration["hardware_info"]
-    hardware_string = hw_info["hardware_string"].replace(" ", "_")
-
-    output_dir = Path(output_root) / hardware_string / datetime_string
+    output_dir = output_root / hardware_string / datetime_string
     output_dir.mkdir(parents=True, exist_ok=False)
 
     with (output_dir / "settings.json").open("w") as f:

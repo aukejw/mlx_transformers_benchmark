@@ -84,7 +84,7 @@ def get_mac_hardware_info() -> Dict:
         f"+{info['efficiency_cores']}E"
         f"+{info['gpu_cores']}GPU"
         f"_{info['memory']}GB"
-    )
+    ).replace(" ", "_")
 
     return info
 

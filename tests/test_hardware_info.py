@@ -29,7 +29,7 @@ def test_get_mac_hardware_info_success():
         assert info["efficiency_cores"] == "4"
         assert info["gpu_cores"] == "8"
         assert info["memory"] == "16"
-        assert info["hardware_string"] == "Apple M1_4P+4E+8GPU_16GB"
+        assert info["hardware_string"] == "Apple_M1_4P+4E+8GPU_16GB"
         assert info["processor"] is not None
 
 
