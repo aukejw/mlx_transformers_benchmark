@@ -42,12 +42,12 @@ Before you start, you will need:
    make test
    ```
 
-3. Run benchmarking. By default, we will test multiple batch sizes and sequence lengths for each specified operator. 
+3. Run benchmarking, here for the 0.5B parameter `Qwen2.5` model:
    ```
    python scripts/run_llm_benchmarks.py \
-      --num_warmup_iterations 1 \
+      --run_only_benchmarks qwen-2.5-0.5b-it \
+      --dtypes \["int4","int8"\] \
       --num_iterations 3 \
-      --dtype bfloat16 
    ```
    This creates a new result in the `measurements` folder.
 

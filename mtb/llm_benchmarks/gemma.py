@@ -8,13 +8,18 @@ __all__ = [
     "GemmaBenchmark",
     "Gemma3_1B_it_Benchmark",
     "Gemma3_4B_it_Benchmark",
+    "Gemma3_1B_it_QAT_Benchmark",
+    "Gemma3_4B_it_QAT_Benchmark",
+    "Gemma3_12B_it_QAT_Benchmark",
 ]
 
 
 class GemmaBenchmark(BaseLLMBenchmark):
     """Benchmarks for the Gemma class of models.
 
-    See https://huggingface.co/collections/mlx-community/gemma-3-67d14a10480a436ad478b0f9
+    See
+    https://huggingface.co/collections/mlx-community/gemma-3-67d14a10480a436ad478b0f9,
+    https://huggingface.co/collections/mlx-community/gemma-3-qat-68002674cd5afc6f9022a0ae,
     for available models.
 
     """
@@ -67,3 +72,30 @@ class Gemma3_4B_it_Benchmark(GemmaBenchmark):
         "mx.int4": "mlx-community/gemma-3-4b-it-4bit",
     }
     name = "gemma-3-4b-it"
+
+
+class Gemma3_1B_it_QAT_Benchmark(GemmaBenchmark):
+    dtype_to_model_id = {
+        mx.bfloat16: "mlx-community/gemma-3-1b-it-qat-bf16",
+        mx.int8: "mlx-community/gemma-3-1b-it-qat-8bit",
+        "mx.int4": "mlx-community/gemma-3-1b-it-qat-4bit",
+    }
+    name = "gemma-3-1b-it-qat"
+
+
+class Gemma3_4B_it_QAT_Benchmark(GemmaBenchmark):
+    dtype_to_model_id = {
+        mx.bfloat16: "mlx-community/gemma-3-4b-it-qat-bf16",
+        mx.int8: "mlx-community/gemma-3-4b-it-qat-8bit",
+        "mx.int4": "mlx-community/gemma-3-4b-it-qat-4bit",
+    }
+    name = "gemma-3-4b-it-qat"
+
+
+class Gemma3_12B_it_QAT_Benchmark(GemmaBenchmark):
+    dtype_to_model_id = {
+        mx.bfloat16: "mlx-community/gemma-3-12b-it-qat-bf16",
+        mx.int8: "mlx-community/gemma-3-12b-it-qat-8bit",
+        "mx.int4": "mlx-community/gemma-3-12b-it-qat-4bit",
+    }
+    name = "gemma-3-12b-it-qat"

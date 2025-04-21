@@ -55,9 +55,18 @@ def main(
         max_num_tokens=max_num_tokens,
     )
     benchmarks = [
+        # gemma 3
         mtb_bench.Gemma3_1B_it_Benchmark(**kwargs),
         mtb_bench.Gemma3_4B_it_Benchmark(**kwargs),
+        # gemma 3 qat
+        mtb_bench.Gemma3_1B_it_QAT_Benchmark(**kwargs),
+        mtb_bench.Gemma3_4B_it_QAT_Benchmark(**kwargs),
+        mtb_bench.Gemma3_12B_it_QAT_Benchmark(**kwargs),
+        # qwen 2.5
+        mtb_bench.Qwen2p5_0p5B_it_Benchmark(**kwargs),
         mtb_bench.Qwen2p5_3B_it_Benchmark(**kwargs),
+        # qwen 2.5 coder
+        mtb_bench.Qwen2p5_Coder_0p5B_it_Benchmark(**kwargs),
         mtb_bench.Qwen2p5_Coder_3B_it_Benchmark(**kwargs),
     ]
 
