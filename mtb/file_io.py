@@ -114,6 +114,14 @@ def aggregate_measurements(
         with settings_file.open("r") as f:
             settings = json.load(f)
 
+        # backward compatibility - dtype in settings instead of measurements
+        if (
+            "dtype" not in measurements.columns
+            and "dtype" in settings["benchmark_settings"]
+        ):
+            measurements["dtype"] = settings["benchmark_settings"]["dtype"]
+            measurements.to_csv(measurements_file, index=False)
+
         # Copy some global settings to the dataframe
         for key in [
             "num_warmup_iterations",
