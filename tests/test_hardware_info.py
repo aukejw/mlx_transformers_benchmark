@@ -21,10 +21,15 @@ def test_get_mac_hardware_info_success():
     """
     with patch("subprocess.check_output", return_value=mock_output.encode("utf-8")):
         info = get_mac_hardware_info()
+        print(info)
         assert info["model_name"] == "MacBook Pro"
         assert info["chip"] == "Apple M1"
-        assert info["total_cores"] == "8 (4 performance and 4 efficiency)"
-        assert info["memory"] == "16 GB"
+        assert info["total_cores"] == "8"
+        assert info["performance_cores"] == "4"
+        assert info["efficiency_cores"] == "4"
+        assert info["gpu_cores"] == "8"
+        assert info["memory"] == "16"
+        assert info["hardware_string"] == "Apple M1_4P+4E+8GPU_16GB"
         assert info["processor"] is not None
 
 
@@ -35,6 +40,10 @@ def test_get_linux_hardware_info():
     assert "cpu_model" in info
     assert "total_cores" in info
     assert "memory" in info
+
+    assert info["hardware_string"] == (
+        f"{info['processor']}_{info['cpu_model']}_{info['total_cores']}C_{info['memory']}GB"
+    )
 
 
 @patch("mtb.hardware_info._get_linux_cpu_info", return_value=dict(processor="aarch64"))
@@ -49,7 +58,7 @@ def test_get_linux_hardware_info_mocked(
     # bit of a useless test, but cannot run on mac otherwise
     info = get_linux_hardware_info()
     assert info["processor"] == "aarch64"
-    assert info["memory"] == "1.00 GB"
+    assert info["memory"] == "1.00"
     assert info["chip"] == "Nvidia GeForce RTX 3080"
 
 

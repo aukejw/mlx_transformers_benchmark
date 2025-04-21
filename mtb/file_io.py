@@ -39,9 +39,7 @@ def create_benchmark_output_dir(
     datetime_string = configuration["datetime"]
 
     hw_info = configuration["hardware_info"]
-    chip_str = hw_info["chip"].replace(" ", "_")
-    processor_str = hw_info["processor"].replace(" ", "_")
-    hardware_string = f"{chip_str}__{processor_str}"
+    hardware_string = hw_info["hardware_string"].replace(" ", "_")
 
     output_dir = Path(output_root) / hardware_string / datetime_string
     output_dir.mkdir(parents=True, exist_ok=False)

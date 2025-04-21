@@ -1,4 +1,5 @@
 import platform
+import re
 import subprocess
 import warnings
 from typing import Dict
@@ -9,30 +10,80 @@ __all__ = [
 ]
 
 
+def _find_values_in_string(
+    pattern: str,
+    string: str,
+    default_value: str,
+) -> Dict[str, str]:
+    """Find the first hit of interest in a string. Return the default value if not found."""
+
+    match = re.search(pattern, string)
+    if match:
+        return match.group(1).strip()
+    else:
+        return default_value
+
+
 def get_mac_hardware_info() -> Dict:
     """Get info for this machine, assuming it is a Mac."""
     info = dict(
         processor=platform.processor(),
     )
-    try:
-        sp_output = subprocess.check_output(
-            ["system_profiler", "SPHardwareDataType"]
-        ).decode("utf-8")
 
-        values_of_interest = dict(
-            model_name="Model Name:",
-            chip="Chip:",
-            total_cores="Total Number of Cores:",
-            memory="Memory:",
-        )
+    sp_output = subprocess.check_output(
+        ["system_profiler", "SPHardwareDataType"]
+    ).decode("utf-8")
 
-        for line in sp_output.splitlines():
-            for key, lookup in values_of_interest.items():
-                if lookup in line:
-                    info[key] = line.split(lookup)[1].strip()
+    info["model_name"] = _find_values_in_string(
+        pattern=r"Model Name: (.+)",
+        string=sp_output,
+        default_value="Unknown",
+    )
+    info["chip"] = _find_values_in_string(
+        pattern=r"Chip: (.+)",
+        string=sp_output,
+        default_value="Unknown",
+    )
+    info["memory"] = _find_values_in_string(
+        pattern=r"Memory: (\d+) GB",
+        string=sp_output,
+        default_value="X",
+    )
+    info["total_cores"] = _find_values_in_string(
+        pattern=r"Total Number of Cores: (\d+)",
+        string=sp_output,
+        default_value="X",
+    )
+    info["performance_cores"] = _find_values_in_string(
+        pattern=r"Total Number of Cores: \d+ \((\d+) performance",
+        string=sp_output,
+        default_value="X",
+    )
+    info["efficiency_cores"] = _find_values_in_string(
+        pattern=r"Total Number of Cores: \d+ \(\d+ performance and (\d+) efficiency",
+        string=sp_output,
+        default_value="X",
+    )
 
-    except:
-        warnings.warn("Could not obtain hardware information")
+    # Get GPU cores
+    display_output = subprocess.check_output(
+        ["system_profiler", "SPDisplaysDataType"]
+    ).decode("utf-8")
+
+    info["gpu_cores"] = _find_values_in_string(
+        pattern=r"Total Number of Cores: (\d+)",
+        string=display_output,
+        default_value="X",
+    )
+
+    # Summarize machine in one string
+    info["hardware_string"] = (
+        f"{info['chip']}"
+        f"_{info['performance_cores']}P"
+        f"+{info['efficiency_cores']}E"
+        f"+{info['gpu_cores']}GPU"
+        f"_{info['memory']}GB"
+    )
 
     return info
 
@@ -51,6 +102,11 @@ def get_linux_hardware_info() -> Dict:
     info.update(_get_linux_memory_info())
     info.update(_get_nvidia_info())
 
+    info["hardware_string"] = (
+        f"{info['processor']}"
+        + (info["chip"] if info["chip"] != "no_gpu" else "")
+        + f"_{info['total_cores']}C_{info['memory']}GB"
+    )
     return info
 
 
@@ -96,7 +152,7 @@ def _get_linux_memory_info() -> Dict:
             if "MemTotal:" in line:
                 mem_kb = int(line.split()[1])
                 mem_gb = round(mem_kb / 1024 / 1024, 2)
-                info["memory"] = f"{mem_gb} GB"
+                info["memory"] = f"{mem_gb}"
                 break
     except:
         pass
