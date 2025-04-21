@@ -1,16 +1,18 @@
 {
-  "datetime": "2025-04-03__20:33:16",
-  "git_commit": "1c5d0d12df3d5d6d20222c9d90ca1e44feb20388",
+  "datetime": "2025-04-03__20:17:18",
+  "git_commit": "b23a34ac8d4c63446a48a0d1b5a9463b1560e37c",
   "benchmark_settings": {
     "num_warmup_iterations": 10,
     "num_iterations": 50,
     "num_repeats": 1,
-    "dtype": "bfloat16"
+    "dtype": "float32"
   },
   "hardware_info": {
     "model_name": "MacBook Pro",
     "chip": "Apple M4 Pro",
-    "total_cores": "14 (10 performance and 4 efficiency)",
+    "total_cores": "14",
+    "performance_cores": "10",
+    "efficiency_cores": "4",
     "memory": "24 GB",
     "processor": "arm"
   },

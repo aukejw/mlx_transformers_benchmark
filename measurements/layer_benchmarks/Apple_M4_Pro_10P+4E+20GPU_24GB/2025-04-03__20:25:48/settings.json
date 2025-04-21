@@ -10,7 +10,9 @@
   "hardware_info": {
     "model_name": "MacBook Pro",
     "chip": "Apple M4 Pro",
-    "total_cores": "14 (10 performance and 4 efficiency)",
+    "total_cores": "14",
+    "performance_cores": "10",
+    "efficiency_cores": "4",
     "memory": "24 GB",
     "processor": "arm"
   },
