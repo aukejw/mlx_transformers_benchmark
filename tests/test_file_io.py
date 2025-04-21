@@ -43,7 +43,7 @@ def test_create_benchmark_output_dir(output_root, benchmark_settings):
 
 
 @patch("platform.system", return_value="Darwin")
-@patch("mtb.file_io.get_mac_hardware_info", return_value={"chip": "M1"})
+@patch("mtb.file_io.get_hardware_info", return_value={"chip": "M1"})
 @patch("mtb.file_io.get_mlx_version", return_value=mlx_version_return_value)
 @patch("mtb.file_io.get_torch_version", return_value=torch_version_return_value)
 def test_create_benchmark_config_mac(
@@ -62,7 +62,7 @@ def test_create_benchmark_config_mac(
 
 
 @patch("platform.system", return_value="Linux")
-@patch("mtb.file_io.get_linux_hardware_info", return_value={"chip": "aarch64"})
+@patch("mtb.hardware_info.get_linux_hardware_info", return_value={"chip": "aarch64"})
 @patch("mtb.file_io.get_mlx_version", return_value=mlx_version_return_value)
 @patch("mtb.file_io.get_torch_version", return_value=torch_version_return_value)
 def test_create_benchmark_config_linux(

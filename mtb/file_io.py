@@ -9,7 +9,9 @@ from typing import Dict, Union
 import pandas as pd
 from tqdm import tqdm
 
-from mtb.hardware_info import get_linux_hardware_info, get_mac_hardware_info
+from mtb.hardware_info import (
+    get_hardware_info,
+)
 from mtb.software_info import get_mlx_version, get_torch_version
 
 __all__ = [
@@ -61,12 +63,7 @@ def create_benchmark_config(
     git_commit = _get_commit()
 
     # Select the appropriate hardware info function based on platform
-    if platform.system() == "Darwin":
-        hardware_info = get_mac_hardware_info()
-    elif platform.system() == "Linux":
-        hardware_info = get_linux_hardware_info()
-    else:
-        raise NotImplementedError(f"Unsupported platform {platform.system()}")
+    hardware_info = get_hardware_info()
 
     software_info = dict(
         platform=platform.platform(),
