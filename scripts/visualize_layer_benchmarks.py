@@ -8,9 +8,7 @@ from mtb.file_io import aggregate_measurements
 from mtb.visualization.create_index import create_index
 from mtb.visualization.plot_layer_benchmark_result import show_layer_benchmark_data
 
-DEFAULT_MEASUREMENTS_FOLDER = (
-    mtb.REPO_ROOT / "measurements" / "layer_benchmarks" / "Apple_M4_Pro__arm"
-)
+DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "layer_benchmarks"
 VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations"
 OUTPUT_FOLDER = VISUALIZATIONS_FOLDER / "layer_benchmarks"
 
@@ -29,10 +27,28 @@ def main(
 
     """
     measurements_folder = Path(measurements_folder)
-    chip_name = measurements_folder.stem
 
-    output_folder = Path(output_folder) / chip_name
-    output_folder.mkdir(parents=True, exist_ok=True)
+    for chip_folder in sorted(measurements_folder.glob("*")):
+        chip_name = chip_folder.stem
+
+        output_folder_chip = Path(output_folder) / chip_name
+        output_folder_chip.mkdir(parents=True, exist_ok=True)
+
+        visualize_chip_measurements(
+            measurements_folder=chip_folder,
+            output_folder=output_folder_chip,
+            show_all_measurements=show_all_measurements,
+        )
+    return
+
+
+def visualize_chip_measurements(
+    measurements_folder: Path,
+    output_folder: Path,
+    show_all_measurements: bool,
+):
+    """Visualize measurements for a specific chip."""
+    chip_name = measurements_folder.stem
 
     relevant_measurements = aggregate_measurements(measurements_folder)
     relevant_measurements = relevant_measurements.sort_values(
