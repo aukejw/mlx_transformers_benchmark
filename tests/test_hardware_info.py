@@ -3,13 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from mtb.hardware_info import (
-    _get_linux_cpu_info,
-    _get_linux_memory_info,
-    _get_nvidia_info,
-    get_linux_hardware_info,
-    get_mac_hardware_info,
-)
+from mtb.hardware_info import get_linux_hardware_info, get_mac_hardware_info
 
 
 def test_get_mac_hardware_info_success():
@@ -38,12 +32,16 @@ def test_get_linux_hardware_info():
     info = get_linux_hardware_info()
     assert "processor" in info
     assert "cpu_model" in info
+    assert "chip" in info
     assert "total_cores" in info
     assert "memory" in info
 
-    assert info["hardware_string"] == (
-        f"{info['processor']}_{info['cpu_model']}_{info['total_cores']}C_{info['memory']}GB"
+    expected_hardware_string = (
+        f"{info['processor']}"
+        + (f"_{info['chip']}" if info["chip"] is not None else "")
+        + f"_{info['total_cores']}C_{info['memory']}GB"
     )
+    assert info["hardware_string"] == expected_hardware_string
 
 
 @patch("mtb.hardware_info._get_linux_cpu_info", return_value=dict(processor="aarch64"))
