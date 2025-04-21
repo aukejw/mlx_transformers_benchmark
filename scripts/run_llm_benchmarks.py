@@ -18,7 +18,7 @@ def main(
     num_warmup_iterations: int = 1,
     num_iterations: int = 5,
     batch_sizes: Tuple = (1,),
-    dtypes: str = ("bfloat16", "int8", "int4"),
+    dtypes: str = ("int4", "int8", "bfloat16"),
     max_num_tokens: int = 100,
     enable_hf_progressbar: bool = False,
     cooldown_time_fraction: float = 0.05,

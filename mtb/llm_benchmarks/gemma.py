@@ -59,7 +59,7 @@ class Gemma3_1B_it_Benchmark(GemmaBenchmark):
         torch.bfloat16: "google/gemma-3-1b-it",
         mx.bfloat16: "mlx-community/gemma-3-1b-it-bf16",
         mx.int8: "mlx-community/gemma-3-1b-it-8bit",
-        "mx_int4": "mlx-community/gemma-3-1b-pt-4bit",
+        "mx.int4": "mlx-community/gemma-3-1b-it-4bit",
     }
     name = "gemma-3-1b-it"
 
