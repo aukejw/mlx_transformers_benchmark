@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Tuple, Union
+from typing import Union
 
 import fire
 
@@ -39,6 +39,11 @@ def main(
             output_folder=output_folder_chip,
             show_all_measurements=show_all_measurements,
         )
+
+    index_path = create_index(
+        visualizations_folder=VISUALIZATIONS_FOLDER,
+    )
+    print(f"See '{index_path}'")
     return
 
 
@@ -58,10 +63,7 @@ def visualize_chip_measurements(
 
     benchmark_tasks = sorted(relevant_measurements["name"].unique())
 
-    # Create a mapping from (chip, benchmark) -> results html file
-    benchmark_to_figurefile: Dict[Tuple[str, str], Path] = dict()
-
-    print("Visualizing data per benchmark.")
+    print(f"Visualizing data per benchmark for '{chip_name}'.")
     for benchmark_task in benchmark_tasks:
         relevant_measurements_benchmark = relevant_measurements[
             relevant_measurements.name == benchmark_task
@@ -86,13 +88,6 @@ def visualize_chip_measurements(
         fig_path = output_folder / f"{benchmark_shortname}.html"
         fig.write_html(fig_path)
 
-        relative_fig_path = fig_path.relative_to(VISUALIZATIONS_FOLDER)
-        benchmark_to_figurefile[(chip_name, benchmark_task)] = relative_fig_path
-
-    index_path = create_index(
-        visualizations_folder=VISUALIZATIONS_FOLDER,
-    )
-    print(f"See '{index_path}'")
     return
 
 

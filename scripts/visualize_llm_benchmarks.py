@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Tuple, Union
+from typing import Union
 
 import fire
 
@@ -8,9 +8,7 @@ from mtb.file_io import aggregate_measurements
 from mtb.visualization.create_index import create_index
 from mtb.visualization.plot_llm_benchmark_result import show_llm_benchmark_data
 
-DEFAULT_MEASUREMENTS_FOLDER = (
-    mtb.REPO_ROOT / "measurements" / "llm_benchmarks" / "Apple_M4_Pro__arm"
-)
+DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "llm_benchmarks"
 VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations"
 OUTPUT_FOLDER = VISUALIZATIONS_FOLDER / "llm_benchmarks"
 
@@ -29,10 +27,30 @@ def main(
 
     """
     measurements_folder = Path(measurements_folder)
-    chip_name = measurements_folder.stem
+    for chip_folder in sorted(measurements_folder.glob("*")):
+        chip_name = chip_folder.stem
+        output_folder = Path(output_folder) / chip_name
+        output_folder.mkdir(parents=True, exist_ok=True)
 
-    output_folder = Path(output_folder) / chip_name
-    output_folder.mkdir(parents=True, exist_ok=True)
+        visualize_chip_measurements(
+            measurements_folder=chip_folder,
+            output_folder=output_folder,
+            show_all_measurements=show_all_measurements,
+        )
+
+    index_path = create_index(
+        visualizations_folder=VISUALIZATIONS_FOLDER,
+    )
+    print(f"See '{index_path}'")
+    return
+
+
+def visualize_chip_measurements(
+    measurements_folder: Path,
+    output_folder: Path,
+    show_all_measurements: bool,
+):
+    """Visualize measurements for a specific chip."""
 
     relevant_measurements = aggregate_measurements(
         measurements_folder,
@@ -44,17 +62,18 @@ def main(
         relevant_measurements["prompt_time_sec"]
         + relevant_measurements["generation_time_sec"]
     )
-
     relevant_measurements = relevant_measurements.sort_values(
-        by=["framework_backend", "name", "batch_size", "num_prompt_tokens"],
+        by=["framework_backend", "name", "batch_size", "dtype", "num_prompt_tokens"],
         ignore_index=True,
     )
 
+    # Filter out measurements with no prompt time
     benchmark_tasks = sorted(relevant_measurements["name"].unique())
-    dtypes = sorted(relevant_measurements["dtype"].unique())
-
-    # Create a mapping from (chip, benchmark) -> results html file
-    benchmark_to_figurefile: Dict[Tuple[str, str], Path] = dict()
+    dtypes = [
+        dtype
+        for dtype in ("float32", "float16", "bfloat16", "int8", "int4")
+        if dtype in set(relevant_measurements["dtype"].unique())
+    ]
 
     print("Visualizing data per benchmark.")
     for benchmark_task in benchmark_tasks:
@@ -82,13 +101,6 @@ def main(
         fig_path = output_folder / f"{benchmark_shortname}.html"
         fig.write_html(fig_path)
 
-        relative_fig_path = fig_path.relative_to(VISUALIZATIONS_FOLDER)
-        benchmark_to_figurefile[(chip_name, benchmark_task)] = relative_fig_path
-
-    index_path = create_index(
-        visualizations_folder=VISUALIZATIONS_FOLDER,
-    )
-    print(f"See '{index_path}'")
     return
 
 
