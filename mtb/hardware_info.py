@@ -34,6 +34,11 @@ def get_mac_hardware_info() -> Dict:
         ["system_profiler", "SPHardwareDataType"]
     ).decode("utf-8")
 
+    display_output = subprocess.check_output(
+        ["system_profiler", "SPDisplaysDataType"]
+    ).decode("utf-8")
+
+    # Get chip, CPU info
     info["model_name"] = _find_values_in_string(
         pattern=r"Model Name: (.+)",
         string=sp_output,
@@ -66,10 +71,6 @@ def get_mac_hardware_info() -> Dict:
     )
 
     # Get GPU cores
-    display_output = subprocess.check_output(
-        ["system_profiler", "SPDisplaysDataType"]
-    ).decode("utf-8")
-
     info["gpu_cores"] = _find_values_in_string(
         pattern=r"Total Number of Cores: (\d+)",
         string=display_output,
@@ -151,8 +152,8 @@ def _get_linux_memory_info() -> Dict:
             # Get the total RAM in GB
             if "MemTotal:" in line:
                 mem_kb = int(line.split()[1])
-                mem_gb = round(mem_kb / 1024 / 1024, 2)
-                info["memory"] = f"{mem_gb}"
+                mem_gb = round(mem_kb / 1024**2, 2)
+                info["memory"] = f"{mem_gb:.2f}"
                 break
     except:
         pass

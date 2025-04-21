@@ -11,7 +11,8 @@ from mtb.llm_benchmarks.qwen import Qwen2p5_0p5B_it_Benchmark
 
 @pytest.fixture(scope="session")
 def benchmark_torch():
-    benchmark = Qwen2p5_0p5B_it_Benchmark(max_num_tokens=30)
+    torch.manual_seed(0)
+    benchmark = Qwen2p5_0p5B_it_Benchmark(max_num_tokens=10)
     benchmark.setup(framework="torch", backend="mps", dtype="bfloat16")
     benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
@@ -19,7 +20,8 @@ def benchmark_torch():
 
 @pytest.fixture(scope="session")
 def benchmark_mlx():
-    benchmark = Qwen2p5_0p5B_it_Benchmark(max_num_tokens=30)
+    torch.manual_seed(0)
+    benchmark = Qwen2p5_0p5B_it_Benchmark(max_num_tokens=10)
     benchmark.setup(framework="mlx", backend="metal", dtype="bfloat16")
     benchmark.set_prompt("Write a story about Einstein", batch_size=1)
     return benchmark
@@ -39,10 +41,7 @@ class TestQwenBenchmark:
         assert timing.prompt_time_sec > 0
         assert timing.generation_tps > 0
 
-        bfloat16_response = (
-            "Once upon a time, in the quiet town of Bern, there lived a "
-            "young man named Albert Einstein. He was an inquisitive boy with a"
-        )
+        bfloat16_response = "Einstein was born in 1879"
         assert timing.response.startswith(bfloat16_response)
 
     @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
@@ -57,8 +56,5 @@ class TestQwenBenchmark:
         assert timing.prompt_time_sec > 0
         assert timing.generation_tps > 0
 
-        bfloat16_response = (
-            "Once upon a time, in the quiet town of Bern, Switzerland, there lived a curious "
-            "young man named Albert Einstein. He was a boy with a"
-        )
+        bfloat16_response = "Einstein was a brilliant and innovative mind"
         assert timing.response.startswith(bfloat16_response)

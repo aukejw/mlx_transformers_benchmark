@@ -47,7 +47,7 @@ def test_get_linux_hardware_info():
 
 
 @patch("mtb.hardware_info._get_linux_cpu_info", return_value=dict(processor="aarch64"))
-@patch("mtb.hardware_info._get_linux_memory_info", return_value=dict(memory="1.00 GB"))
+@patch("mtb.hardware_info._get_linux_memory_info", return_value=dict(memory="1.00"))
 @patch(
     "mtb.hardware_info._get_nvidia_info",
     return_value=dict(chip="Nvidia GeForce RTX 3080"),
@@ -63,10 +63,15 @@ def test_get_linux_hardware_info_mocked(
 
 
 @patch("platform.processor", return_value="arm")
-@patch("subprocess.check_output", side_effect=Exception("Command failed"))
+@patch("subprocess.check_output", return_value=b"illegal_value")
 def test_get_mac_hardware_info_failure(mock_processor, mock_check_output):
     info = get_mac_hardware_info()
-    assert info == dict(processor="arm")
+    assert info["processor"] == "arm"
+    assert info["chip"] == "Unknown"
+    assert info["total_cores"] == "X"
+    assert info["performance_cores"] == "X"
+    assert info["efficiency_cores"] == "X"
+    assert info["memory"] == "X"
 
 
 @patch("platform.processor", return_value="x86_64")
@@ -103,7 +108,7 @@ def test_get_linux_memory_info_success(mock_open, tmp_path):
     mock_open.return_value.__enter__.return_value = fake_proc_info.open("r")
 
     info = _get_linux_memory_info()
-    assert info["memory"] == "31.21 GB"
+    assert info["memory"] == "31.21"
 
 
 @patch("builtins.open")
