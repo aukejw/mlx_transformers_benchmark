@@ -10,7 +10,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from mtb.dtypes import get_mlx_dtype, get_torch_dtype
-from mtb.hf_utils import get_hf_home, verbose_download_model
+from mtb.hf_utils import verbose_download_model
 from mtb.measurement import LlmBenchmarkMeasurement
 
 
@@ -105,17 +105,14 @@ class BaseLLMBenchmark:
 
     def setup_torch(self):
         model_id = self.dtype_to_model_id[self._dtype]
-        verbose_download_model(model_id)
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_id,
             device_map=self._device,
-            cache_dir=get_hf_home(),
         ).eval()
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_id,
-            cache_dir=get_hf_home(),
         )
 
     def setup_mlx(self):
