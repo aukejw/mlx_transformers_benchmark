@@ -13,7 +13,15 @@ def show_measurements(
     plot_function: Callable,
     is_llm_benchmark: bool = False,
 ):
-    """Plot measurements in the given folder."""
+    """Plot measurements in the given folder.
+
+    Creates benchmark plot html files for each individual benchmark.
+
+    """
+    measurements_folder = Path(measurements_folder)
+    output_folder = Path(output_folder)
+    output_folder.mkdir(parents=True, exist_ok=True)
+
     relevant_measurements = aggregate_measurements(
         measurements_folder,
         is_llm_benchmark=is_llm_benchmark,
@@ -41,7 +49,7 @@ def show_measurements(
         ]
         print(
             f"  Found {len(relevant_measurements_benchmark):>4} "
-            f" datapoints for {benchmark_task}"
+            f" datapoints for '{benchmark_task}'"
         )
 
         fig = plot_function(

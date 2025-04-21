@@ -6,9 +6,11 @@ import torch
 from mtb import FLAG_ON_MAC
 from mtb.memory import (
     bytes_to_gb,
+    get_available_ram_gb,
     get_mlx_memory_gb,
     get_process_memory_gb,
     get_torch_memory_gb,
+    get_used_ram_gb,
 )
 
 
@@ -21,6 +23,13 @@ def test_get_process_memory():
     # we should have allocated process memory, but allow for overhead, deduplication, etc.
     difference_gb = get_process_memory_gb() - initial_memory
     assert difference_gb > 0.1 * array_gb
+
+
+def test_get_ram():
+    memory = get_available_ram_gb()
+    assert memory > 0
+    memory = get_used_ram_gb()
+    assert memory > 0
 
 
 @pytest.mark.skipif(not torch.mps.is_available(), reason="MPS is not available")

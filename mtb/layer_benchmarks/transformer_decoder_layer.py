@@ -84,9 +84,10 @@ class TransformerDecoderLayerBenchmark(BaseLayerBenchmark):
                 device=self._device,
                 dtype=self._dtype,
             )
-
         elif self._framework == "mlx":
             self.memory = mx.random.normal(input_shape, dtype=self._dtype)
+        else:
+            raise NotImplementedError("Framework '{self._framework}' not supported")
 
         attention_mask_kwargs = dict(
             framework=self._framework,

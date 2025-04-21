@@ -63,6 +63,8 @@ class MhsaBenchmark(BaseLayerBenchmark):
                 dtype=self._dtype,
                 compile=self._compile,
             )
+        else:
+            raise NotImplementedError("Framework '{self._framework}' not supported")
 
     def setup_torch(self):
         self.torch_function = torch.nn.MultiheadAttention(

@@ -1,10 +1,34 @@
 import pytest
 
-from mtb.measurement import Measurements
+from mtb.measurement import LlmBenchmarkMeasurement, Measurements
+
+
+def test_llm_benchmark_measurement():
+    meausrement = LlmBenchmarkMeasurement(
+        response="Hello, world!",
+        prompt_time_sec=0.1,
+        prompt_tps=10.0,
+        generation_time_sec=0.2,
+        generation_tps=20.0,
+        num_prompt_tokens=5,
+        num_generated_tokens=10,
+    )
+    assert meausrement.response == "Hello, world!"
+    assert meausrement.to_dict(include_reponse=True) == {
+        "response": "Hello, world!",
+        "prompt_time_sec": 0.1,
+        "prompt_tps": 10.0,
+        "generation_time_sec": 0.2,
+        "generation_tps": 20.0,
+        "num_prompt_tokens": 5,
+        "num_generated_tokens": 10,
+    }
 
 
 def test_measurements():
     measurements = Measurements()
+    assert measurements.keys == []
+
     measurements.add(
         {
             "runtime": 0.1,

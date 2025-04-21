@@ -10,7 +10,6 @@ class SoftmaxBenchmark(BaseLayerBenchmark):
         feature_dim: int,
     ):
         name = f"Softmax(dim={feature_dim})"
-
         super().__init__(name=name, feature_dim=feature_dim)
 
     def setup_torch(self):

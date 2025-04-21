@@ -9,9 +9,7 @@ from typing import Dict, Union
 import pandas as pd
 from tqdm import tqdm
 
-from mtb.hardware_info import (
-    get_hardware_info,
-)
+from mtb.hardware_info import get_hardware_info
 from mtb.software_info import get_mlx_version, get_torch_version
 
 __all__ = [
@@ -111,14 +109,6 @@ def aggregate_measurements(
         settings_file = measurements_file.parent / "settings.json"
         with settings_file.open("r") as f:
             settings = json.load(f)
-
-        # backward compatibility - dtype in settings instead of measurements
-        if (
-            "dtype" not in measurements.columns
-            and "dtype" in settings["benchmark_settings"]
-        ):
-            measurements["dtype"] = settings["benchmark_settings"]["dtype"]
-            measurements.to_csv(measurements_file, index=False)
 
         # Copy some global settings to the dataframe
         for key in [
