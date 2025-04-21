@@ -118,7 +118,11 @@
 
             // Check if combination exists
             if (page) {
+                viewer.style.display = "block";
+                noDataMessage.style.display = "none";
+                noDataMessage.textContent = "";
                 viewer.src = page;
+
             } else {
                 viewer.style.display = "none";
                 noDataMessage.style.display = "block";
