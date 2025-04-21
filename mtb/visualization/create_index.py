@@ -32,14 +32,17 @@ def create_index(
 
     # Create a mapping from (benchmark_type chip, benchmark) -> html file
     benchmark_to_figurefile = dict()
-    for benchmark_file in natsorted(visualizations_folder.glob("./*/*/*.html")):
-        benchmark_file = benchmark_file.relative_to(visualizations_folder)
-        benchmark_type = benchmark_file.parts[0]
-        chip_name = benchmark_file.parts[1]
-        benchmark_name = benchmark_file.stem
+    for benchmark_type in ["llm_benchmarks", "layer_benchmarks"]:
+        for benchmark_file in natsorted(
+            visualizations_folder.glob(f"./{benchmark_type}/*/*.html")
+        ):
+            benchmark_file = benchmark_file.relative_to(visualizations_folder)
+            benchmark_type = benchmark_file.parts[0]
+            chip_name = benchmark_file.parts[1]
+            benchmark_name = benchmark_file.stem
 
-        key = (benchmark_type, chip_name, benchmark_name)
-        benchmark_to_figurefile[key] = benchmark_file.as_posix()
+            key = (benchmark_type, chip_name, benchmark_name)
+            benchmark_to_figurefile[key] = benchmark_file.as_posix()
 
     # Create the index content
     index_content = template.render(

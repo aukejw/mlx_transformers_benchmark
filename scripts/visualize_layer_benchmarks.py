@@ -4,9 +4,9 @@ from typing import Union
 import fire
 
 import mtb as mtb
-from mtb.file_io import aggregate_measurements
 from mtb.visualization.create_index import create_index
 from mtb.visualization.plot_layer_benchmark_result import show_layer_benchmark_data
+from mtb.visualization.show_measurements import show_measurements
 
 DEFAULT_MEASUREMENTS_FOLDER = mtb.REPO_ROOT / "measurements" / "layer_benchmarks"
 VISUALIZATIONS_FOLDER = mtb.REPO_ROOT / "visualizations"
@@ -34,60 +34,18 @@ def main(
         output_folder_chip = Path(output_folder) / chip_name
         output_folder_chip.mkdir(parents=True, exist_ok=True)
 
-        visualize_chip_measurements(
+        show_measurements(
             measurements_folder=chip_folder,
             output_folder=output_folder_chip,
             show_all_measurements=show_all_measurements,
+            plot_function=show_layer_benchmark_data,
+            is_llm_benchmark=False,
         )
 
     index_path = create_index(
         visualizations_folder=VISUALIZATIONS_FOLDER,
     )
     print(f"See '{index_path}'")
-    return
-
-
-def visualize_chip_measurements(
-    measurements_folder: Path,
-    output_folder: Path,
-    show_all_measurements: bool,
-):
-    """Visualize measurements for a specific chip."""
-    chip_name = measurements_folder.stem
-
-    relevant_measurements = aggregate_measurements(measurements_folder)
-    relevant_measurements = relevant_measurements.sort_values(
-        by=["framework_backend", "name", "batch_size", "sequence_length"],
-        ignore_index=True,
-    )
-
-    benchmark_tasks = sorted(relevant_measurements["name"].unique())
-
-    print(f"Visualizing data per benchmark for '{chip_name}'.")
-    for benchmark_task in benchmark_tasks:
-        relevant_measurements_benchmark = relevant_measurements[
-            relevant_measurements.name == benchmark_task
-        ]
-        print(
-            f"  Found {len(relevant_measurements_benchmark):>4} "
-            f" datapoints for {benchmark_task}"
-        )
-
-        fig = show_layer_benchmark_data(
-            title=benchmark_task,
-            measurements=relevant_measurements_benchmark,
-            do_average_measurements=(not show_all_measurements),
-        )
-
-        benchmark_shortname = (
-            benchmark_task.lower()
-            .replace("(", "__")
-            .replace(")", "")
-            .replace(", ", "_")
-        )
-        fig_path = output_folder / f"{benchmark_shortname}.html"
-        fig.write_html(fig_path)
-
     return
 
 

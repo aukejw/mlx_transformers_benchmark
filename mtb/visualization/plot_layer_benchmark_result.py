@@ -4,6 +4,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.subplots as sp
+from natsort import natsorted
+
+from mtb.visualization.symbol_and_color import add_category_to_colormap
 
 
 def show_layer_benchmark_data(
@@ -26,6 +29,9 @@ def show_layer_benchmark_data(
         The created figure.
 
     """
+    frameworks = natsorted(measurements["framework_backend"].unique())
+    for framework in frameworks:
+        add_category_to_colormap(framework)
 
     fig = sp.make_subplots(
         rows=len(dtypes),

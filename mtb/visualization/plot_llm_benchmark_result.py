@@ -6,13 +6,15 @@ import plotly.graph_objects as go
 import plotly.subplots as sp
 from natsort import natsorted
 
-from mtb.visualization.symbol_and_color import get_symbol_and_color_map
+from mtb.visualization.symbol_and_color import (
+    add_category_to_colormap,
+    get_symbol_and_color_map,
+)
 
 
 def show_llm_benchmark_data(
     title: str,
     measurements: pd.DataFrame,
-    frameworks: List[str] = None,
     dtypes: List[str] = ("bfloat16",),
     batch_sizes: List[int] = (1,),
     do_average_measurements: bool = True,
@@ -30,8 +32,9 @@ def show_llm_benchmark_data(
         The created figure.
 
     """
-    if frameworks is None:
-        frameworks = natsorted(measurements["framework_backend"].unique().tolist())
+    frameworks = natsorted(measurements["framework_backend"].unique())
+    for framework in frameworks:
+        add_category_to_colormap(framework)
 
     metrics_of_interest = [
         "prompt_tps",

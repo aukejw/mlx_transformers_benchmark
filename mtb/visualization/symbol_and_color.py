@@ -6,7 +6,7 @@ global_color_map = dict()
 global_symbol_map = dict()
 
 
-def add_category(
+def add_category_to_colormap(
     category: str,
 ):
     """Add a category to the global color and symbol map."""

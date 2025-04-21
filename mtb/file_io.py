@@ -148,6 +148,13 @@ def aggregate_measurements(
         axis=1,
     ).astype("category")
 
+    # add columns of interest combining existing ones
+    if is_llm_benchmark and "total_time_sec" not in relevant_measurements.columns:
+        relevant_measurements["total_time_sec"] = (
+            relevant_measurements["prompt_time_sec"]
+            + relevant_measurements["generation_time_sec"]
+        )
+
     return relevant_measurements
 
 
