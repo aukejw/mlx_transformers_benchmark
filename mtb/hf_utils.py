@@ -2,13 +2,13 @@ import os
 from pathlib import Path
 from typing import Union
 
-from transformers.utils.logging import disable_progress_bar
+from transformers.utils.logging import disable_progress_bar, enable_progress_bar
 
-hf_home = os.environ.get("HF_HOME", "./hf_cache")
+hf_home = os.environ.get("HF_HOME", "~/.cache/huggingface")
 
 
 def set_hf_home(
-    path: Union[str, Path] = "./hf_cache",
+    path: Union[str, Path] = "~/.cache/huggingface",
     enable_hf_progressbar: bool = False,
 ):
     """Set the HF_HOME environment variable to a specific path.
@@ -30,3 +30,32 @@ def get_hf_home() -> str:
     """Get the HF_HOME environment variable."""
     global hf_home
     return hf_home
+
+
+def verbose_download_model(
+    model_id: str,
+    **kwargs,
+):
+    """Download a model from Hugging Face with verbose output."""
+    from huggingface_hub import snapshot_download
+
+    # Check if the model is already downloaded
+    try:
+        snapshot_folder = snapshot_download(
+            model_id,
+            local_files_only=True,
+            **kwargs,
+        )
+    except Exception as e:
+        print(f"\nDownloading model '{model_id}'...\n")
+
+        enable_progress_bar()
+        snapshot_folder = snapshot_download(
+            model_id,
+            local_files_only=False,
+            **kwargs,
+        )
+        disable_progress_bar()
+        print(f"\n\nDownloaded model '{model_id}'.")
+
+    return snapshot_folder
