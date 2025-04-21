@@ -175,11 +175,11 @@ def show_llm_benchmark_data(
         hovertemplate=(
             "<b>Batch size:</b>              %{customdata[0]:>9.0f}<br>"
             "<b>Num prompt tokens:</b>       %{x:>9.0f}<br>"
-            "<b>Prompt speed (tokens/s):</b> %{customdata[0]:>9.4f}<br>"
-            "<b>Gen. speed (tokens/s):</b>   %{customdata[1]:>9.4f}<br>"
-            "<b>Prompt time (s):</b>         %{customdata[2]:>9.4f}<br>"
-            "<b>Gen. time (s):</b>           %{customdata[3]:>9.4f}<br>"
-            "<b>Total time (s):</b>          %{customdata[4]:>9.4f}<br>"
+            "<b>Prompt speed (tokens/s):</b> %{customdata[1]:>9.4f}<br>"
+            "<b>Gen. speed (tokens/s):</b>   %{customdata[2]:>9.4f}<br>"
+            "<b>Prompt time (s):</b>         %{customdata[3]:>9.4f}<br>"
+            "<b>Gen. time (s):</b>           %{customdata[4]:>9.4f}<br>"
+            "<b>Total time (s):</b>          %{customdata[5]:>9.4f}<br>"
         ),
         mode="markers",
     )
