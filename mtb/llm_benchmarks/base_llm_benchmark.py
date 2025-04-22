@@ -36,6 +36,8 @@ class BaseLLMBenchmark:
 
     """
 
+    # number of parameters
+    num_params: int = None
     # mapping from dtype to model_id
     dtype_to_model_id: Dict[Any, str] = {}
     # benchmark identifier

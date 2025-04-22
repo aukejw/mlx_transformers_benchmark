@@ -65,3 +65,20 @@ def get_mlx_memory_gb() -> float:
     """
     mem = mx.get_active_memory()
     return bytes_to_gb(mem)
+
+
+def estimate_model_size(
+    num_params: int,
+    dtype: str,
+) -> float:
+    """Estimate the model size in GB."""
+    dtype_to_bits = {
+        "float32": 32,
+        "bfloat16": 16,
+        "float16": 16,
+        "int8": 8,
+        "int6": 6,  # not sure if true in practice
+        "int4": 4,
+        "int3": 3,  # not sure if true in practice
+    }
+    return bytes_to_gb(num_params * dtype_to_bits[dtype] / 8)

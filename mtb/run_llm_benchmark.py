@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement, Measurements
+from mtb.memory import estimate_model_size, get_available_ram_gb
 
 
 def run_benchmark_for_framework(
@@ -150,8 +151,22 @@ def run_benchmark(
         cooldown_time_fraction=cooldown_time_fraction,
     )
 
+    available_memory = get_available_ram_gb()
+
     settings = []
     for dtype in dtypes:
+        memory_needed_gb = estimate_model_size(
+            num_params=benchmark.num_params,
+            dtype=dtype,
+        )
+        if memory_needed_gb > available_memory:
+            print(
+                f"Skipping benchmark '{benchmark.name}' for dtype {dtype}: "
+                f"it needs {memory_needed_gb:.3f} GB memory just to load the model, "
+                f"but only {available_memory:.3f} GB is available."
+            )
+            continue
+
         if run_torch_cpu:
             settings.append(dict(framework="torch", backend="cpu", dtype=dtype))
         if run_torch_mps:

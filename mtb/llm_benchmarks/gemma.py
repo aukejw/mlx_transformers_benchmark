@@ -62,6 +62,7 @@ class Gemma3_1B_it_Benchmark(GemmaBenchmark):
         "mx.int4": "mlx-community/gemma-3-1b-it-4bit",
     }
     name = "gemma-3-1b-it"
+    num_params = 1e9
 
 
 class Gemma3_4B_it_Benchmark(GemmaBenchmark):
@@ -72,6 +73,7 @@ class Gemma3_4B_it_Benchmark(GemmaBenchmark):
         "mx.int4": "mlx-community/gemma-3-4b-it-4bit",
     }
     name = "gemma-3-4b-it"
+    num_params = 4e9
 
 
 class Gemma3_1B_it_QAT_Benchmark(GemmaBenchmark):
@@ -81,6 +83,7 @@ class Gemma3_1B_it_QAT_Benchmark(GemmaBenchmark):
         "mx.int4": "mlx-community/gemma-3-1b-it-qat-4bit",
     }
     name = "gemma-3-1b-it-qat"
+    num_params = 1e9
 
 
 class Gemma3_4B_it_QAT_Benchmark(GemmaBenchmark):
@@ -90,6 +93,7 @@ class Gemma3_4B_it_QAT_Benchmark(GemmaBenchmark):
         "mx.int4": "mlx-community/gemma-3-4b-it-qat-4bit",
     }
     name = "gemma-3-4b-it-qat"
+    num_params = 4e9
 
 
 class Gemma3_12B_it_QAT_Benchmark(GemmaBenchmark):
@@ -99,3 +103,4 @@ class Gemma3_12B_it_QAT_Benchmark(GemmaBenchmark):
         "mx.int4": "mlx-community/gemma-3-12b-it-qat-4bit",
     }
     name = "gemma-3-12b-it-qat"
+    num_params = 12e9

@@ -55,6 +55,7 @@ class QwenBenchmark(BaseLLMBenchmark):
 
 class Qwen2p5_0p5B_it_Benchmark(QwenBenchmark):
     name = "qwen-2.5-0.5b-it"
+    num_params = 5e8
 
     dtype_to_model_id = {
         torch.bfloat16: "Qwen/Qwen2.5-0.5B-Instruct",
@@ -66,6 +67,7 @@ class Qwen2p5_0p5B_it_Benchmark(QwenBenchmark):
 
 class Qwen2p5_3B_it_Benchmark(QwenBenchmark):
     name = "qwen-2.5-3b-it"
+    num_params = 3e9
 
     dtype_to_model_id = {
         torch.bfloat16: "Qwen/Qwen2.5-3B-Instruct",
@@ -77,6 +79,7 @@ class Qwen2p5_3B_it_Benchmark(QwenBenchmark):
 
 class Qwen2p5_Coder_0p5B_it_Benchmark(QwenBenchmark):
     name = "qwen-2.5-coder-0.5b-it"
+    num_params = 5e8
 
     dtype_to_model_id = {
         torch.bfloat16: "Qwen/Qwen2.5-Coder-0.5B-Instruct",
@@ -88,6 +91,7 @@ class Qwen2p5_Coder_0p5B_it_Benchmark(QwenBenchmark):
 
 class Qwen2p5_Coder_3B_it_Benchmark(QwenBenchmark):
     name = "qwen-2.5-coder-3b-it"
+    num_params = 3e9
 
     dtype_to_model_id = {
         torch.bfloat16: "Qwen/Qwen2.5-Coder-3B-Instruct",
