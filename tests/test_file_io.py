@@ -89,7 +89,7 @@ def test_get_commit(mock_git_commit):
 @patch("mtb.file_io.subprocess.check_output", return_value="illegal_value")
 def test_get_illegal_commit(mock_git_commit):
     commit = _get_commit()
-    assert commit is None
+    assert commit == "commit_unknown"
 
 
 def test_aggregate_measurements(tmp_path):

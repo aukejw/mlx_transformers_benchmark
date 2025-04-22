@@ -58,11 +58,6 @@ def create_benchmark_config(
 
     datetime_string = datetime.datetime.now().strftime("%Y-%m-%d__%H:%M:%S")
 
-    git_commit = _get_commit()
-
-    # Select the appropriate hardware info function based on platform
-    hardware_info = get_hardware_info()
-
     software_info = dict(
         platform=platform.platform(),
         python_version=platform.python_version(),
@@ -72,16 +67,18 @@ def create_benchmark_config(
 
     configuration = dict(
         datetime=datetime_string,
-        git_commit=git_commit,
+        contributor=_get_git_user_info(),
+        git_commit=_get_commit(),
         benchmark_settings=benchmark_settings,
-        hardware_info=hardware_info,
+        hardware_info=get_hardware_info(),
         software_info=software_info,
     )
 
     return configuration
 
 
-def _get_commit():
+def _get_commit() -> str:
+    """Get the current git commit hash."""
     try:
         git_commit = (
             subprocess.check_output(["git", "rev-parse", "HEAD"])
@@ -89,8 +86,22 @@ def _get_commit():
             .strip()
         )
     except:
-        git_commit = None
+        git_commit = "commit_unknown"
     return git_commit
+
+
+def _get_git_user_info() -> Dict[str, str]:
+    """Get the current user name and email from git config."""
+    name = (
+        subprocess.check_output(["git", "config", "user.name"]).decode("ascii").strip()
+    )
+    email = (
+        subprocess.check_output(["git", "config", "user.email"]).decode("ascii").strip()
+    )
+    return dict(
+        name=name,
+        email=email,
+    )
 
 
 def aggregate_measurements(
