@@ -137,6 +137,7 @@ def show_layer_benchmark_data(
             tracegroupgap=5,
         ),
         font=dict(size=10),
+        template="plotly_dark",
     )
 
     # Reduce subplot title font size

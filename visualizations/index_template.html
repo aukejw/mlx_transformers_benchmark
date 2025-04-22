@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/styles.css">
+
     <title>Benchmark results</title>
     <script>
         // Track the options
@@ -138,32 +140,6 @@
             initializeData();
         };
     </script>
-    <style>
-        .dropdown-container {
-            margin: 10px 0;
-        }
-
-        select {
-            padding: 5px;
-            margin-right: 10px;
-        }
-
-        label {
-            margin-right: 5px;
-            font-weight: bold;
-        }
-
-        #noDataMessage {
-            padding: 20px;
-            background-color: #f8f8f8;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 16px;
-            margin-top: 20px;
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
@@ -174,17 +150,25 @@
         for more information.
     </p>
     <div class="dropdown-container">
-        <label for="typeSelector">Benchmark type:</label>
-        <select id="typeSelector" onchange="updateDropdowns()"></select>
-
-        <label for="chipSelector">Chip:</label>
-        <select id="chipSelector" onchange="loadPage()"></select>
-
-        <label for="benchmarkSelector">Benchmark:</label>
-        <select id="benchmarkSelector" onchange="loadPage()"></select>
+        <div>
+            <label for="typeSelector">Benchmark type:</label>
+            <select id="typeSelector" onchange="updateDropdowns()"></select>
+        </div>
+        <div>
+            <label for="chipSelector">Chip:</label>
+            <select id="chipSelector" onchange="loadPage()"></select>
+        </div>
+        <div>
+            <label for="benchmarkSelector">Benchmark:</label>
+            <select id="benchmarkSelector" onchange="loadPage()"></select>
+        </div>
     </div>
 
-    <iframe id="viewer" width="100%" height="880px"></iframe>
+    <div class="separator"></div>
+
+    <div class="iframe-container">
+        <iframe id="viewer"></iframe>
+    </div>
     <div id="noDataMessage"></div>
 </body>
 
