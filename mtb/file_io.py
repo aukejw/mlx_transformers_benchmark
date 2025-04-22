@@ -67,7 +67,7 @@ def create_benchmark_config(
 
     configuration = dict(
         datetime=datetime_string,
-        contributor=_get_git_user_info(),
+        contributor="",
         git_commit=_get_commit(),
         benchmark_settings=benchmark_settings,
         hardware_info=get_hardware_info(),
@@ -88,20 +88,6 @@ def _get_commit() -> str:
     except:
         git_commit = "commit_unknown"
     return git_commit
-
-
-def _get_git_user_info() -> Dict[str, str]:
-    """Get the current user name and email from git config."""
-    name = (
-        subprocess.check_output(["git", "config", "user.name"]).decode("ascii").strip()
-    )
-    email = (
-        subprocess.check_output(["git", "config", "user.email"]).decode("ascii").strip()
-    )
-    return dict(
-        name=name,
-        email=email,
-    )
 
 
 def aggregate_measurements(

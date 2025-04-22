@@ -14,6 +14,7 @@ from mtb.run_llm_benchmark import run_benchmark, run_benchmark_for_framework
 
 class MockBenchmark(BaseLLMBenchmark):
     name = "mock"
+    num_params = int(1e6)
 
     dtype_to_model_id = {
         torch.float16: "mock_model_id",
