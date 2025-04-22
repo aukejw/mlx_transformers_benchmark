@@ -55,21 +55,21 @@ Before you start, you will need:
    ``` 
    make run-llm-benchmarks
    ```
+   This will take a longer time however, so make sure you aren't busy!
 
 4. To create a HTML report of all measurements and open the index page:
    ```
    make show-llm-benchmarks
    ```
-
    This should open a page similar to 
    [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
 
 ### Contributing
 
-If you have an Apple device, additional measurements are always welcome! The easiest way to contribute is to [fork the repo]( https://github.com/aukejw/mlx_transformers_benchmark/fork), and run benchmarks for common LLMs and operators. 
+If you have an Apple device, additional measurements are always welcome! The easiest way to contribute is to [fork the repo]( https://github.com/aukejw/mlx_transformers_benchmark/fork), and run benchmarks for common LLMs and/or operators. 
 
-See [CONTRIBUTING.md](https://github.com/aukejw/mlx_transformers_benchmark/blob/main/README.md) for the instructions.
+See [CONTRIBUTING.md](https://github.com/aukejw/mlx_transformers_benchmark/blob/main/contributing.md) for the instructions.
 
 
 ### On reproducibility
@@ -79,8 +79,9 @@ and using Metal from a Docker container is not supported yet. This makes exact r
 challenging, but the numbers should give a decent idea nevertheless. 
 
 Although the default parameters do not result in thermal throttling for a Macbook M4 Pro, older
-machines may have trouble with the heavier models and operators, or may have too little RAM and 
-fall back on swap space. If you see huge memory pressure or outlier measurements, do take a closer look!
+machines may have trouble with the heavier models and operators. We do try to skip large models,
+but you may still have too little RAM and fall back on swap space. If you see huge memory pressure 
+or outlier measurements, do take a closer look!
 
 > [!NOTE] 
 > For a large number of iterations, the GPU will certainly heat up. If needed, you can 
@@ -106,4 +107,4 @@ You may also be interested in:
   and `torch` functions in a single benchmark class makes it easy to see the differences between the 
   two, and we adopt the same strategy here.
 
-- [The work of Feng et al](https://arxiv.org/pdf/2501.14925) comparing training on Nvidia cards vs Apple Silicon. 
+- [The work of Feng et al.](https://arxiv.org/pdf/2501.14925) comparing training on Nvidia cards vs Apple Silicon. 
