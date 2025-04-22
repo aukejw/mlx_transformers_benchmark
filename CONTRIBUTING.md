@@ -33,7 +33,7 @@ make test
 
 2. Check that the new measurements look sensible by visualizing results:
    ```
-   make show-llm-measurements
+   make show-llm-benchmarks
    ```
    This will open a browser window and show individual measurements. Do check for outliers!
 
@@ -87,7 +87,7 @@ For more examples, see
 [the gemma benchmark](https://github.com/aukejw/mlx_transformers_benchmark/blob/main/mtb/llm_benchmarks/gemma.py).
 
 #### Layer benchmarks
+
 Layer benchmarks will run operators in torch and mlx, and therefore require you to define 
 `setup_torch`, `setup_mlx` and `run_torch`, `run_mlx` functions. For an example, see 
 [the mhsa benchmark](https://github.com/aukejw/mlx_transformers_benchmark/blob/main/mtb/layer_benchmarks/mhsa.py).
-
