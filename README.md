@@ -67,32 +67,9 @@ Before you start, you will need:
 
 ### Contributing
 
-If you have an Apple device, additional measurements are always welcome! 
+If you have an Apple device, additional measurements are always welcome! The easiest way to contribute is to [fork the repo]( https://github.com/aukejw/mlx_transformers_benchmark/fork), and run benchmarks for common LLMs and operators. 
 
-The easiest way to contribute is to [fork the repo]( https://github.com/aukejw/mlx_transformers_benchmark/fork), and run benchmarks for common LLMs:
-```
-git clone https://github.com/<your-username>/mlx_transformers_benchmark
-cd mlx_transformers_benchmark
-```
-Then run benchmarks for common LLMs:
-```
-make create-venv
-source .venv/bin/activate
-make run-llm-benchmarks
-```
-Running benchmarks should take around 8 minutes, excluding model time-to-download. 
-
-This creates a new measurement folder and stores the platform info as well as the `mlx`, `mlx_lm`, and 
-`torch` versions in a settings file. You can view it and all previous measurements:
-```
-make show-llm-benchmarks
-```
-
-Commit and push all new measurements, and create a pull request!
-```
-git commit -am "Adding measurements for <your-device>"
-git push
-```
+See [CONTRIBUTING.md](https://github.com/aukejw/mlx_transformers_benchmark/blob/main/README.md) for the instructions.
 
 
 ### On reproducibility
