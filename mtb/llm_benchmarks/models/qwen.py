@@ -4,7 +4,7 @@ from typing import Any
 from mtb.llm_benchmarks.models.base import ModelSpec
 
 __all__ = [
-    "QwenPromptFormatter",
+    "format_qwen_prompt",
     "Qwen2p5_0p5B_it",
     "Qwen2p5_Coder_0p5B_it",
     "Qwen2p5_3B_it",
@@ -12,28 +12,26 @@ __all__ = [
 ]
 
 
-class QwenPromptFormatter:
+def format_qwen_prompt(self, prompt: str) -> Any:
     """Input-finetuned models ('-pi' suffix) expect a specific format."""
-
-    def __call__(self, prompt: str) -> Any:
-        messages = [
-            {
-                "role": "system",
-                "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ]
-        return messages
+    messages = [
+        {
+            "role": "system",
+            "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
+        },
+        {
+            "role": "user",
+            "content": prompt,
+        },
+    ]
+    return messages
 
 
 @dataclass
 class Qwen2p5_0p5B_it(ModelSpec):
     name = "qwen-2.5-0.5b-it"
     num_params = 5e8
-    prompt_formatter = QwenPromptFormatter
+    prompt_formatter = format_qwen_prompt
 
     model_ids = {
         "torch": {
@@ -51,7 +49,7 @@ class Qwen2p5_0p5B_it(ModelSpec):
 class Qwen2p5_3B_it(ModelSpec):
     name = "qwen-2.5-3b-it"
     num_params = 3e9
-    prompt_formatter = QwenPromptFormatter
+    prompt_formatter = format_qwen_prompt
 
     model_ids = {
         "torch": {
@@ -69,7 +67,7 @@ class Qwen2p5_3B_it(ModelSpec):
 class Qwen2p5_Coder_0p5B_it(ModelSpec):
     name = "qwen-2.5-coder-0.5b-it"
     num_params = 5e8
-    prompt_formatter = QwenPromptFormatter
+    prompt_formatter = format_qwen_prompt
 
     model_ids = {
         "torch": {
@@ -87,7 +85,7 @@ class Qwen2p5_Coder_0p5B_it(ModelSpec):
 class Qwen2p5_Coder_3B_it(ModelSpec):
     name = "qwen-2.5-coder-3b-it"
     num_params = 3e9
-    prompt_formatter = QwenPromptFormatter
+    prompt_formatter = format_qwen_prompt
 
     model_ids = {
         "torch": {

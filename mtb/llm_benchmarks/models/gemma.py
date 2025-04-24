@@ -1,5 +1,5 @@
 __all__ = [
-    "GemmaItPromptFormatter",
+    "format_gemma_prompt",
     "Gemma3_1B_it",
     "Gemma3_4B_it",
     "Gemma3_1B_it_QAT",
@@ -14,28 +14,26 @@ from typing import Any
 from mtb.llm_benchmarks.models.base import ModelSpec
 
 
-class GemmaItPromptFormatter:
+def format_gemma_prompt(prompt: str) -> Any:
     """Gemma models expect a system prompt with data types."""
-
-    def __call__(self, prompt: str) -> Any:
-        messages = [
-            {
-                "role": "system",
-                "content": [{"type": "text", "text": "You are a helpful assistant."}],
-            },
-            {
-                "role": "user",
-                "content": [{"type": "text", "text": prompt}],
-            },
-        ]
-        return messages
+    messages = [
+        {
+            "role": "system",
+            "content": [{"type": "text", "text": "You are a helpful assistant."}],
+        },
+        {
+            "role": "user",
+            "content": [{"type": "text", "text": prompt}],
+        },
+    ]
+    return messages
 
 
 @dataclass
 class Gemma3_1B_it(ModelSpec):
     name = "gemma-3-1b-it"
     num_params = 1e9
-    prompt_formatter = GemmaItPromptFormatter
+    prompt_formatter = format_gemma_prompt
 
     model_ids = {
         "torch": {
@@ -57,7 +55,7 @@ class Gemma3_1B_it(ModelSpec):
 class Gemma3_4B_it(ModelSpec):
     name = "gemma-3-4b-it"
     num_params = 4e9
-    prompt_formatter = GemmaItPromptFormatter
+    prompt_formatter = format_gemma_prompt
 
     model_ids = {
         "torch": {
@@ -81,7 +79,7 @@ class Gemma3_4B_it(ModelSpec):
 class Gemma3_1B_it_QAT(ModelSpec):
     name = "gemma-3-1b-it-qat"
     num_params = 1e9
-    prompt_formatter = GemmaItPromptFormatter
+    prompt_formatter = format_gemma_prompt
 
     model_ids = {
         "mlx": {
@@ -99,7 +97,7 @@ class Gemma3_1B_it_QAT(ModelSpec):
 class Gemma3_4B_it_QAT(ModelSpec):
     name = "gemma-3-4b-it-qat"
     num_params = 4e9
-    prompt_formatter = GemmaItPromptFormatter
+    prompt_formatter = format_gemma_prompt
 
     model_ids = {
         "mlx": {
@@ -117,7 +115,7 @@ class Gemma3_4B_it_QAT(ModelSpec):
 class Gemma3_12B_it_QAT(ModelSpec):
     name = "gemma-3-12b-it-qat"
     num_params = 12e9
-    prompt_formatter = GemmaItPromptFormatter
+    prompt_formatter = format_gemma_prompt
 
     model_ids = {
         "mlx": {
