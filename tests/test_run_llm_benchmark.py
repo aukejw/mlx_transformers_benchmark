@@ -6,18 +6,20 @@ import pytest
 import torch
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
+from mtb.llm_benchmarks.models.base import ModelSpec
 from mtb.measurement import LlmBenchmarkMeasurement
 from mtb.run_llm_benchmark import run_benchmark, run_benchmark_for_framework
 
-
-class MockModelSpec:
-    name = "mock_model"
-    num_params = 1e9
-    prompt_formatter = lambda x: x
-
-    model_ids = {
+MockModelSpec = ModelSpec(
+    name="mock_model",
+    num_params=1e9,
+    prompt_formatter=lambda x: x,
+    model_ids={
         "torch": {"float16": "mock_model_id"},
-    }
+        "mlx": {"float16": "mock_model_id"},
+        "lmstudio": {"float16": "mock_model_id"},
+    },
+)
 
 
 class MockBenchmark(BaseLLMBenchmark):
@@ -39,7 +41,7 @@ class MockBenchmark(BaseLLMBenchmark):
     def format_prompt(self, prompt: str):
         return torch.Tensor([[1, 2, 3]])
 
-    def run_once(self):
+    def run_once(self, prompt: str) -> LlmBenchmarkMeasurement:
         return LlmBenchmarkMeasurement(
             response="response",
             num_prompt_tokens=1,

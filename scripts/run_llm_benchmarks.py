@@ -71,7 +71,7 @@ def main(
     # Filter benchmarks if specified
     if run_only_benchmarks is not None:
         num_models = len(model_specs)
-        models = filter_benchmarks(
+        model_specs = filter_benchmarks(
             benchmarks=model_specs,
             run_only_benchmarks=run_only_benchmarks,
         )
