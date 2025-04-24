@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Callable
 
 from mtb.measurement import LlmBenchmarkMeasurement
 
@@ -23,14 +23,14 @@ class BaseLLMBenchmark:
         model_id: str,
         backend: str,
         dtype: str,
-        prompt_formatter: Any,
+        prompt_formatter: Callable[[str], Any],
         max_num_tokens: int = 100,
     ):
         self.name = name
         self.model_id = model_id
         self.backend = backend
         self.dtype = dtype
-        self.prompt_formatter = prompt_formatter()
+        self.prompt_formatter = prompt_formatter
         self.max_num_tokens = max_num_tokens
 
     def format_prompt(self, prompt: str, batch_size: int):

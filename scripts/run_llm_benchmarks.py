@@ -29,6 +29,7 @@ def main(
     run_torch_cpu: bool = False,
     run_torch_cuda: bool = False,
     run_mlx_cpu: bool = False,
+    run_lmstudio_metal: bool = False,
 ):
     """Run LLM benchmarks.
 
@@ -50,34 +51,31 @@ def main(
         "Write a story about Einstein",
     ]
 
-    # Set up benchmarks
-    kwargs = dict(
-        max_num_tokens=max_num_tokens,
-    )
-    benchmarks = [
+    # Define the model specs to benchmark
+    model_specs = [
         # gemma 3
-        mtb_bench.Gemma3_1B_it_Benchmark(**kwargs),
-        mtb_bench.Gemma3_4B_it_Benchmark(**kwargs),
+        mtb_bench.Gemma3_1B_it,
+        mtb_bench.Gemma3_4B_it,
         # gemma 3 qat
-        mtb_bench.Gemma3_1B_it_QAT_Benchmark(**kwargs),
-        mtb_bench.Gemma3_4B_it_QAT_Benchmark(**kwargs),
-        mtb_bench.Gemma3_12B_it_QAT_Benchmark(**kwargs),
+        mtb_bench.Gemma3_1B_it_QAT,
+        mtb_bench.Gemma3_4B_it_QAT,
+        mtb_bench.Gemma3_12B_it_QAT,
         # qwen 2.5
-        mtb_bench.Qwen2p5_0p5B_it_Benchmark(**kwargs),
-        mtb_bench.Qwen2p5_3B_it_Benchmark(**kwargs),
+        mtb_bench.Qwen2p5_0p5B_it,
+        mtb_bench.Qwen2p5_3B_it,
         # qwen 2.5 coder
-        mtb_bench.Qwen2p5_Coder_0p5B_it_Benchmark(**kwargs),
-        mtb_bench.Qwen2p5_Coder_3B_it_Benchmark(**kwargs),
+        mtb_bench.Qwen2p5_Coder_0p5B_it,
+        mtb_bench.Qwen2p5_Coder_3B_it,
     ]
 
     # Filter benchmarks if specified
     if run_only_benchmarks is not None:
-        num_benchmarks = len(benchmarks)
-        benchmarks = filter_benchmarks(
-            benchmarks=benchmarks,
+        num_models = len(model_specs)
+        models = filter_benchmarks(
+            benchmarks=model_specs,
             run_only_benchmarks=run_only_benchmarks,
         )
-        print(f"Running {len(benchmarks)} out of {num_benchmarks} benchmarks")
+        print(f"Benchmarking {len(model_specs)} out of {num_models} models")
 
     # Create output directory for measurements
     output_dir = create_benchmark_output_dir(
@@ -85,6 +83,7 @@ def main(
         benchmark_settings=dict(
             num_warmup_iterations=num_warmup_iterations,
             num_iterations=num_iterations,
+            max_num_tokens=max_num_tokens,
             dtypes=dtypes,
             run_only_benchmarks=run_only_benchmarks,
         ),
@@ -93,24 +92,26 @@ def main(
     print(f"Output directory: '{output_dir}'")
 
     # Run
-    with tqdm(benchmarks, position=0) as iterator:
-        for benchmark in iterator:
-            iterator.set_description(f"Timing {benchmark.name}")
+    with tqdm(model_specs, position=0) as iterator:
+        for model_spec in iterator:
+            iterator.set_description(f"Benchmarking model {model_spec.name}")
 
             run_benchmark(
-                benchmark=benchmark,
+                model_spec=model_spec,
+                output_path=output_path,
                 batch_sizes=batch_sizes,
+                dtypes=dtypes,
                 prompts=prompts,
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
+                max_num_tokens=max_num_tokens,
                 cooldown_time_fraction=cooldown_time_fraction,
-                dtypes=dtypes,
                 run_torch_cpu=run_torch_cpu,
                 run_torch_mps=run_torch_mps,
                 run_torch_cuda=run_torch_cuda,
                 run_mlx_cpu=run_mlx_cpu,
                 run_mlx_metal=run_mlx_metal,
-                output_path=output_path,
+                run_lmstudio_metal=run_lmstudio_metal,
             )
 
     print(f"Saved measurements to '{output_path}'")

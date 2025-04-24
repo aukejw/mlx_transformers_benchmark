@@ -73,20 +73,24 @@ def run_benchmark(
             )
             continue
 
+        # If so, define settings
+        setting = dict(dtype=dtype)
         if run_torch_cpu:
-            settings.append(dict(framework="torch", backend="cpu"))
+            setting.update(framework="torch", backend="cpu")
         if run_torch_mps:
-            settings.append(dict(framework="torch", backend="mps"))
+            setting.update(framework="torch", backend="mps")
         if run_torch_cuda:
-            settings.append(dict(framework="torch", backend="cuda"))
+            setting.update(framework="torch", backend="cuda")
         if run_mlx_cpu:
-            settings.append(dict(framework="mlx", backend="cpu"))
+            setting.update(framework="mlx", backend="cpu")
         if run_mlx_metal:
-            settings.append(dict(framework="mlx", backend="metal"))
+            setting.update(framework="mlx", backend="metal")
         if run_lmstudio_metal:
-            settings.append(dict(framework="lmstudio", backend="metal+llama.cpp"))
+            setting.update(framework="lmstudio", backend="metal+llama.cpp")
 
-    columns = [
+        settings.append(setting)
+
+    csv_columns = [
         "name",
         "framework",
         "backend",
@@ -101,15 +105,12 @@ def run_benchmark(
     ]
 
     for framework_kwargs in settings:
-        # Create
         benchmark: BaseLLMBenchmark = create_benchmark(
             model_spec=model_spec,
-            dtype=dtype,
             max_num_tokens=max_num_tokens,
             **framework_kwargs,
         )
 
-        # Run
         try:
             measurements: List[Dict] = run_benchmark_for_framework(
                 benchmark=benchmark,
@@ -124,9 +125,13 @@ def run_benchmark(
             continue
 
         # Save measurements to csv
-        measurements = pd.DataFrame(measurements, columns=columns)
-        save_header = not output_path.exists()
-        measurements.to_csv(output_path, index=False, mode="a", header=save_header)
+        measurements = pd.DataFrame(measurements, columns=csv_columns)
+        measurements.to_csv(
+            output_path,
+            index=False,
+            mode="a",
+            header=(not output_path.exists()),
+        )
 
     return
 

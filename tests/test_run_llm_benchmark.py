@@ -1,42 +1,45 @@
 from typing import Dict, List
 from unittest.mock import Mock
 
-import mlx.core as mx
 import pandas as pd
 import pytest
 import torch
-from transformers import BatchEncoding
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement
 from mtb.run_llm_benchmark import run_benchmark, run_benchmark_for_framework
 
 
-class MockBenchmark(BaseLLMBenchmark):
-    name = "mock"
-    num_params = int(1e6)
+class MockModelSpec:
+    name = "mock_model"
+    num_params = 1e9
+    prompt_formatter = lambda x: x
 
-    dtype_to_model_id = {
-        torch.float16: "mock_model_id",
-        mx.float16: "mock_model_id",
+    model_ids = {
+        "torch": {"float16": "mock_model_id"},
     }
 
-    def setup_torch(self):
-        pass
 
-    def setup_mlx(self):
-        pass
+class MockBenchmark(BaseLLMBenchmark):
+    framework = "torch"
 
-    def set_prompt(self, prompt: str, batch_size: int) -> BatchEncoding:
-        self.model_input = BatchEncoding(
-            data={
-                "input_ids": [[1, 2, 3]],
-                "attention_mask": [[1, 1, 1]],
-            },
-            tensor_type="pt",
+    def __init__(self, name: str):
+        super().__init__(
+            name=name,
+            model_id="mock_model_id",
+            backend="cpu",
+            dtype="float16",
+            prompt_formatter=lambda x: x,
+            max_num_tokens=10,
         )
 
-    def run_torch_generate(self):
+    def setup(self):
+        pass
+
+    def format_prompt(self, prompt: str):
+        return torch.Tensor([[1, 2, 3]])
+
+    def run_once(self):
         return LlmBenchmarkMeasurement(
             response="response",
             num_prompt_tokens=1,
@@ -47,34 +50,23 @@ class MockBenchmark(BaseLLMBenchmark):
             generation_time_sec=6,
         )
 
-    def run_mlx_generate(self):
-        return LlmBenchmarkMeasurement(
-            response="response",
-            num_prompt_tokens=1,
-            num_generated_tokens=2,
-            generation_tps=3,
-            prompt_tps=4,
-            prompt_time_sec=5,
-            generation_time_sec=6,
-        )
+    def teardown(self):
+        pass
 
 
 @pytest.fixture
 def benchmark():
-    return MockBenchmark(max_num_tokens=10)
+    return MockBenchmark(name=MockModelSpec.name)
 
 
 def test_run_benchmark_for_framework(benchmark):
     measurements = run_benchmark_for_framework(
         benchmark=benchmark,
         batch_sizes=(1,),
-        dtype="float16",
         prompts=["prompt"],
-        cooldown_time_fraction=0.1,
-        framework="torch",
-        backend="cpu",
         num_warmup_iterations=1,
         num_iterations=2,
+        cooldown_time_fraction=0.1,
     )
     assert isinstance(measurements, List)
     assert isinstance(measurements[0], Dict)
@@ -83,30 +75,42 @@ def test_run_benchmark_for_framework(benchmark):
         "generation_tps",
         "prompt_tps",
         "num_prompt_tokens",
+        "num_generated_tokens",
+        "prompt_time_sec",
+        "generation_time_sec",
     ]:
         assert key in measurements[0]
 
 
-def test_run_benchmark(benchmark, tmp_path):
+def test_run_benchmark(monkeypatch, benchmark, tmp_path):
+    # Mock create_benchmark to return the MockBenchmark instance
+    mock_create_benchmark = Mock(return_value=benchmark)
+    monkeypatch.setattr(
+        "mtb.run_llm_benchmark.create_benchmark",
+        mock_create_benchmark,
+    )
+
     output_path = tmp_path / "benchmark_results.csv"
     measurements_df = run_benchmark(
-        benchmark=benchmark,
+        model_spec=MockModelSpec,
         output_path=output_path,
         batch_sizes=(1,),
         prompts=["prompt"],
-        cooldown_time_fraction=0.1,
         dtypes=("float16",),
         num_warmup_iterations=1,
         num_iterations=1,
+        max_num_tokens=10,
+        cooldown_time_fraction=0.01,
         run_torch_cpu=True,
-        run_mlx_cpu=True,
     )
     assert output_path.exists()
 
-    # one for torch, one for mlx
+    # we should have one measurement for torch, nothing else
     measurements_df = pd.read_csv(output_path)
     assert isinstance(measurements_df, pd.DataFrame)
-    assert len(measurements_df) == 2
+    assert len(measurements_df) == 1
+    assert measurements_df["framework"].iloc[0] == "torch"
+    assert measurements_df["backend"].iloc[0] == "cpu"
 
 
 def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path):
@@ -118,78 +122,59 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path)
         )
     ]
 
-    # Setup the monkeypatch to replace run_benchmark_for_framework
-    mock_run_benchmark_for_framework = Mock(
-        return_value=mock_measurements,
-    )
+    # Mock run_benchmark_for_framework, create_benchmark
+    mock_run_benchmark_for_framework = Mock(return_value=mock_measurements)
     monkeypatch.setattr(
         "mtb.run_llm_benchmark.run_benchmark_for_framework",
         mock_run_benchmark_for_framework,
     )
 
-    # Test parameters
-    num_warmup_iterations = 1
-    num_iterations = 1
-    dtypes = ("float16",)
+    # Mock create_benchmark to return the MockBenchmark instance
+    mock_create_benchmark = Mock(return_value=benchmark)
+    monkeypatch.setattr(
+        "mtb.run_llm_benchmark.create_benchmark",
+        mock_create_benchmark,
+    )
 
-    # Define all backend options and their expected arguments
+    # Define backend options and their expected arguments
     backend_options = [
-        {
-            "option": "run_torch_cpu",
-            "framework": "torch",
-            "backend": "cpu",
-        },
-        {
-            "option": "run_torch_mps",
-            "framework": "torch",
-            "backend": "mps",
-        },
-        {
-            "option": "run_torch_cuda",
-            "framework": "torch",
-            "backend": "cuda",
-        },
-        {
-            "option": "run_mlx_cpu",
-            "framework": "mlx",
-            "backend": "cpu",
-        },
-        {
-            "option": "run_mlx_metal",
-            "framework": "mlx",
-            "backend": "metal",
-        },
+        "run_torch_cpu",
+        "run_torch_mps",
+        "run_torch_cuda",
+        "run_mlx_cpu",
+        "run_mlx_metal",
+        "run_mlx_metal",
+        "run_lmstudio_metal",
     ]
 
     output_path = tmp_path / "benchmark_results.csv"
-    for backend in backend_options:
+    for option in backend_options:
+        mock_create_benchmark.reset_mock()
         mock_run_benchmark_for_framework.reset_mock()
 
-        kwargs = {
-            "benchmark": benchmark,
-            "output_path": output_path,
-            "batch_sizes": (1,),
-            "dtypes": dtypes,
-            "prompts": ["prompt"],
-            "cooldown_time_fraction": 0.1,
-            "num_warmup_iterations": num_warmup_iterations,
-            "num_iterations": num_iterations,
-        }
-        kwargs[backend["option"]] = True
+        kwargs = {option: True}
 
-        run_benchmark(**kwargs)
-
-        mock_run_benchmark_for_framework.assert_called_once_with(
-            benchmark=benchmark,
+        run_benchmark(
+            model_spec=MockModelSpec,
+            output_path=output_path,
             batch_sizes=(1,),
             prompts=["prompt"],
-            cooldown_time_fraction=0.1,
-            num_warmup_iterations=num_warmup_iterations,
-            num_iterations=num_iterations,
-            dtype=dtypes[0],
-            framework=backend["framework"],
-            backend=backend["backend"],
+            dtypes=("float16",),
+            num_warmup_iterations=1,
+            num_iterations=2,
+            max_num_tokens=10,
+            cooldown_time_fraction=0.01,
+            **kwargs,
         )
 
-    # Test with multiple options enabled
-    mock_run_benchmark_for_framework.reset_mock()
+        mock_create_benchmark.assert_called_once()
+        mock_run_benchmark_for_framework.assert_called_once()
+
+    # validate that we saved one measurement to file for each setting, dtype
+    expected_measuremnts = pd.read_csv(output_path)
+
+    assert isinstance(expected_measuremnts, pd.DataFrame)
+    assert len(expected_measuremnts) == len(backend_options)
+
+    for column in ["framework", "backend", "dtype", "prompt_tps", "generation_tps"]:
+        assert column in expected_measuremnts.columns
