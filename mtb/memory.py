@@ -77,8 +77,8 @@ def estimate_model_size(
         "bfloat16": 16,
         "float16": 16,
         "int8": 8,
-        "int6": 6,  # not sure if true in practice
+        "int6": 6,  # not always true in practice
         "int4": 4,
-        "int3": 3,  # not sure if true in practice
+        "int3": 3,  # not always true in practice
     }
     return bytes_to_gb(num_params * dtype_to_bits[dtype] / 8)

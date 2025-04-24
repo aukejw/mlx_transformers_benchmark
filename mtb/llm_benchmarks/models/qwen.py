@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Any
 
 from mtb.llm_benchmarks.models.base import ModelSpec
@@ -27,13 +26,11 @@ def format_qwen_prompt(self, prompt: str) -> Any:
     return messages
 
 
-@dataclass
-class Qwen2p5_0p5B_it(ModelSpec):
-    name = "qwen-2.5-0.5b-it"
-    num_params = 5e8
-    prompt_formatter = format_qwen_prompt
-
-    model_ids = {
+Qwen2p5_0p5B_it = ModelSpec(
+    name="qwen-2.5-0.5b-it",
+    num_params=5e8,
+    prompt_formatter=format_qwen_prompt,
+    model_ids={
         "torch": {
             "bfloat16": "Qwen/Qwen2.5-0.5B-Instruct",
         },
@@ -42,16 +39,15 @@ class Qwen2p5_0p5B_it(ModelSpec):
             "int8": "mlx-community/Qwen2.5-0.5B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
         },
-    }
+    },
+)
 
 
-@dataclass
-class Qwen2p5_3B_it(ModelSpec):
-    name = "qwen-2.5-3b-it"
-    num_params = 3e9
-    prompt_formatter = format_qwen_prompt
-
-    model_ids = {
+Qwen2p5_3B_it = ModelSpec(
+    name="qwen-2.5-3b-it",
+    num_params=3e9,
+    prompt_formatter=format_qwen_prompt,
+    model_ids={
         "torch": {
             "bfloat16": "Qwen/Qwen2.5-3B-Instruct",
         },
@@ -60,16 +56,15 @@ class Qwen2p5_3B_it(ModelSpec):
             "int8": "mlx-community/Qwen2.5-3B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-3B-Instruct-4bit",
         },
-    }
+    },
+)
 
 
-@dataclass
-class Qwen2p5_Coder_0p5B_it(ModelSpec):
-    name = "qwen-2.5-coder-0.5b-it"
-    num_params = 5e8
-    prompt_formatter = format_qwen_prompt
-
-    model_ids = {
+Qwen2p5_Coder_0p5B_it = ModelSpec(
+    name="qwen-2.5-coder-0.5b-it",
+    num_params=5e8,
+    prompt_formatter=format_qwen_prompt,
+    model_ids={
         "torch": {
             "bfloat16": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
         },
@@ -78,16 +73,14 @@ class Qwen2p5_Coder_0p5B_it(ModelSpec):
             "int8": "mlx-community/Qwen2.5-Coder-0.5B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-Coder-0.5B-Instruct-4bit",
         },
-    }
+    },
+)
 
-
-@dataclass
-class Qwen2p5_Coder_3B_it(ModelSpec):
-    name = "qwen-2.5-coder-3b-it"
-    num_params = 3e9
-    prompt_formatter = format_qwen_prompt
-
-    model_ids = {
+Qwen2p5_Coder_3B_it = ModelSpec(
+    name="qwen-2.5-coder-3b-it",
+    num_params=3e9,
+    prompt_formatter=format_qwen_prompt,
+    model_ids={
         "torch": {
             "bfloat16": "Qwen/Qwen2.5-Coder-3B-Instruct",
         },
@@ -96,4 +89,5 @@ class Qwen2p5_Coder_3B_it(ModelSpec):
             "int8": "mlx-community/Qwen2.5-Coder-3B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-Coder-3B-Instruct-4bit",
         },
-    }
+    },
+)

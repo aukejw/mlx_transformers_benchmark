@@ -42,7 +42,6 @@ def test_get_mac_hardware_info_success():
     """
     with patch("subprocess.check_output", return_value=mock_output.encode("utf-8")):
         info = get_mac_hardware_info()
-        print(info)
         assert info["model_name"] == "MacBook Pro"
         assert info["chip"] == "Apple M1"
         assert info["total_cores"] == "8"
