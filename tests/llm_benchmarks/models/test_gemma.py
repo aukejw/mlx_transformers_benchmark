@@ -3,26 +3,37 @@ import mlx.nn
 import pytest
 import torch
 from mlx_lm.tokenizer_utils import TokenizerWrapper
-from transformers import BatchEncoding, GemmaTokenizerFast
+from transformers import GemmaTokenizerFast
 from transformers.models.gemma3.modeling_gemma3 import Gemma3PreTrainedModel
 
 from mtb import FLAG_ON_MAC
-from mtb.llm_benchmarks.gemma import Gemma3_1B_it_Benchmark
+from mtb.llm_benchmarks.models.gemma import Gemma3_1B_it
+from mtb.run_llm_benchmark import create_benchmark
 
 
 @pytest.fixture(scope="session")
 def benchmark_torch():
-    benchmark = Gemma3_1B_it_Benchmark(max_num_tokens=30)
-    benchmark.setup(framework="torch", backend="mps", dtype="bfloat16")
-    benchmark.set_prompt("Write a story about Einstein", batch_size=1)
+    benchmark = create_benchmark(
+        model_spec=Gemma3_1B_it,
+        framework="torch",
+        backend="mps",
+        dtype="bfloat16",
+        max_num_tokens=30,
+    )
+    benchmark.setup()
     return benchmark
 
 
 @pytest.fixture(scope="session")
 def benchmark_mlx():
-    benchmark = Gemma3_1B_it_Benchmark(max_num_tokens=30)
-    benchmark.setup(framework="mlx", backend="metal", dtype="bfloat16")
-    benchmark.set_prompt("Write a story about Einstein", batch_size=1)
+    benchmark = create_benchmark(
+        model_spec=Gemma3_1B_it,
+        framework="mlx",
+        backend="metal",
+        dtype="bfloat16",
+        max_num_tokens=30,
+    )
+    benchmark.setup()
     return benchmark
 
 
@@ -32,16 +43,17 @@ bfloat16_response = (
 )
 
 
-class TestGemmaBenchmark:
+class TestGemma:
     @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
     @pytest.mark.skipif(not torch.mps.is_available(), reason="Must run on MPS backend")
     def test_setup_generate_torch(self, benchmark_torch):
         assert isinstance(benchmark_torch.model, Gemma3PreTrainedModel)
         assert isinstance(benchmark_torch.tokenizer, GemmaTokenizerFast)
-        assert isinstance(benchmark_torch.model_input, BatchEncoding)
-        assert isinstance(benchmark_torch.model_input["input_ids"], torch.Tensor)
 
-        timing = benchmark_torch.run_torch_generate()
+        prompt_tokens = benchmark_torch.format_prompt("OK")
+        assert isinstance(prompt_tokens, torch.Tensor)
+
+        timing = benchmark_torch.run_once(prompt="Write a story about Einstein")
         assert timing.prompt_tps > 0
         assert timing.prompt_time_sec > 0
         assert timing.generation_tps > 0
@@ -51,10 +63,11 @@ class TestGemmaBenchmark:
     def test_setup_generate_mlx(self, benchmark_mlx):
         assert isinstance(benchmark_mlx.model, mlx.nn.Module)
         assert isinstance(benchmark_mlx.tokenizer, TokenizerWrapper)
-        assert isinstance(benchmark_mlx.model_input, BatchEncoding)
-        assert isinstance(benchmark_mlx.model_input["input_ids"], mx.array)
 
-        timing = benchmark_mlx.run_mlx_generate()
+        prompt_tokens = benchmark_mlx.format_prompt("OK")
+        assert isinstance(prompt_tokens, mx.array)
+
+        timing = benchmark_mlx.run_once(prompt="Write a story about Einstein")
         assert timing.prompt_tps > 0
         assert timing.prompt_time_sec > 0
         assert timing.generation_tps > 0

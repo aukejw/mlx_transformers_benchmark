@@ -7,17 +7,165 @@ import pandas as pd
 from tqdm import tqdm
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
+from mtb.llm_benchmarks.lmstudio_llm_benchmark import LMStudioLlmBenchmark
+from mtb.llm_benchmarks.mlx_llm_benchmark import MlxLlmBenchmark
+from mtb.llm_benchmarks.models.base import ModelSpec
+from mtb.llm_benchmarks.torch_llm_benchmark import TorchLlmBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement, Measurements
 from mtb.memory import estimate_model_size, get_available_ram_gb
+
+
+def run_benchmark(
+    model_spec: ModelSpec,
+    output_path: Union[Path, str],
+    batch_sizes: Tuple[int],
+    dtypes: Tuple[str],
+    prompts: List[str],
+    num_warmup_iterations: int = 1,
+    num_iterations: int = 5,
+    max_num_tokens: int = 100,
+    cooldown_time_fraction: float = 0.1,
+    *,
+    run_torch_cpu: bool = False,
+    run_torch_mps: bool = False,
+    run_torch_cuda: bool = False,
+    run_mlx_cpu: bool = False,
+    run_mlx_metal: bool = False,
+    run_lmstudio_metal: bool = False,
+):
+    """Run a benchmark for specific models.
+
+    Each combination of batchsize, prompt, dtype results in one measurement.
+
+    Args:
+        model_spec: The specs for the model to benchmark.
+        output_path: Path to save benchmark results.
+        batch_sizes: List of batch sizes to run.
+        dtypes: List of dtypes to run.
+        prompts: List of prompts to run.
+        num_warmup_iterations: Number of warmup iterations.
+        num_iterations: Number of iterations to run generation for.
+        run_torch_cpu: Framework torch, on cpu.
+        run_torch_mps: Framework torch, on gpu (mps backend).
+        run_torch_cuda: Framework torch, on gpu (cuda backend).
+        run_mlx_cpu: Framework mlx, on cpu.
+        run_mlx_metal: Framework mlx, on gpu (metal backend).
+        run_lmstudio_metal: Framework lmstudio, on gpu (llama.cpp metal backend).
+
+    Returns:
+        pd.DataFrame: A dataframe containing benchmark results.
+
+    """
+    available_memory = get_available_ram_gb()
+
+    settings = []
+    for dtype in dtypes:
+        # Check if we can run it
+        memory_needed_gb = estimate_model_size(
+            num_params=model_spec.num_params,
+            dtype=dtype,
+        )
+        if memory_needed_gb > available_memory:
+            print(
+                f"Skipping benchmark '{benchmark.name}' for dtype {dtype}: "
+                f"it needs {memory_needed_gb:.3f} GB memory just to load the model, "
+                f"but only {available_memory:.3f} GB is available."
+            )
+            continue
+
+        if run_torch_cpu:
+            settings.append(dict(framework="torch", backend="cpu"))
+        if run_torch_mps:
+            settings.append(dict(framework="torch", backend="mps"))
+        if run_torch_cuda:
+            settings.append(dict(framework="torch", backend="cuda"))
+        if run_mlx_cpu:
+            settings.append(dict(framework="mlx", backend="cpu"))
+        if run_mlx_metal:
+            settings.append(dict(framework="mlx", backend="metal"))
+        if run_lmstudio_metal:
+            settings.append(dict(framework="lmstudio", backend="metal+llama.cpp"))
+
+    columns = [
+        "name",
+        "framework",
+        "backend",
+        "batch_size",
+        "dtype",
+        "num_prompt_tokens",
+        "num_generated_tokens",
+        "prompt_tps",  # tokens/sec for processing the prompt
+        "prompt_time_sec",  # total time needed to parse prompt, init kv cache
+        "generation_tps",  # tokens/sec for generation
+        "generation_time_sec",  # total time needed for generation, excl. prompting
+    ]
+
+    for framework_kwargs in settings:
+        # Create
+        benchmark: BaseLLMBenchmark = create_benchmark(
+            model_spec=model_spec,
+            dtype=dtype,
+            max_num_tokens=max_num_tokens,
+            **framework_kwargs,
+        )
+
+        # Run
+        try:
+            measurements: List[Dict] = run_benchmark_for_framework(
+                benchmark=benchmark,
+                batch_sizes=batch_sizes,
+                prompts=prompts,
+                num_warmup_iterations=num_warmup_iterations,
+                num_iterations=num_iterations,
+                cooldown_time_fraction=cooldown_time_fraction,
+            )
+        except Exception as e:
+            print(f"\n  Exception for '{benchmark.name}': {e}")
+            continue
+
+        # Save measurements to csv
+        measurements = pd.DataFrame(measurements, columns=columns)
+        save_header = not output_path.exists()
+        measurements.to_csv(output_path, index=False, mode="a", header=save_header)
+
+    return
+
+
+def create_benchmark(
+    model_spec: ModelSpec,
+    framework: str,
+    backend: str,
+    dtype: str,
+    max_num_tokens: int = 100,
+) -> BaseLLMBenchmark:
+    """Create a benchmark for a specific task."""
+
+    if framework == "torch":
+        benchmark_class = TorchLlmBenchmark
+    elif framework == "mlx":
+        benchmark_class = MlxLlmBenchmark
+    elif framework == "lmstudio":
+        benchmark_class = LMStudioLlmBenchmark
+    else:
+        raise NotImplementedError(f"Framework not supported: {framework}. ")
+
+    model_id = model_spec.model_ids[framework][dtype]
+
+    benchmark = benchmark_class(
+        name=model_spec.name,
+        prompt_formatter=model_spec.prompt_formatter,
+        model_id=model_id,
+        backend=backend,
+        dtype=dtype,
+        max_num_tokens=max_num_tokens,
+    )
+    return benchmark
 
 
 def run_benchmark_for_framework(
     benchmark: BaseLLMBenchmark,
     batch_sizes: Tuple[int],
     prompts: List[str],
-    framework: str,
-    backend: str,
-    dtype: str,
     num_warmup_iterations: int,
     num_iterations: int,
     cooldown_time_fraction: float,
@@ -36,25 +184,23 @@ def run_benchmark_for_framework(
         List of measurements containing benchmark results.
 
     """
-    all_measurements = []
-
-    benchmark.setup(
-        framework=framework,
-        backend=backend,
-        dtype=dtype,
-    )
+    benchmark.setup()
 
     settings = list(itertools.product(batch_sizes, prompts))
     total_num_iterations = len(settings) * (num_iterations + num_warmup_iterations)
 
+    all_measurements = []
     with tqdm(total=total_num_iterations, position=1, leave=False) as iterator:
-        for batch_size, prompt in settings:
-            benchmark.set_prompt(prompt=prompt, batch_size=batch_size)
-            num_prompt_tokens = benchmark.num_prompt_tokens
+        for setting_index, (batch_size, prompt) in enumerate(settings):
+            assert batch_size == 1, "Batch size > 1 not supported yet."
+
+            prompt_tokens = benchmark.format_prompt(prompt=prompt)
+            num_prompt_tokens = len(prompt_tokens)
 
             # let us know where we are
             desc = (
-                f"  {framework}+{backend}, {dtype}, b={batch_size}, num_prompt_tokens={num_prompt_tokens}, "
+                f"  {benchmark.framework}+{benchmark.backend}, {benchmark.dtype}, "
+                + f"setting={setting_index}/{len(settings)}, "
                 + "warmup {warmup_it} / "
                 + f"{num_warmup_iterations}, "
                 + "benchmark {it} / "
@@ -84,10 +230,13 @@ def run_benchmark_for_framework(
                     desc.format(warmup_it=num_warmup_iterations, it=iteration + 1)
                 )
 
-            # Save the measurements
+            # Save the (averaged) measurements
             measurement = dict(
+                name=benchmark.name,
+                framework=benchmark.framework,
+                backend=benchmark.backend,
+                dtype=benchmark.dtype,
                 batch_size=batch_size,
-                dtype=dtype,
                 num_prompt_tokens=num_prompt_tokens,
             )
             for metric_name in container.keys:
@@ -95,119 +244,10 @@ def run_benchmark_for_framework(
 
             all_measurements.append(measurement)
 
-            # cooldown - don't fry our chip
+            # Cooldown - don't fry our chip
             total_time = time.perf_counter() - start_time
             time.sleep(cooldown_time_fraction * total_time)
 
     benchmark.teardown()
 
     return all_measurements
-
-
-def run_benchmark(
-    benchmark: BaseLLMBenchmark,
-    output_path: Union[Path, str],
-    batch_sizes: Tuple[int],
-    dtypes: Tuple[str],
-    prompts: List[str],
-    num_warmup_iterations: int = 1,
-    num_iterations: int = 5,
-    cooldown_time_fraction: float = 0.1,
-    *,
-    run_torch_cpu: bool = False,
-    run_torch_mps: bool = False,
-    run_torch_cuda: bool = False,
-    run_mlx_cpu: bool = False,
-    run_mlx_metal: bool = False,
-):
-    """Run a benchmark for specific frameworks.
-
-    Each combination of batchsize, prompt, dtype results in one measurement.
-
-    Args:
-        benchmark: The benchmark to run.
-        output_path: Path to save the benchmark results.
-        batch_sizes: List of batch sizes to run.
-        dtypes: List of dtypes to run.
-        prompts: List of prompts to run.
-        num_warmup_iterations: Number of warmup iterations.
-        num_iterations: Number of iterations to run generation for.
-        run_torch_cpu: Framework torch, on cpu.
-        run_torch_mps: Framework torch, on gpu (mps backend).
-        run_torch_cuda: Framework torch, on gpu (cuda backend).
-        run_mlx_cpu: Framework mlx, on cpu.
-        run_mlx_metal: Framework mlx, on gpu (metal backend).
-
-    Returns:
-        pd.DataFrame: A dataframe containing benchmark results.
-
-    """
-    general_kwargs = dict(
-        benchmark=benchmark,
-        batch_sizes=batch_sizes,
-        prompts=prompts,
-        num_warmup_iterations=num_warmup_iterations,
-        num_iterations=num_iterations,
-        cooldown_time_fraction=cooldown_time_fraction,
-    )
-
-    available_memory = get_available_ram_gb()
-
-    settings = []
-    for dtype in dtypes:
-        memory_needed_gb = estimate_model_size(
-            num_params=benchmark.num_params,
-            dtype=dtype,
-        )
-        if memory_needed_gb > available_memory:
-            print(
-                f"Skipping benchmark '{benchmark.name}' for dtype {dtype}: "
-                f"it needs {memory_needed_gb:.3f} GB memory just to load the model, "
-                f"but only {available_memory:.3f} GB is available."
-            )
-            continue
-
-        if run_torch_cpu:
-            settings.append(dict(framework="torch", backend="cpu", dtype=dtype))
-        if run_torch_mps:
-            settings.append(dict(framework="torch", backend="mps", dtype=dtype))
-        if run_torch_cuda:
-            settings.append(dict(framework="torch", backend="cuda", dtype=dtype))
-        if run_mlx_cpu:
-            settings.append(dict(framework="mlx", backend="cpu", dtype=dtype))
-        if run_mlx_metal:
-            settings.append(dict(framework="mlx", backend="metal", dtype=dtype))
-
-    columns = [
-        "name",
-        "framework",
-        "backend",
-        "batch_size",
-        "dtype",
-        "num_prompt_tokens",
-        "num_generated_tokens",
-        "prompt_tps",  # tokens/sec for processing the prompt
-        "prompt_time_sec",  # total time needed to parse prompt, init kv cache
-        "generation_tps",  # tokens/sec for generation
-        "generation_time_sec",  # total time needed for generation, excl. prompting
-    ]
-
-    for framework_kwargs in settings:
-        try:
-            measurements: List[Dict] = run_benchmark_for_framework(
-                **general_kwargs,
-                **framework_kwargs,
-            )
-        except Exception as e:
-            print(f"\n  Exception for '{benchmark.name}': {e}")
-            continue
-
-        measurements = pd.DataFrame(measurements, columns=columns)
-        measurements["name"] = benchmark.name
-        for key in framework_kwargs:
-            measurements[key] = framework_kwargs[key]
-
-        save_header = not output_path.exists()
-        measurements.to_csv(output_path, index=False, mode="a", header=save_header)
-
-    return
