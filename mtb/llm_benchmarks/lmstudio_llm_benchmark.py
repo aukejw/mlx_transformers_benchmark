@@ -76,11 +76,7 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
         # Unload, delete references
         self.model.unload()
         del self.model
-        del self.input_tensor
-
-        # Reset placeholders
         self.model = None
-        self.input_tensor = None
 
         # Reset indicators
         self._backend = None
