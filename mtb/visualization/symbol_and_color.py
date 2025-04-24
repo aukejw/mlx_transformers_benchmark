@@ -11,7 +11,7 @@ def add_category_to_colormap(
 ):
     """Add a category to the global color and symbol map."""
     global global_color_map, global_symbol_map
-    palette = pc.qualitative.Plotly
+    palette = pc.qualitative.Dark24
 
     plotly_symbols = [
         "circle",

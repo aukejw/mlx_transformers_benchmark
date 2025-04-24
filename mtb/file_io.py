@@ -163,6 +163,8 @@ def _convert_row_to_framework_backend(
         name += "_" + row["torch_version"]
     elif row["framework"] == "mlx":
         name += "_" + row["mlx_version"]
+    elif row["framework"] == "lmstudio":
+        pass
     else:
         raise NotImplementedError(f"Unsupported framework {row['framework']}")
 
