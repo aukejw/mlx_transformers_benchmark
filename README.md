@@ -1,6 +1,7 @@
 # Benchmarking transformer operators on Apple silicon
 
-[![tests](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests.yaml)
+[![tests-linux](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests-linux.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests-linux.yaml)
+[![tests-mac](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests-mac.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests-mac.yaml)
 
 Let's say you're interested in performing LLM inference on Apple hardware. You care about speed, but don't know which model or framwork to pick.
 
