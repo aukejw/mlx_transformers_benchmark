@@ -1,5 +1,5 @@
 # This workflow runs unittests on linux and - if indicated - a local Mac runner
-name: tests
+name: tests-linux
 
 on:
   push:
@@ -40,28 +40,6 @@ jobs:
 
       - name: Re-generate poetry.lock file for linux, install dependencies
         run: |
-          poetry lock 
-          poetry install --with dev
-
-      - name: Run tests with pytest
-        run: |
-          poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
-
-  # Testing on a local macOS runner
-  tests-mac:
-    if: github.event_name == 'workflow_dispatch' 
-    runs-on: [self-hosted, macOS]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python, assuming pyenv is available
-        run: | 
-          pyenv local 3.11.11
-
-      - name: Install dependencies, assuming poetry is available
-        run: |
-          poetry config virtualenvs.in-project true
           poetry lock 
           poetry install --with dev
 

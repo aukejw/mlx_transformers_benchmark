@@ -1,5 +1,5 @@
 # This workflow visualizes and deploys benhchmark results
-name: visualize_measurements
+name: visualize-measurements
 
 on:
   workflow_dispatch:
