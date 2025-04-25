@@ -2,16 +2,14 @@
 
 [![tests](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests.yaml)
 
-Let's say you're interested in performing LLM inference on Apple hardware. You care about 
-speed, but don't know which model or framwork to pick!
+Let's say you're interested in performing LLM inference on Apple hardware. You care about speed, but don't know which model or framwork to pick.
 
 Do you:
 - use [PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html)
 - use Apple's [MLX, built directly for Metal](https://github.com/ml-explore/mlx)?
 - use `LMStudio` with the `Metal+llama.cpp` backend?
 
-We aim to help make this choice by benchmarking inference for a few common models and operators. 
-Results can be found at 
+We aim to help make this choice by benchmarking inference for a few common models and operators. Results can be found at 
 [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
 
@@ -20,6 +18,9 @@ Results can be found at
 Before you start, you will need:
  - [`pyenv`](https://github.com/pyenv/pyenv) to manage the python version
  - [`poetry`](https://python-poetry.org/) for dependency management
+
+ To (optionally) benchmark `Metal+llama.cpp` models, you will also need:
+ - [`lmstudio`](https://lmstudio.ai/) 
 
 ### Quickstart
 
@@ -74,9 +75,7 @@ See [CONTRIBUTING.md](https://github.com/aukejw/mlx_transformers_benchmark/blob/
 
 ### On reproducibility
 
-Apple's virtualization framework does not provide a GPU API for virtualized envionments, 
-and using Metal from a Docker container is not supported yet. This makes exact reproducibility 
-challenging, but the numbers should give a decent idea nevertheless. 
+As Apple machines share memory with other background processes, these benchmarks are not exact, certainly not for Macbooks. Still, the numbers should give a decent idea of the performance to expect. 
 
 Although the default parameters do not result in thermal throttling for a Macbook M4 Pro, older
 machines may have trouble with the heavier models and operators. We do try to skip large models,
@@ -102,6 +101,7 @@ useful when finetuning custom models for (or on!) Apple devices. While speed is 
 do consider ecosystem and cross-platform support too - here, Nvidia+CUDA remain hard to beat!  
 
 You may also be interested in:
+
 - Tristan Bilot's comprehensive benchmark for fundamental operators for `mlx`, 
   `torch+mps`, and `torch+cuda` ([link](https://github.com/TristanBilot/mlx-benchmark)). Placing both `mlx` 
   and `torch` functions in a single benchmark class makes it easy to see the differences between the 
