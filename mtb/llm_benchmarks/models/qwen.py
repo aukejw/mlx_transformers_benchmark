@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-def format_qwen_prompt(self, prompt: str) -> Any:
+def format_qwen_prompt(prompt: str) -> Any:
     """Input-finetuned models ('-pi' suffix) expect a specific format."""
     messages = [
         {
