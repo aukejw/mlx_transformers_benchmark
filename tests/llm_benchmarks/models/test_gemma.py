@@ -10,6 +10,7 @@ from transformers.models.gemma3.modeling_gemma3 import Gemma3PreTrainedModel
 
 from mtb import FLAG_ON_MAC
 from mtb.llm_benchmarks.models.gemma import Gemma3_1B_it
+from mtb.lmstudio_utils import check_lms_server_running
 from mtb.run_llm_benchmark import create_benchmark
 
 
@@ -96,7 +97,8 @@ def test_gemma_mlx(benchmark_mlx):
     assert timing.response.startswith(bfloat16_response)
 
 
-# @pytest.mark.skipif(not check_lms_server_running(), reason="Must run on LLM Studio")
+@pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
+@pytest.mark.skipif(not check_lms_server_running(), reason="Must run on LLM Studio")
 def test_lms_gemma(benchmark_lms):
     assert isinstance(benchmark_lms.model, LLM)
 
