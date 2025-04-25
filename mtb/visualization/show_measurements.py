@@ -35,10 +35,11 @@ def show_measurements(
 
     # Determine how many plots to create
     benchmark_tasks = natsorted(relevant_measurements["name"].unique())
-    # force a specific order (high to low precision)
+
+    # Force a specific order (high to low precision)
     dtypes = [
         dtype
-        for dtype in ("float32", "float16", "bfloat16", "int8", "int4")
+        for dtype in ("int4", "int8", "bfloat16", "float16", "float32")
         if dtype in set(relevant_measurements["dtype"].unique())
     ]
 

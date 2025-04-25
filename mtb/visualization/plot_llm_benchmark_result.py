@@ -71,6 +71,7 @@ def show_llm_benchmark_data(
                 (measurements["dtype"] == dtype)
                 & (measurements["batch_size"] == batch_size)
             ]
+
             if do_average_measurements:
                 filtered_data = filtered_data[
                     [
@@ -91,7 +92,13 @@ def show_llm_benchmark_data(
 
             # Show
             if not filtered_data.empty:
+                filtered_data = filtered_data.sort_values(
+                    by=["framework_backend", "num_prompt_tokens", "batch_size"],
+                )
                 for col_offset, y_metric_name in enumerate(y_metrics):
+                    row_index = row + 1
+                    column_index = col * len(y_metrics) + col_offset + 1
+
                     scatter = px.scatter(
                         filtered_data,
                         x="num_prompt_tokens",
@@ -104,10 +111,6 @@ def show_llm_benchmark_data(
                         custom_data=["batch_size"] + metrics_of_interest,
                         title=f"dtype: {dtype}, batch_size: {batch_size}",
                     )
-
-                    row_index = row + 1
-                    column_index = col * len(y_metrics) + col_offset + 1
-
                     for trace in scatter["data"]:
                         fig.add_trace(trace, row=row_index, col=column_index)
                         fig.update_yaxes(
@@ -115,6 +118,32 @@ def show_llm_benchmark_data(
                             col=column_index,
                             title_text=y_metrics[y_metric_name],
                         )
+            else:
+                # Disable the subplot, show text "no data available"
+                for col_offset in range(len(y_metrics)):
+                    row_index = row + 1
+                    column_index = col * len(y_metrics) + col_offset + 1
+
+                    # disable the subplot
+                    fig.update_xaxes(
+                        row=row_index,
+                        col=column_index,
+                        visible=False,
+                    )
+                    fig.update_yaxes(
+                        row=row_index,
+                        col=column_index,
+                        visible=False,
+                    )
+                    fig.add_annotation(
+                        text="No data available",
+                        row=row_index,
+                        col=column_index,
+                        x=0.5,
+                        y=0.5,
+                        showarrow=False,
+                        font=dict(size=14),
+                    )
 
     # Update x and y axes layouts for all subplots
     fig.update_xaxes(
