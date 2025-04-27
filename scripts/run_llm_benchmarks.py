@@ -19,7 +19,7 @@ def main(
     num_iterations: int = 5,
     batch_sizes: Iterable[int] = (1,),
     dtypes: str = ("int4", "int8", "bfloat16"),
-    prompt_lengths: Iterable[int] = (4096, 2048, 1024, 512, 128, 64),
+    prompt_lengths: Iterable[int] = (4096, 1024, 256, 64),
     max_num_tokens: int = 100,
     enable_hf_progressbar: bool = False,
     cooldown_time_fraction: float = 0.05,
