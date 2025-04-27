@@ -67,7 +67,7 @@ def get_mac_hardware_info() -> Dict:
         default_value="Unknown",
     )
     info["memory"] = _find_values_in_string(
-        pattern=r"Memory: (\d+) GiB",
+        pattern=r"Memory: (\d+) GB",
         string=sp_output,
         default_value="X",
     )
@@ -100,7 +100,7 @@ def get_mac_hardware_info() -> Dict:
         f"_{info['performance_cores']}P"
         f"+{info['efficiency_cores']}E"
         f"+{info['gpu_cores']}GPU"
-        f"_{info['memory']}GiB"
+        f"_{info['memory']}GB"
     ).replace(" ", "_")
 
     return info
@@ -123,7 +123,7 @@ def get_linux_hardware_info() -> Dict:
     info["hardware_string"] = (
         f"{info['processor']}"
         + (info["chip"] if info["chip"] != "no_gpu" else "")
-        + f"_{info['total_cores']}C_{info['memory']}GiB"
+        + f"_{info['total_cores']}C_{info['memory']}GB"
     )
     return info
 
@@ -157,7 +157,7 @@ def _get_linux_cpu_info() -> Dict:
 def _get_linux_memory_info() -> Dict:
     """Returns a dict with entries:
 
-    - memory: Total RAM in GiB
+    - memory: Total RAM in GB
 
     """
     info = dict()
@@ -166,11 +166,11 @@ def _get_linux_memory_info() -> Dict:
             meminfo = f.read()
 
         for line in meminfo.splitlines():
-            # Get the total RAM in GiB
+            # Get the total RAM in GB
             if "MemTotal:" in line:
                 mem_kb = int(line.split()[1])
-                mem_gib = round(mem_kb / 1024**2, 2)
-                info["memory"] = f"{mem_gib:.2f}"
+                mem_gb = round(mem_kb / 1000**2, 2)
+                info["memory"] = f"{mem_gb:.2f}"
                 break
     except:
         pass
