@@ -36,6 +36,7 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
         return
 
     def format_prompt(self, prompt: str) -> List[List[int]]:
+        """Format the given prompt."""
         prompt = self.prompt_formatter(prompt)
         if isinstance(prompt, list):
             prompt = {"messages": prompt}

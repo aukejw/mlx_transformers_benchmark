@@ -33,16 +33,14 @@ class BaseLLMBenchmark:
         self.prompt_formatter = prompt_formatter
         self.max_num_tokens = max_num_tokens
 
-    def format_prompt(self, prompt: str, batch_size: int):
-        if batch_size > 1:
-            raise NotImplementedError("Batch size > 1 not supported yet.")
-
-        prompt = self.prompt_formatter(prompt)
-        return prompt
+    def format_prompt(self, prompt: str) -> Any:
+        """Format the given prompt"""
+        raise NotImplementedError
 
     def get_num_prompt_tokens(self, prompt: str) -> int:
         """Get the number of tokens in the prompt."""
-        raise NotImplementedError
+        tokens = self.format_prompt(prompt)
+        return len(tokens[0])
 
     def setup(self):
         """Set up the benchmark. Load the model, tokenizer."""
