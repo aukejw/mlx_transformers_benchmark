@@ -1,14 +1,17 @@
 {
-  "datetime": "2025-04-22__13:28:24",
-  "contributor": "aukejw",
-  "git_commit": "2164d8b43de7af0b2f8f0975d397bc090ae996f1",
+  "datetime": "2025-04-27__13:59:10",
+  "contributor": "",
+  "git_commit": "a3454782b170053c8acb2c63c61f51a5c6296a21",
   "benchmark_settings": {
     "num_warmup_iterations": 1,
-    "num_iterations": 5,
+    "num_iterations": 3,
+    "max_num_tokens": 100,
     "dtypes": [
-      "int4"
+      "int4",
+      "int8",
+      "bfloat16"
     ],
-    "run_only_benchmarks": "qwen-2.5"
+    "run_only_benchmarks": null
   },
   "hardware_info": {
     "processor": "arm",

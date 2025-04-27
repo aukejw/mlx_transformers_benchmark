@@ -1,13 +1,17 @@
 {
-  "datetime": "2025-04-21__15:36:28",
-  "git_commit": "6f8e16a77984404d7f07c71a299d2a5b9bae5843",
+  "datetime": "2025-04-27__13:25:50",
+  "contributor": "",
+  "git_commit": "a3454782b170053c8acb2c63c61f51a5c6296a21",
   "benchmark_settings": {
     "num_warmup_iterations": 1,
-    "num_iterations": 5,
+    "num_iterations": 3,
+    "max_num_tokens": 100,
     "dtypes": [
-      "int4"
+      "int4",
+      "int8",
+      "bfloat16"
     ],
-    "run_only_benchmarks": "gemma-3-12b"
+    "run_only_benchmarks": null
   },
   "hardware_info": {
     "processor": "arm",
@@ -24,7 +28,7 @@
     "platform": "macOS-15.1-arm64-arm-64bit",
     "python_version": "3.11.11",
     "torch_version": "2.6.0",
-    "mlx_version": "0.25.0",
-    "mlx_lm_version": "0.23.0"
+    "mlx_version": "0.24.1",
+    "mlx_lm_version": "0.22.3"
   }
 }
