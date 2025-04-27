@@ -12,7 +12,7 @@ from mtb.llm_benchmarks.mlx_llm_benchmark import MlxLlmBenchmark
 from mtb.llm_benchmarks.models.base import ModelSpec
 from mtb.llm_benchmarks.torch_llm_benchmark import TorchLlmBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement, Measurements
-from mtb.memory import estimate_model_size, get_available_ram_gb
+from mtb.memory import estimate_model_size, get_available_ram_gib
 from mtb.prompts import find_prompt_for_llm_benchmark
 
 
@@ -57,20 +57,20 @@ def run_benchmark(
         pd.DataFrame: A dataframe containing benchmark results.
 
     """
-    available_memory = get_available_ram_gb()
+    available_memory = get_available_ram_gib()
 
     settings = []
     for dtype in dtypes:
         # Check if we can run it
-        memory_needed_gb = estimate_model_size(
+        memory_needed_gib = estimate_model_size(
             num_params=model_spec.num_params,
             dtype=dtype,
         )
-        if memory_needed_gb > available_memory:
+        if memory_needed_gib > available_memory:
             print(
                 f"Skipping model '{model_spec.name}' for dtype {dtype}: "
-                f"it needs {memory_needed_gb:.3f} GB memory just to load the model, "
-                f"but only {available_memory:.3f} GB is available."
+                f"it needs {memory_needed_gib:.3f} GiB memory just to load the model, "
+                f"but only {available_memory:.3f} GiB is available."
             )
             continue
 

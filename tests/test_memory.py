@@ -5,75 +5,75 @@ import torch
 
 from mtb import FLAG_ON_MAC
 from mtb.memory import (
-    bytes_to_gb,
-    get_available_ram_gb,
-    get_mlx_memory_gb,
-    get_process_memory_gb,
-    get_torch_memory_gb,
-    get_used_ram_gb,
+    bytes_to_gib,
+    get_available_ram_gib,
+    get_mlx_memory_gib,
+    get_process_memory_gib,
+    get_torch_memory_gib,
+    get_used_ram_gib,
 )
 
 
 def test_get_process_memory():
-    initial_memory = get_process_memory_gb()
+    initial_memory = get_process_memory_gib()
 
     array = np.ones((10_000, 10_000), dtype=np.float32)
-    array_gb = bytes_to_gb(array.nbytes)
+    array_gib = bytes_to_gib(array.nbytes)
 
     # we should have allocated process memory, but allow for overhead, deduplication, etc.
-    difference_gb = get_process_memory_gb() - initial_memory
-    assert difference_gb > 0.1 * array_gb
+    difference_gib = get_process_memory_gib() - initial_memory
+    assert difference_gib > 0.1 * array_gib
 
 
 def test_get_ram():
-    memory = get_available_ram_gb()
+    memory = get_available_ram_gib()
     assert memory > 0
-    memory = get_used_ram_gb()
+    memory = get_used_ram_gib()
     assert memory > 0
 
 
 @pytest.mark.skipif(not torch.mps.is_available(), reason="MPS is not available")
-def test_get_torch_memory_gb_mps():
-    initial_process_memory = get_process_memory_gb()
-    initial_torch_memory = get_torch_memory_gb()
+def test_get_torch_memory_gib_mps():
+    initial_process_memory = get_process_memory_gib()
+    initial_torch_memory = get_torch_memory_gib()
 
     # create a tensor on cpu -> only uses RAM
     tensor = torch.ones((10_000, 10_000), dtype=torch.float32, device="cpu")
-    tensor_gb = bytes_to_gb(tensor.element_size() * tensor.numel())
+    tensor_gib = bytes_to_gib(tensor.element_size() * tensor.numel())
 
     # torch memory should stay the same for now
-    difference_gb = get_torch_memory_gb() - initial_torch_memory
-    assert difference_gb == 0
+    difference_gib = get_torch_memory_gib() - initial_torch_memory
+    assert difference_gib == 0
 
     # we should use some RAM for this tensor
-    difference_gb = get_process_memory_gb() - initial_process_memory
-    assert difference_gb > 0
+    difference_gib = get_process_memory_gib() - initial_process_memory
+    assert difference_gib > 0
 
     # but if we allocate a tensor on GPU -> uses mps memory buffers -> exact match
     tensor = tensor.to("mps")
-    difference_gb = get_torch_memory_gb() - initial_torch_memory
-    assert difference_gb == tensor_gb
+    difference_gib = get_torch_memory_gib() - initial_torch_memory
+    assert difference_gib == tensor_gib
 
 
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
-def test_get_mlx_memory_gb():
-    initial_process_memory = get_process_memory_gb()
-    initial_mlx_memory = get_mlx_memory_gb()
+def test_get_mlx_memory_gib():
+    initial_process_memory = get_process_memory_gib()
+    initial_mlx_memory = get_mlx_memory_gib()
 
     # create a tensor in mlx is lazy -> not actually allocated yet
     tensor = mx.ones((10_000, 10_000), dtype=mx.float32)
-    tensor_gb = bytes_to_gb(tensor.nbytes)
+    tensor_gib = bytes_to_gib(tensor.nbytes)
 
     # quite some RAM should be allocated, but much less than the tensor
-    difference_gb = get_process_memory_gb() - initial_process_memory
-    assert difference_gb < 1e-3
-    assert difference_gb < tensor_gb
+    difference_gib = get_process_memory_gib() - initial_process_memory
+    assert difference_gib < 1e-3
+    assert difference_gib < tensor_gib
 
     # mlx should have only allocated a 4-byte placeholder
-    difference_gb = get_mlx_memory_gb() - initial_mlx_memory
-    assert difference_gb == bytes_to_gb(4)
+    difference_gib = get_mlx_memory_gib() - initial_mlx_memory
+    assert difference_gib == bytes_to_gib(4)
 
     # but once we evaluate, the memory is allocated (plus some overhead)
     mx.eval(tensor)
-    difference_gb = get_mlx_memory_gb() - initial_mlx_memory
-    assert difference_gb > tensor_gb
+    difference_gib = get_mlx_memory_gib() - initial_mlx_memory
+    assert difference_gib > tensor_gib
