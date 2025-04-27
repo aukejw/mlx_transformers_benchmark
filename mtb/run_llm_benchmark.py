@@ -254,10 +254,11 @@ def run_benchmark_for_framework(
                 backend=benchmark.backend,
                 dtype=benchmark.dtype,
                 batch_size=batch_size,
-                num_prompt_tokens=num_prompt_tokens,
+                num_prompt_tokens=int(num_prompt_tokens),
             )
             for metric_name in container.keys:
-                measurement[metric_name] = container.get_mean(metric_name)
+                if metric_name not in measurement:
+                    measurement[metric_name] = container.get_mean(metric_name)
 
             all_measurements.append(measurement)
 

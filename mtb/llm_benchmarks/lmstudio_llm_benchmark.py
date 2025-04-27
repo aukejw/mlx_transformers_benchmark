@@ -55,13 +55,17 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
         )
         stats = response.stats
 
+        # get num prompt tokens by encoding the prompt string instead of using
+        # stats.prompt_tokens_count, as the latter excludes the system prompt tokens!
+        num_prompt_tokens = len(self.format_prompt(prompt)[0])
+
         return LlmBenchmarkMeasurement(
             response=response.content,
             prompt_time_sec=stats.time_to_first_token_sec,
             prompt_tps=stats.prompt_tokens_count / stats.time_to_first_token_sec,
             generation_time_sec=stats.predicted_tokens_count / stats.tokens_per_second,
             generation_tps=stats.tokens_per_second,
-            num_prompt_tokens=stats.prompt_tokens_count,
+            num_prompt_tokens=num_prompt_tokens,
             num_generated_tokens=stats.predicted_tokens_count,
         )
 

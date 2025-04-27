@@ -44,9 +44,9 @@ def show_llm_benchmark_data(
         "total_time_sec",
     ]
     y_metrics = {
-        "prompt_time_sec": "Prompt time (s)",
-        "total_time_sec": "Prompt + 100 tokens time (s)",
-        "generation_tps": "Gen. speed (tokens/s)",
+        "total_time_sec": "Total time (s)",
+        "prompt_time_sec": "Time to first token (s)",
+        "generation_tps": "Generation speed (tokens/s)",
     }
 
     fig = sp.make_subplots(
