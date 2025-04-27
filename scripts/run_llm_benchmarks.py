@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import Iterable, Optional, Union
 
 import fire
 from tqdm import tqdm
@@ -17,13 +17,14 @@ def main(
     output_root: Union[str, Path] = DEFAULT_OUTPUT_ROOT,
     num_warmup_iterations: int = 1,
     num_iterations: int = 5,
-    batch_sizes: Tuple = (1,),
+    batch_sizes: Iterable[int] = (1,),
     dtypes: str = ("int4", "int8", "bfloat16"),
+    prompt_lengths: Iterable[int] = (4096, 2048, 512, 128, 32),
     max_num_tokens: int = 100,
     enable_hf_progressbar: bool = False,
     cooldown_time_fraction: float = 0.05,
     *,
-    run_only_benchmarks: Optional[List[str]] = None,
+    run_only_benchmarks: Optional[Iterable[str]] = None,
     run_mlx_metal: bool = True,
     run_torch_mps: bool = False,
     run_torch_cpu: bool = False,
@@ -43,13 +44,6 @@ def main(
     from mtb.hf_utils import set_hf_home
 
     set_hf_home(enable_hf_progressbar=enable_hf_progressbar)
-
-    prompts = [
-        "Repeat the following sequence: " + ", ".join(str(i) for i in range(1_000)),
-        "Repeat the following sequence: " + ", ".join(str(i) for i in range(500)),
-        "Repeat the following sequence: " + ", ".join(str(i) for i in range(100)),
-        "Write a story about Einstein",
-    ]
 
     # Define the model specs to benchmark
     model_specs = [
@@ -101,7 +95,7 @@ def main(
                 output_path=output_path,
                 batch_sizes=batch_sizes,
                 dtypes=dtypes,
-                prompts=prompts,
+                prompt_lengths=prompt_lengths,
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
                 max_num_tokens=max_num_tokens,

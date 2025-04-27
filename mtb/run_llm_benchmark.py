@@ -13,6 +13,7 @@ from mtb.llm_benchmarks.models.base import ModelSpec
 from mtb.llm_benchmarks.torch_llm_benchmark import TorchLlmBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement, Measurements
 from mtb.memory import estimate_model_size, get_available_ram_gb
+from mtb.prompts import find_prompt_for_llm_benchmark
 
 
 def run_benchmark(
@@ -20,7 +21,7 @@ def run_benchmark(
     output_path: Union[Path, str],
     batch_sizes: Tuple[int],
     dtypes: Tuple[str],
-    prompts: List[str],
+    prompt_lengths: List[str],
     num_warmup_iterations: int = 1,
     num_iterations: int = 5,
     max_num_tokens: int = 100,
@@ -42,7 +43,7 @@ def run_benchmark(
         output_path: Path to save benchmark results.
         batch_sizes: List of batch sizes to run.
         dtypes: List of dtypes to run.
-        prompts: List of prompts to run.
+        prompt_lengths: List of lengths of prompts to use.
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run generation for.
         run_torch_cpu: Framework torch, on cpu.
@@ -121,7 +122,7 @@ def run_benchmark(
             measurements: List[Dict] = run_benchmark_for_framework(
                 benchmark=benchmark,
                 batch_sizes=batch_sizes,
-                prompts=prompts,
+                prompt_lenghts=prompt_lengths,
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
                 cooldown_time_fraction=cooldown_time_fraction,
@@ -176,7 +177,7 @@ def create_benchmark(
 def run_benchmark_for_framework(
     benchmark: BaseLLMBenchmark,
     batch_sizes: Tuple[int],
-    prompts: List[str],
+    prompt_lenghts: List[int],
     num_warmup_iterations: int,
     num_iterations: int,
     cooldown_time_fraction: float,
@@ -197,16 +198,13 @@ def run_benchmark_for_framework(
     """
     benchmark.setup()
 
-    settings = list(itertools.product(batch_sizes, prompts))
+    settings = list(itertools.product(batch_sizes, prompt_lenghts))
     total_num_iterations = len(settings) * (num_iterations + num_warmup_iterations)
 
     all_measurements = []
     with tqdm(total=total_num_iterations, position=1, leave=False) as iterator:
-        for setting_index, (batch_size, prompt) in enumerate(settings):
+        for setting_index, (batch_size, num_prompt_tokens) in enumerate(settings):
             assert batch_size == 1, "Batch size > 1 not supported yet."
-
-            prompt_tokens = benchmark.format_prompt(prompt=prompt)
-            num_prompt_tokens = len(prompt_tokens)
 
             # let us know where we are
             desc = (
@@ -222,6 +220,10 @@ def run_benchmark_for_framework(
             iterator.set_description(desc.format(warmup_it=0, it=0))
             start_time = time.perf_counter()
             for warmup_iteration in range(num_warmup_iterations):
+                prompt = find_prompt_for_llm_benchmark(
+                    benchmark=benchmark,
+                    num_tokens=num_prompt_tokens,
+                )
                 benchmark.run_once(prompt=prompt)
 
                 iterator.update(1)
@@ -233,6 +235,10 @@ def run_benchmark_for_framework(
             iterator.set_description(desc.format(warmup_it=num_warmup_iterations, it=0))
             container = Measurements()
             for iteration in range(num_iterations):
+                prompt = find_prompt_for_llm_benchmark(
+                    benchmark=benchmark,
+                    num_tokens=num_prompt_tokens,
+                )
                 measurement: LlmBenchmarkMeasurement = benchmark.run_once(prompt=prompt)
                 container.add(measurement.to_dict())
 

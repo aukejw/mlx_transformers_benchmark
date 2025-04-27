@@ -42,12 +42,6 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
             prompt = {"messages": prompt}
         prompt = self.model.apply_prompt_template(prompt)
         prompt_tokens = self.model.tokenize(prompt)
-
-        if len(prompt_tokens) > self.max_context_length:
-            raise ValueError(
-                f"Prompt length {len(prompt_tokens)} exceeds model "
-                f"max_context_length {self.max_context_length}."
-            )
         return np.array([prompt_tokens])
 
     def run_once(self, prompt: Any) -> LlmBenchmarkMeasurement:

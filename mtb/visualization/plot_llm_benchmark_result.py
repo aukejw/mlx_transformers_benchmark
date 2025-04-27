@@ -148,8 +148,8 @@ def show_llm_benchmark_data(
     # Update x and y axes layouts for all subplots
     fig.update_xaxes(
         type="log",
-        tickvals=[4096, 2048, 1028, 512, 256, 128, 64, 32, 16],
-        ticktext=["4096", "2048", "1028", "512", "256", "128", "64", "32", "16"],
+        tickvals=[4096, 2048, 1024, 512, 256, 128, 64, 32, 16],
+        ticktext=["4096", "2048", "1024", "512", "256", "128", "64", "32", "16"],
     )
     fig.update_xaxes(
         row=len(dtypes),
