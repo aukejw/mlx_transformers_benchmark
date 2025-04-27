@@ -122,7 +122,7 @@ def run_benchmark(
             measurements: List[Dict] = run_benchmark_for_framework(
                 benchmark=benchmark,
                 batch_sizes=batch_sizes,
-                prompt_lenghts=prompt_lengths,
+                prompt_lengths=prompt_lengths,
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
                 cooldown_time_fraction=cooldown_time_fraction,
@@ -177,7 +177,7 @@ def create_benchmark(
 def run_benchmark_for_framework(
     benchmark: BaseLLMBenchmark,
     batch_sizes: Tuple[int],
-    prompt_lenghts: List[int],
+    prompt_lengths: List[int],
     num_warmup_iterations: int,
     num_iterations: int,
     cooldown_time_fraction: float,
@@ -198,7 +198,7 @@ def run_benchmark_for_framework(
     """
     benchmark.setup()
 
-    settings = list(itertools.product(batch_sizes, prompt_lenghts))
+    settings = list(itertools.product(batch_sizes, prompt_lengths))
     total_num_iterations = len(settings) * (num_iterations + num_warmup_iterations)
 
     all_measurements = []

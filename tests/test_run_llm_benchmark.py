@@ -3,7 +3,6 @@ from unittest.mock import Mock
 
 import pandas as pd
 import pytest
-import torch
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.llm_benchmarks.models.base import ModelSpec
@@ -39,7 +38,7 @@ class MockBenchmark(BaseLLMBenchmark):
         pass
 
     def format_prompt(self, prompt: str):
-        return torch.Tensor([[1, 2, 3]])
+        return [[0 for _ in range(len(prompt))]]
 
     def run_once(self, prompt: str) -> LlmBenchmarkMeasurement:
         return LlmBenchmarkMeasurement(
@@ -65,7 +64,7 @@ def test_run_benchmark_for_framework(benchmark):
     measurements = run_benchmark_for_framework(
         benchmark=benchmark,
         batch_sizes=(1,),
-        prompts=["prompt"],
+        prompt_lengths=(64,),
         num_warmup_iterations=1,
         num_iterations=2,
         cooldown_time_fraction=0.1,
@@ -97,7 +96,7 @@ def test_run_benchmark(monkeypatch, benchmark, tmp_path):
         model_spec=MockModelSpec,
         output_path=output_path,
         batch_sizes=(1,),
-        prompts=["prompt"],
+        prompt_lengths=(64,),
         dtypes=("float16",),
         num_warmup_iterations=1,
         num_iterations=1,
@@ -160,7 +159,7 @@ def test_run_benchmark_calls_with_correct_args(monkeypatch, benchmark, tmp_path)
             model_spec=MockModelSpec,
             output_path=output_path,
             batch_sizes=(1,),
-            prompts=["prompt"],
+            prompt_lengths=(64,),
             dtypes=("float16",),
             num_warmup_iterations=1,
             num_iterations=2,
