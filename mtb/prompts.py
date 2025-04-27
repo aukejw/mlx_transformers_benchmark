@@ -25,6 +25,7 @@ def find_prompt_for_llm_benchmark(
     text_length = int(num_tokens)
     num_prompt_tokens = None
 
+    # iteratively search for prompts until we hit one with length num_tokens
     while num_prompt_tokens != num_tokens:
         prompt = get_random_prompt(text_length=text_length)
         prompt_tokens = benchmark.format_prompt(prompt)
@@ -52,17 +53,17 @@ def get_random_prompt(text_length: int) -> str:
 
     As an example, the prompt could look like this:
 
-        0, 3, 2. Write a story about Einstein
+        0, 3, 2. Write a story
 
     """
-    task_string = "Write a story about Einstein"
-
-    if text_length < len(task_string) + 2:
+    task_string = "Write a story"
+    if text_length < len(task_string):
         raise ValueError(
-            f"Text length {text_length} is too short for task string '{task_string}'"
+            f"Text_length {text_length} is too small for "
+            f"task string '{task_string}' of length {len(task_string)}"
         )
 
-    # add random prefix sequence
+    # add random prefix
     prefix_length = text_length - len(task_string) - 2
     prompt = "".join(str(random.randint(0, 10)) for _ in range(prefix_length)) + ". "
 

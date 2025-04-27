@@ -203,13 +203,13 @@ def run_benchmark_for_framework(
 
     all_measurements = []
     with tqdm(total=total_num_iterations, position=1, leave=False) as iterator:
-        for setting_index, (batch_size, num_prompt_tokens) in enumerate(settings):
+        for batch_size, num_prompt_tokens in settings:
             assert batch_size == 1, "Batch size > 1 not supported yet."
 
-            # let us know where we are
+            # Let us know where we are
             desc = (
                 f"  {benchmark.framework}+{benchmark.backend}, {benchmark.dtype}, "
-                + f"setting={setting_index}/{len(settings)}, "
+                + f"B={batch_size}, L={num_prompt_tokens}, "
                 + "warmup {warmup_it} / "
                 + f"{num_warmup_iterations}, "
                 + "benchmark {it} / "
