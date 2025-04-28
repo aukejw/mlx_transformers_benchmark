@@ -42,11 +42,12 @@ def show_llm_benchmark_data(
         "prompt_time_sec",
         "generation_time_sec",
         "total_time_sec",
+        "peak_memory_gib",
     ]
     y_metrics = {
-        "total_time_sec": "Total time (s)",
         "prompt_time_sec": "Time to first token (s)",
         "generation_tps": "Generation speed (tokens/s)",
+        "peak_memory_gib": "Peak memory (GiB)",
     }
 
     fig = sp.make_subplots(
@@ -210,6 +211,7 @@ def show_llm_benchmark_data(
             "<b>Prompt time (s):</b>         %{customdata[3]:>9.4f}<br>"
             "<b>Gen. time (s):</b>           %{customdata[4]:>9.4f}<br>"
             "<b>Total time (s):</b>          %{customdata[5]:>9.4f}<br>"
+            "<b>Peak memory (GiB):</b>       %{customdata[6]:>9.4f}<br>"
         ),
         mode="markers",
     )

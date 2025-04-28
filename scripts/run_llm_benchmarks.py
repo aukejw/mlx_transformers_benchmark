@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Dict, Iterable, List, Optional, Union
 
 import fire
 from tqdm import tqdm
@@ -8,7 +8,7 @@ import mtb as mtb
 import mtb.llm_benchmarks as mtb_bench
 from mtb.file_io import create_benchmark_output_dir
 from mtb.run_llm_benchmark import run_benchmark
-from mtb.select_benchmarks import filter_benchmarks
+from mtb.select_benchmarks import filter_llm_benchmarks
 
 DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements" / "llm_benchmarks"
 
@@ -45,6 +45,15 @@ def main(
 
     set_hf_home(enable_hf_progressbar=enable_hf_progressbar)
 
+    boolean_flags = dict(
+        run_mlx_metal=run_mlx_metal,
+        run_torch_mps=run_torch_mps,
+        run_torch_cpu=run_torch_cpu,
+        run_torch_cuda=run_torch_cuda,
+        run_mlx_cpu=run_mlx_cpu,
+        run_lmstudio_metal=run_lmstudio_metal,
+    )
+
     # Define the model specs to benchmark
     model_specs = [
         # gemma 3
@@ -63,13 +72,12 @@ def main(
     ]
 
     # Filter benchmarks if specified
-    if run_only_benchmarks is not None:
-        num_models = len(model_specs)
-        model_specs = filter_benchmarks(
-            benchmarks=model_specs,
-            run_only_benchmarks=run_only_benchmarks,
-        )
-        print(f"Benchmarking {len(model_specs)} out of {num_models} models")
+    benchmarks_to_run: List[Dict] = filter_llm_benchmarks(
+        model_specs=model_specs,
+        dtypes=dtypes,
+        run_only_benchmarks=run_only_benchmarks,
+        **boolean_flags,
+    )
 
     # Create output directory for measurements
     output_dir = create_benchmark_output_dir(
@@ -83,32 +91,30 @@ def main(
         ),
     )
     output_path = output_dir / "benchmark_results.csv"
-    print(f"Output directory: '{output_dir}'")
+    print(f"\nOutput directory: '{output_dir}'")
 
     # Run
-    with tqdm(model_specs, position=0) as iterator:
-        for model_spec in iterator:
-            iterator.set_description(f"Benchmarking model {model_spec.name}")
+    with tqdm(benchmarks_to_run, position=0) as iterator:
+        for benchmark_config in iterator:
+            model_spec = benchmark_config["model_spec"]
+            iterator.set_description(
+                f"Benchmarking {model_spec.name}, "
+                f"{benchmark_config['framework']}+{benchmark_config['backend']}, "
+                f"dtype={benchmark_config['dtype']}"
+            )
 
-            run_benchmark(
-                model_spec=model_spec,
+            measurements = run_benchmark(
+                **benchmark_config,
                 output_path=output_path,
                 batch_sizes=batch_sizes,
-                dtypes=dtypes,
                 prompt_lengths=prompt_lengths,
                 num_warmup_iterations=num_warmup_iterations,
                 num_iterations=num_iterations,
                 max_num_tokens=max_num_tokens,
                 cooldown_time_fraction=cooldown_time_fraction,
-                run_torch_cpu=run_torch_cpu,
-                run_torch_mps=run_torch_mps,
-                run_torch_cuda=run_torch_cuda,
-                run_mlx_cpu=run_mlx_cpu,
-                run_mlx_metal=run_mlx_metal,
-                run_lmstudio_metal=run_lmstudio_metal,
             )
 
-    print(f"Saved measurements to '{output_path}'")
+    print(f"Saved {len(measurements)} measurements to '{output_path}'")
     return
 
 

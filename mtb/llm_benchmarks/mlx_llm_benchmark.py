@@ -17,6 +17,8 @@ class MlxLlmBenchmark(BaseLLMBenchmark):
 
     def setup(self):
         """Set up the benchmark. Load the model, tokenizer."""
+        mx.reset_peak_memory()
+
         self._device = {
             "cpu": mx.Device(mx.DeviceType.cpu),
             "metal": mx.Device(mx.DeviceType.gpu),

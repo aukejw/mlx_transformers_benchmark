@@ -12,91 +12,41 @@ from mtb.llm_benchmarks.mlx_llm_benchmark import MlxLlmBenchmark
 from mtb.llm_benchmarks.models.base import ModelSpec
 from mtb.llm_benchmarks.torch_llm_benchmark import TorchLlmBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement, Measurements
-from mtb.memory import estimate_model_size, get_available_ram_gib
 from mtb.prompts import find_prompt_for_llm_benchmark
 
 
 def run_benchmark(
-    model_spec: ModelSpec,
+    model_spec: Dict,
+    framework: str,
+    backend: str,
+    dtype: str,
     output_path: Union[Path, str],
     batch_sizes: Tuple[int],
-    dtypes: Tuple[str],
     prompt_lengths: List[str],
     num_warmup_iterations: int = 1,
     num_iterations: int = 5,
     max_num_tokens: int = 100,
     cooldown_time_fraction: float = 0.1,
-    *,
-    run_torch_cpu: bool = False,
-    run_torch_mps: bool = False,
-    run_torch_cuda: bool = False,
-    run_mlx_cpu: bool = False,
-    run_mlx_metal: bool = False,
-    run_lmstudio_metal: bool = False,
 ):
-    """Run a benchmark for specific models.
+    """Run a benchmark for a specific model (and, by definition, dtype).
 
-    Each combination of batchsize, prompt, dtype results in one measurement.
+    Each combination of batchsize, prompt results in one measurement.
 
     Args:
-        model_spec: The specs for the model to benchmark.
+        benchmark_config: Configuration for the benchmark, including model_id.
         output_path: Path to save benchmark results.
         batch_sizes: List of batch sizes to run.
-        dtypes: List of dtypes to run.
         prompt_lengths: List of lengths of prompts to use.
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run generation for.
-        run_torch_cpu: Framework torch, on cpu.
-        run_torch_mps: Framework torch, on gpu (mps backend).
-        run_torch_cuda: Framework torch, on gpu (cuda backend).
-        run_mlx_cpu: Framework mlx, on cpu.
-        run_mlx_metal: Framework mlx, on gpu (metal backend).
-        run_lmstudio_metal: Framework lmstudio, on gpu (llama.cpp metal backend).
+        cooldown_time_fraction: Fraction of time to wait after each benchmark.
+            This is to avoid overheating the GPU.
+        max_num_tokens: Maximum number of tokens to generate.
 
     Returns:
         pd.DataFrame: A dataframe containing benchmark results.
 
     """
-    available_memory = get_available_ram_gib()
-
-    settings = []
-    for dtype in dtypes:
-        # Check if we can run it
-        memory_needed_gib = estimate_model_size(
-            num_params=model_spec.num_params,
-            dtype=dtype,
-        )
-        if memory_needed_gib > available_memory:
-            print(
-                f"Skipping model '{model_spec.name}' for dtype {dtype}: "
-                f"it needs {memory_needed_gib:.3f} GiB memory just to load the model, "
-                f"but only {available_memory:.3f} GiB is available."
-            )
-            continue
-
-        # If so, define the available benchmark settings
-        setting = dict(dtype=dtype)
-        if model_spec.has_model_id(framework="torch", dtype=dtype):
-            if run_torch_cpu:
-                setting.update(framework="torch", backend="cpu")
-            if run_torch_mps:
-                setting.update(framework="torch", backend="mps")
-            if run_torch_cuda:
-                setting.update(framework="torch", backend="cuda")
-
-        if model_spec.has_model_id("mlx", dtype):
-            if run_mlx_cpu and dtype in model_spec.model_ids["mlx"]:
-                setting.update(framework="mlx", backend="cpu")
-            if run_mlx_metal and dtype in model_spec.model_ids["mlx"]:
-                setting.update(framework="mlx", backend="metal")
-
-        if model_spec.has_model_id("lmstudio", dtype):
-            if run_lmstudio_metal and dtype in model_spec.model_ids["lmstudio"]:
-                setting.update(framework="lmstudio", backend="metal+llama.cpp")
-
-        if "framework" in setting:
-            settings.append(setting)
-
     csv_columns = [
         "name",
         "framework",
@@ -112,25 +62,23 @@ def run_benchmark(
         "peak_memory_gib",  # peak memory usage in GiB
     ]
 
-    for framework_kwargs in settings:
-        benchmark: BaseLLMBenchmark = create_benchmark(
-            model_spec=model_spec,
-            max_num_tokens=max_num_tokens,
-            **framework_kwargs,
-        )
+    benchmark: BaseLLMBenchmark = create_benchmark(
+        model_spec=model_spec,
+        framework=framework,
+        backend=backend,
+        dtype=dtype,
+        max_num_tokens=max_num_tokens,
+    )
 
-        try:
-            measurements: List[Dict] = run_benchmark_for_framework(
-                benchmark=benchmark,
-                batch_sizes=batch_sizes,
-                prompt_lengths=prompt_lengths,
-                num_warmup_iterations=num_warmup_iterations,
-                num_iterations=num_iterations,
-                cooldown_time_fraction=cooldown_time_fraction,
-            )
-        except Exception as e:
-            print(f"\n  Exception for '{benchmark.name}': {e}")
-            continue
+    try:
+        measurements: List[Dict] = run_benchmark_for_framework(
+            benchmark=benchmark,
+            batch_sizes=batch_sizes,
+            prompt_lengths=prompt_lengths,
+            num_warmup_iterations=num_warmup_iterations,
+            num_iterations=num_iterations,
+            cooldown_time_fraction=cooldown_time_fraction,
+        )
 
         # Save measurements to csv
         measurements = pd.DataFrame(measurements, columns=csv_columns)
@@ -141,7 +89,10 @@ def run_benchmark(
             header=(not output_path.exists()),
         )
 
-    return
+    except Exception as e:
+        print(f"\n  Exception for '{benchmark.name}': {e}")
+
+    return pd.read_csv(output_path)
 
 
 def create_benchmark(
