@@ -38,6 +38,7 @@ def sample_benchmark_data() -> pd.DataFrame:
                 "total_time_sec": prompt_time_sec + generation_time_sec,
                 "prompt_tps": prompt_time_sec,
                 "generation_tps": generation_tps,
+                "peak_memory_gib": num_prompt_tokens * 0.01,
             }
         )
 
