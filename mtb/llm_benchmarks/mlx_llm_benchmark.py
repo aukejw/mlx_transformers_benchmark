@@ -17,8 +17,6 @@ class MlxLlmBenchmark(BaseLLMBenchmark):
 
     def setup(self):
         """Set up the benchmark. Load the model, tokenizer."""
-        mx.reset_peak_memory()
-
         self._device = {
             "cpu": mx.Device(mx.DeviceType.cpu),
             "metal": mx.Device(mx.DeviceType.gpu),
@@ -45,7 +43,7 @@ class MlxLlmBenchmark(BaseLLMBenchmark):
 
     def run_once(self, prompt: str) -> LlmBenchmarkMeasurement:
         """Run the mlx benchmark once. Return measurements."""
-
+        mx.reset_peak_memory()
         prompt_tokens = self.format_prompt(prompt)
 
         # mlx only accepts B=1

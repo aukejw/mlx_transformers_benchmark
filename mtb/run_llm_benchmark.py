@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
+import mlx.core as mx
 import pandas as pd
 from tqdm import tqdm
 
