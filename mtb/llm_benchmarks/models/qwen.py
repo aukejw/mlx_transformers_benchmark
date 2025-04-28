@@ -39,6 +39,9 @@ Qwen2p5_0p5B_it = ModelSpec(
             "int8": "mlx-community/Qwen2.5-0.5B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
         },
+        "lmstudio": {
+            "int4": "lmstudio-community/Qwen2.5-0.5B-Instruct-GGUF",
+        },
     },
 )
 
@@ -55,6 +58,9 @@ Qwen2p5_3B_it = ModelSpec(
             "bfloat16": "mlx-community/Qwen2.5-3B-Instruct-bf16",
             "int8": "mlx-community/Qwen2.5-3B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-3B-Instruct-4bit",
+        },
+        "lmstudio": {
+            "int4": "lmstudio-community/Qwen2.5-3B-Instruct-GGUF",
         },
     },
 )
@@ -73,6 +79,9 @@ Qwen2p5_Coder_0p5B_it = ModelSpec(
             "int8": "mlx-community/Qwen2.5-Coder-0.5B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-Coder-0.5B-Instruct-4bit",
         },
+        "lmstudio": {
+            "int4": "lmstudio-community/Qwen2.5-Coder-0.5B-Instruct-GGUF",
+        },
     },
 )
 
@@ -88,6 +97,9 @@ Qwen2p5_Coder_3B_it = ModelSpec(
             "bfloat16": "mlx-community/Qwen2.5-Coder-3B-Instruct-bf16",
             "int8": "mlx-community/Qwen2.5-Coder-3B-Instruct-8bit",
             "int4": "mlx-community/Qwen2.5-Coder-3B-Instruct-4bit",
+        },
+        "lmstudio": {
+            "int4": "lmstudio-community/Qwen2.5-Coder-3B-Instruct-GGUF",
         },
     },
 )
