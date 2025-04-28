@@ -120,9 +120,10 @@ Gemma3_12B_it_QAT = ModelSpec(
     num_params=12e9,
     prompt_formatter=format_gemma_prompt,
     model_ids={
-        "torch": {
-            "int4": "google/gemma-3-12b-it-qat-q4_0-gguf",
-        },
+        # TODO: hf repo provides no pytorch_model.bin for the 4bit quantized model
+        #"torch": {
+        #    "int4": "google/gemma-3-12b-it-qat-q4_0-gguf",
+        #},
         "mlx": {
             "bfloat16": "mlx-community/gemma-3-12b-it-qat-bf16",
             "int8": "mlx-community/gemma-3-12b-it-qat-8bit",
