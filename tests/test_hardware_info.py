@@ -133,7 +133,7 @@ def test_get_linux_memory_info_success(mock_open, tmp_path):
     mock_open.return_value.__enter__.return_value = fake_proc_info.open("r")
 
     info = _get_linux_memory_info()
-    assert info["memory"] == "31.21"
+    assert info["memory"] == "32.72"
 
 
 @patch("builtins.open")

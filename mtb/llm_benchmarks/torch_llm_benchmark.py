@@ -7,6 +7,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement
+from mtb.memory import get_torch_memory_gib
 
 
 class TorchLlmBenchmark(BaseLLMBenchmark):
@@ -57,12 +58,14 @@ class TorchLlmBenchmark(BaseLLMBenchmark):
 
         # Time processing of prompt, initializing kv cache via a forward hook
         # for the end of the first forward pass.
-        stats_after_first_forward = None
+        time_after_first_token = None
+        memory_after_first_token = None
 
         def log_time_hook(module, input, output):
-            nonlocal stats_after_first_forward
-            if stats_after_first_forward is None:
-                stats_after_first_forward = dict(end_time=time.time_ns())
+            nonlocal time_after_first_token, memory_after_first_token
+            if memory_after_first_token is None:
+                time_after_first_token = time.time_ns()
+                memory_after_first_token = get_torch_memory_gib(backend=self.backend)
 
         hook_handle = self.model.register_forward_hook(log_time_hook)
 
@@ -82,7 +85,7 @@ class TorchLlmBenchmark(BaseLLMBenchmark):
         # Collect metrics. Assumption: total_time - ttft = generation_time
         end_time = time.time_ns()
 
-        prompt_seconds = (stats_after_first_forward["end_time"] - start_time) / 1e9
+        prompt_seconds = (time_after_first_token - start_time) / 1e9
         prompt_tps = num_prompt_tokens / prompt_seconds
         generation_seconds = (end_time - start_time) / 1e9 - prompt_seconds
         generation_tps = num_generated_tokens / generation_seconds
@@ -97,6 +100,7 @@ class TorchLlmBenchmark(BaseLLMBenchmark):
             generation_time_sec=generation_seconds,
             num_prompt_tokens=num_prompt_tokens,
             num_generated_tokens=num_generated_tokens,
+            peak_memory_gib=memory_after_first_token,
         )
 
     def teardown(self):

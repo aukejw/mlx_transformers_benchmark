@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import mlx.core as mx
 import psutil
@@ -30,20 +31,28 @@ def get_used_ram_gib() -> float:
     return bytes_to_gib(ram)
 
 
-def get_torch_memory_gib() -> float:
+def get_torch_memory_gib(backend: Optional[str] = None) -> float:
     """Return the memory allocated by torch tensors in GiB.
 
     Tensors on GPU typically live in a separate memory space, despite the
     unified memory model. This function returns the allocated GPU memory.
 
     """
-    if torch.mps.is_available():
+    if backend is None:
+        if torch.mps.is_available():
+            backend = "mps"
+        elif torch.cuda.is_available():
+            backend = "cuda"
+        else:
+            backend = "cpu"
+
+    if backend == "mps":
         mem = torch.mps.current_allocated_memory()
-    elif torch.cuda.is_available():
+    elif backend == "cuda":
         mem = torch.cuda.memory_allocated()
     else:
-        # all data lives in RAM?
-        mem = 0
+        # all data lives in RAM -- crude approximation
+        mem = get_process_memory_gib()
 
     return bytes_to_gib(mem)
 
@@ -82,3 +91,25 @@ def estimate_model_size(
         "int3": 3,  # not always true in practice
     }
     return bytes_to_gib(num_params * dtype_to_bits[dtype] / 8)
+
+
+def get_lmstudio_memory():
+    """Return the memory allocated to LmStudio processes in GiB.
+
+    This includes all helper processes as well.
+
+    Returns:
+        A dictionary mapping process names to their memory usage in GiB.
+        A key 'total' is included as well, summing all other processes.
+
+    """
+    memory = dict()
+    for proc in psutil.process_iter():
+        try:
+            if proc.name().lower().replace(" ", "").startswith("lmstudio"):
+                memory[proc.name] = bytes_to_gib(proc.memory_info().rss)
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+
+    memory["total"] = sum(memory.values())
+    return memory

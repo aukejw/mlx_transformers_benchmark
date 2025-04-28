@@ -109,6 +109,7 @@ def run_benchmark(
         "prompt_time_sec",  # total time needed to parse prompt, init kv cache
         "generation_tps",  # tokens/sec for generation
         "generation_time_sec",  # total time needed for generation, excl. prompting
+        "peak_memory_gib",  # peak memory usage in GiB
     ]
 
     for framework_kwargs in settings:

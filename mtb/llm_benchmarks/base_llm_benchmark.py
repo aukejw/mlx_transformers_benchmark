@@ -1,6 +1,7 @@
 from typing import Any, Callable
 
 from mtb.measurement import LlmBenchmarkMeasurement
+from mtb.memory import get_process_memory_gib
 
 
 class BaseLLMBenchmark:
@@ -32,6 +33,9 @@ class BaseLLMBenchmark:
         self.dtype = dtype
         self.prompt_formatter = prompt_formatter
         self.max_num_tokens = max_num_tokens
+
+        # track memory allocated by the process after this benchmark
+        self.initial_process_memory_gib = get_process_memory_gib()
 
     def format_prompt(self, prompt: str) -> Any:
         """Format the given prompt"""

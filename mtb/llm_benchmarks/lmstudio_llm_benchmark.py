@@ -7,6 +7,7 @@ import numpy as np
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.lmstudio_utils import check_lms_server_running
 from mtb.measurement import LlmBenchmarkMeasurement
+from mtb.memory import get_lmstudio_memory
 
 
 class LMStudioLlmBenchmark(BaseLLMBenchmark):
@@ -46,12 +47,20 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
 
     def run_once(self, prompt: Any) -> LlmBenchmarkMeasurement:
         """Run the benchmark once. Return measurements."""
+        memory_after_first_token_gib = 0.0
+
+        def log_lmstudio_memory_callback():
+            nonlocal memory_after_first_token_gib
+            memory = get_lmstudio_memory()
+            memory_after_first_token_gib = memory["total"]
+
         response: lms.json_api.PredictionResult = self.model.respond(
             prompt,
             config=dict(
                 temperature=0.0,
                 maxTokens=self.max_num_tokens,
             ),
+            on_first_token=log_lmstudio_memory_callback,
         )
         stats = response.stats
 
@@ -67,6 +76,7 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
             generation_tps=stats.tokens_per_second,
             num_prompt_tokens=num_prompt_tokens,
             num_generated_tokens=stats.predicted_tokens_count,
+            peak_memory_gib=memory_after_first_token_gib,
         )
 
     def teardown(self):

@@ -28,6 +28,9 @@ class LlmBenchmarkMeasurement:
     num_prompt_tokens: int
     num_generated_tokens: int
 
+    # peak memory usage
+    peak_memory_gib: float
+
     def to_dict(self, include_reponse: bool = False) -> Dict:
         dictionary = asdict(self)
         if not include_reponse:

@@ -67,6 +67,7 @@ class MlxLlmBenchmark(BaseLLMBenchmark):
             generation_tps=response.generation_tps,
             num_prompt_tokens=response.prompt_tokens,
             num_generated_tokens=response.generation_tokens,
+            peak_memory_gib=response.peak_memory,
         )
 
     def teardown(self):

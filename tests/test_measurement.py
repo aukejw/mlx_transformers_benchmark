@@ -12,6 +12,7 @@ def test_llm_benchmark_measurement():
         generation_tps=20.0,
         num_prompt_tokens=5,
         num_generated_tokens=10,
+        peak_memory_gib=0.1,
     )
     assert meausrement.response == "Hello, world!"
     assert meausrement.to_dict(include_reponse=True) == {
@@ -22,6 +23,7 @@ def test_llm_benchmark_measurement():
         "generation_tps": 20.0,
         "num_prompt_tokens": 5,
         "num_generated_tokens": 10,
+        "peak_memory_gib": 0.1,
     }
 
 

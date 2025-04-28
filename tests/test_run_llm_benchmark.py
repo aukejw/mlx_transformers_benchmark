@@ -49,6 +49,7 @@ class MockBenchmark(BaseLLMBenchmark):
             prompt_tps=4,
             prompt_time_sec=5,
             generation_time_sec=6,
+            peak_memory_gib=7,
         )
 
     def teardown(self):
@@ -79,6 +80,7 @@ def test_run_benchmark_for_framework(benchmark):
         "num_generated_tokens",
         "prompt_time_sec",
         "generation_time_sec",
+        "peak_memory_gib",
     ]:
         assert key in measurements[0]
 
