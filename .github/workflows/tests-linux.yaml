@@ -2,18 +2,13 @@
 name: tests-linux
 
 on:
-  push:
-    branches:
-      - main 
-  pull_request:  
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
   # Testing via github Linux runner
   tests-linux:
     runs-on: ubuntu-latest  
+    if: github.event_name == 'workflow_dispatch' 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
