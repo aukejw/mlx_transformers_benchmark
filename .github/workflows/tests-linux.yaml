@@ -40,7 +40,7 @@ jobs:
 
       - name: Re-generate poetry.lock file for linux, install dependencies
         run: |
-          poetry lock 
+          poetry lock --no-cache --regenerate
           poetry install --with dev
 
       - name: Run tests with pytest
