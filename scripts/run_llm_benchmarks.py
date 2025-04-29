@@ -72,25 +72,22 @@ def main(
 
     # Define the model specs to benchmark
     model_specs = [
-        # gemma 3
+        # deepseek
+        Deepseek_R1_Distill_Qwen_7B,
+        # gemma
         Gemma3_1B_it,
         Gemma3_4B_it,
-        # gemma 3 qat
         Gemma3_1B_it_QAT,
         Gemma3_4B_it_QAT,
         Gemma3_12B_it_QAT,
-        # qwen 2.5
+        # qwen
         Qwen2p5_0p5B_it,
         Qwen2p5_3B_it,
-        # qwen 2.5 coder
         Qwen2p5_Coder_0p5B_it,
         Qwen2p5_Coder_3B_it,
-        # qwen 3
         Qwen3_0p6B_it,
         Qwen3_8B_it,
         Qwen3_14B_it,
-        # deepseek
-        Deepseek_R1_Distill_Qwen_7B,
     ]
 
     # Filter benchmarks if specified
