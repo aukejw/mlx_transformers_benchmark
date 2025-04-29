@@ -19,6 +19,9 @@ from mtb.llm_benchmarks.models.qwen import (
     Qwen2p5_3B_it,
     Qwen2p5_Coder_0p5B_it,
     Qwen2p5_Coder_3B_it,
+    Qwen3_0p6B_it,
+    Qwen3_8B_it,
+    Qwen3_14B_it,
 )
 from mtb.run_llm_benchmark import run_benchmark
 from mtb.select_benchmarks import filter_llm_benchmarks
@@ -82,6 +85,10 @@ def main(
         # qwen 2.5 coder
         Qwen2p5_Coder_0p5B_it,
         Qwen2p5_Coder_3B_it,
+        # qwen 3
+        Qwen3_0p6B_it,
+        Qwen3_8B_it,
+        Qwen3_14B_it,
         # deepseek
         Deepseek_R1_Distill_Qwen_7B,
     ]
