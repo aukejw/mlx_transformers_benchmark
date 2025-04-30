@@ -31,4 +31,6 @@ def get_lmstudio_version() -> Dict:
     """
     return dict(
         lmstudio_version=lmstudio.__version__,
+        # TODO can we determine the runtime version using lms?
+        llama_cpp_runtime_version=None,
     )

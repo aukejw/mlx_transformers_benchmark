@@ -32,6 +32,12 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
             self.model_id,
             config=dict(
                 contextLength=self.max_context_length,
+                # TODO eval_batch_size currently None, seems to default to 512 in LMStudio
+                eval_batch_size=None,
+                # TODO flashattention y/n?
+                flash_attention=None,
+                # TODO use_mmap y/n?
+                use_mmap=None,
             ),
         )
         return
