@@ -38,21 +38,30 @@ def test_benchmark_name_to_benchmark_class_valueerror():
         benchmark_name_to_benchmark_class("invalid_benchmark")
 
 
-def test_filter_benchmarks():
+@pytest.fixture()
+def layer_benchmarks():
     kwargs = dict(
         feature_dim=16,
     )
-    benchmarks = [
+    return [
         LayerNormBenchmark(**kwargs),
         LinearBenchmark(**kwargs),
         MhsaBenchmark(**kwargs),
         TransformerDecoderLayerBenchmark(**kwargs),
         TransformerEncoderLayerBenchmark(**kwargs),
     ]
+
+
+def test_filter_benchmarks(layer_benchmarks):
     run_only_benchmarks = ["layernorm", "linear"]
-
-    filtered_benchmarks = filter_benchmarks(benchmarks, run_only_benchmarks)
-
+    filtered_benchmarks = filter_benchmarks(layer_benchmarks, run_only_benchmarks)
     assert len(filtered_benchmarks) == 2
     assert isinstance(filtered_benchmarks[0], LayerNormBenchmark)
     assert isinstance(filtered_benchmarks[1], LinearBenchmark)
+
+
+def test_filter_benchmarks_str(layer_benchmarks):
+    run_only_benchmarks = "layernorm"
+    filtered_benchmarks = filter_benchmarks(layer_benchmarks, run_only_benchmarks)
+    assert len(filtered_benchmarks) == 1
+    assert isinstance(filtered_benchmarks[0], LayerNormBenchmark)
