@@ -6,6 +6,7 @@ import torch
 from mtb import FLAG_ON_MAC
 from mtb.memory import (
     bytes_to_gib,
+    estimate_model_size,
     get_available_ram_gib,
     get_mlx_memory_gib,
     get_process_memory_gib,
@@ -77,3 +78,18 @@ def test_get_mlx_memory_gib():
     mx.eval(tensor)
     difference_gib = get_mlx_memory_gib() - initial_mlx_memory
     assert difference_gib > tensor_gib
+
+
+def test_estimate_model_size():
+    for num_params, dtype, bits in [
+        (1_000_000, "float32", 32),
+        (500_000, "float16", 16),
+        (200_000, "bfloat16", 16),
+        (10_000, "int8", 8),
+        (2_000, "int6", 6),
+        (2_000, "int4", 4),
+        (2_000, "int3", 3),
+    ]:
+        estimated_model_size = estimate_model_size(num_params, dtype)
+        size = bytes_to_gib(num_params * bits / 8)
+        assert estimated_model_size == size
