@@ -39,6 +39,7 @@ def main(
     max_num_tokens: int = 100,
     enable_hf_progressbar: bool = False,
     cooldown_time_fraction: float = 0.05,
+    hf_cache_dir: Optional[str] = "~/.cache/huggingface",
     *,
     run_only_benchmarks: Optional[Iterable[str]] = None,
     run_mlx_metal: bool = True,
@@ -59,7 +60,10 @@ def main(
     """
     from mtb.hf_utils import set_hf_home
 
-    set_hf_home(enable_hf_progressbar=enable_hf_progressbar)
+    set_hf_home(
+        path=hf_cache_dir,
+        enable_hf_progressbar=enable_hf_progressbar,
+    )
 
     boolean_flags = dict(
         run_mlx_metal=run_mlx_metal,

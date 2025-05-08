@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from typing import Union
 
+from huggingface_hub import snapshot_download
 from transformers.utils.logging import disable_progress_bar, enable_progress_bar
 
 hf_home = os.environ.get("HF_HOME", "~/.cache/huggingface")
@@ -17,10 +18,11 @@ def set_hf_home(
 
     """
     global hf_home
+
     if hf_home != str(path):
         hf_home = str(path)
         os.environ["HF_HOME"] = hf_home
-        print(f"HF_HOME set to {hf_home}")
+        print(f"HF_HOME set to '{hf_home}' ")
 
     if not enable_hf_progressbar:
         disable_progress_bar()
@@ -37,13 +39,12 @@ def verbose_download_model(
     **kwargs,
 ):
     """Download a model from Hugging Face with verbose output."""
-    from huggingface_hub import snapshot_download
-
     # Check if the model is already downloaded
     try:
         snapshot_folder = snapshot_download(
             model_id,
             local_files_only=True,
+            cache_dir=get_hf_home(),
             **kwargs,
         )
     except Exception as e:
@@ -53,6 +54,7 @@ def verbose_download_model(
         snapshot_folder = snapshot_download(
             model_id,
             local_files_only=False,
+            cache_dir=get_hf_home(),
             **kwargs,
         )
         disable_progress_bar()
