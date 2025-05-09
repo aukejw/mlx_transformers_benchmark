@@ -52,7 +52,7 @@ To get started:
    poetry run python scripts/run_llm_benchmarks.py \
       --run_only_benchmarks qwen-2.5-0.5b-it \
       --dtypes \["int4","int8"\] \
-      --num_iterations 3 \
+      --num_iterations 3 
    ```
    This creates a new result in the `measurements` folder.
 
