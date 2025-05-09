@@ -7,7 +7,7 @@ Let's say you're interested in performing LLM inference on Apple hardware. You c
 Do you:
 - use [PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html)
 - use Apple's [MLX, built directly for Metal](https://github.com/ml-explore/mlx)?
-- use `LMStudio` with the `Metal+llama.cpp` backend?
+- use `LMStudio` with the `Metal+llama.cpp` backend, or use `llama.cpp` directly?
 
 We aim to help make this choice by benchmarking inference for a few common models and operators. Results can be found at 
 [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
@@ -15,14 +15,14 @@ We aim to help make this choice by benchmarking inference for a few common model
 
 ## Installation
 
-Before you start, you will need:
+You will need:
  - [`pyenv`](https://github.com/pyenv/pyenv) to manage the python version
  - [`poetry`](https://python-poetry.org/) for dependency management
 
- To (optionally) benchmark `Metal+llama.cpp` models, you will also need:
- - [`lmstudio`](https://lmstudio.ai/) 
+ To (optionally) benchmark `Metal+llama.cpp` models in LM Studio, you will also need:
+ - [`lmstudio`](https://lmstudio.ai/)
 
-## Quickstart
+To get started:
 
 1. Clone the repo:
    ```
