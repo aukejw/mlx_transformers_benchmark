@@ -39,7 +39,7 @@ def main(
     max_num_tokens: int = 100,
     enable_hf_progressbar: bool = False,
     cooldown_time_fraction: float = 0.05,
-    hf_cache_dir: Optional[str] = "~/.cache/huggingface",
+    hf_cache_dir: Optional[str] = "~/.cache/huggingface/hub",
     *,
     run_only_benchmarks: Optional[Iterable[str]] = None,
     run_mlx_metal: bool = True,
