@@ -32,9 +32,13 @@ To get started:
 
 2. Set up a python3.11 virtual environment using 
    [`pyenv`](https://github.com/pyenv/pyenv) and 
-   [`poetry`](https://python-poetry.org/), and activate it:
+   [`poetry`](https://python-poetry.org/):
    ```
    make create-venv
+   ```
+
+   If you like, you can always activate it using  
+   ```
    source .venv/bin/activate
    ```
 
@@ -45,7 +49,7 @@ To get started:
 
 3. Run benchmarking, here for the 0.5B parameter `Qwen2.5` model:
    ```
-   python scripts/run_llm_benchmarks.py \
+   poetry run python scripts/run_llm_benchmarks.py \
       --run_only_benchmarks qwen-2.5-0.5b-it \
       --dtypes \["int4","int8"\] \
       --num_iterations 3 \
