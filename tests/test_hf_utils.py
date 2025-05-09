@@ -4,13 +4,15 @@ from mtb.hf_utils import get_hf_home, set_hf_home, verbose_download_model
 
 
 def test_set_home():
+    default_hf_home = get_hf_home()
+
     # Set a new HF_HOME path
     new_path = "/tmp/huggingface"
     set_hf_home(new_path)
     assert get_hf_home() == new_path
 
     set_hf_home()
-    assert get_hf_home() == "~/.cache/huggingface"
+    assert get_hf_home() == default_hf_home
 
 
 def test_verbose_download_model():
