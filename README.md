@@ -13,7 +13,7 @@ We aim to help make this choice by benchmarking inference for a few common model
 [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
 
-### Dependencies
+## Installation
 
 Before you start, you will need:
  - [`pyenv`](https://github.com/pyenv/pyenv) to manage the python version
@@ -22,7 +22,7 @@ Before you start, you will need:
  To (optionally) benchmark `Metal+llama.cpp` models, you will also need:
  - [`lmstudio`](https://lmstudio.ai/) 
 
-### Quickstart
+## Quickstart
 
 1. Clone the repo:
    ```
@@ -66,7 +66,7 @@ Before you start, you will need:
    [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
 
-### Contributing
+## Contributing
 
 If you have an Apple device, additional measurements are always welcome! The easiest way to contribute is to [fork the repo]( https://github.com/aukejw/mlx_transformers_benchmark/fork), and run benchmarks for common LLMs and/or operators. 
 
