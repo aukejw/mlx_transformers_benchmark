@@ -2,12 +2,14 @@
 
 [![tests-Mac](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests-mac.yaml/badge.svg)](https://github.com/aukejw/mlx_transformers_benchmark/actions/workflows/tests-mac.yaml)
 
-Let's say you're interested in performing LLM inference on Apple hardware. You care about speed, but don't know which model or framwork to pick.
+Let's say you're interested in performing LLM inference on Apple hardware. You care about speed, but don't know which model or framework to pick.
 
 Do you:
 - use [PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html)
 - use Apple's [MLX, built directly for Metal](https://github.com/ml-explore/mlx)?
-- use `LMStudio` with the `Metal+llama.cpp` backend, or use `llama.cpp` directly?
+- use `LMStudio` with the `Metal+llama.cpp` backend, 
+- use `Ollama`,
+- or just use `llama.cpp` directly?
 
 We aim to help make this choice by benchmarking inference for a few common models and operators. Results can be found at 
 [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).

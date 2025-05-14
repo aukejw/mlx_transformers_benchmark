@@ -21,7 +21,7 @@ def benchmark_torch():
         framework="torch",
         backend="mps",
         dtype="bfloat16",
-        max_num_tokens=30,
+        max_num_tokens=10,
     )
     benchmark.setup()
     yield benchmark
@@ -35,7 +35,7 @@ def benchmark_mlx():
         framework="mlx",
         backend="metal",
         dtype="bfloat16",
-        max_num_tokens=30,
+        max_num_tokens=10,
     )
     benchmark.setup()
     yield benchmark
@@ -49,21 +49,15 @@ def benchmark_lms():
         framework="lmstudio",
         backend="metal+llama.cpp",
         dtype="int4",
-        max_num_tokens=30,
+        max_num_tokens=10,
     )
     benchmark.setup()
     yield benchmark
     benchmark.teardown()
 
 
-bfloat16_response = (
-    "Okay, here’s a story about Albert Einstein, aiming for a balance of his brilliance, "
-    "his struggles, and a touch of "
-)
-int4_response = (
-    "Okay, here's a story about Albert Einstein, aiming for a "
-    "balance of his brilliance, his struggles, and a touch of melancholy"
-)
+expected_bf16_response = "Okay, here’s a story about Albert Einstein"
+expected_int4_response = "Okay, here's a story about Albert"
 
 
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
@@ -80,7 +74,9 @@ def test_gemma_torch(benchmark_torch):
     assert timing.prompt_tps > 0
     assert timing.prompt_time_sec > 0
     assert timing.generation_tps > 0
-    assert timing.response.startswith(bfloat16_response)
+
+    response = timing.response
+    assert response == expected_bf16_response
 
 
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
@@ -96,7 +92,9 @@ def test_gemma_mlx(benchmark_mlx):
     assert timing.prompt_tps > 0
     assert timing.prompt_time_sec > 0
     assert timing.generation_tps > 0
-    assert timing.response.startswith(bfloat16_response)
+
+    response = timing.response
+    assert response == expected_bf16_response
 
 
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
@@ -111,4 +109,6 @@ def test_gemma_lmstudio(benchmark_lms):
     assert timing.prompt_tps > 0
     assert timing.prompt_time_sec > 0
     assert timing.generation_tps > 0
-    assert timing.response.startswith(int4_response)
+
+    response = timing.response
+    assert response == expected_int4_response
