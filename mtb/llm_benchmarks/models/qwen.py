@@ -42,6 +42,9 @@ Qwen2p5_0p5B_it = ModelSpec(
         "lmstudio": {
             "int4": "lmstudio-community/Qwen2.5-0.5B-Instruct-GGUF",
         },
+        "ollama": {
+            "int4": "qwen2.5:0.5b",
+        },
     },
 )
 
@@ -61,6 +64,9 @@ Qwen2p5_3B_it = ModelSpec(
         },
         "lmstudio": {
             "int4": "lmstudio-community/Qwen2.5-3B-Instruct-GGUF",
+        },
+        "ollama": {
+            "int4": "qwen2.5:3b",
         },
     },
 )
@@ -82,6 +88,9 @@ Qwen2p5_Coder_0p5B_it = ModelSpec(
         "lmstudio": {
             "int4": "lmstudio-community/Qwen2.5-Coder-0.5B-Instruct-GGUF",
         },
+        "ollama": {
+            "int4": "qwen2.5-coder:0.5b",
+        },
     },
 )
 
@@ -101,6 +110,9 @@ Qwen2p5_Coder_3B_it = ModelSpec(
         "lmstudio": {
             "int4": "lmstudio-community/Qwen2.5-Coder-3B-Instruct-GGUF",
         },
+        "ollama": {
+            "int4": "qwen2.5-coder:3b",
+        },
     },
 )
 
@@ -117,6 +129,9 @@ Qwen3_0p6B_it = ModelSpec(
         "lmstudio": {
             "int4": "lmstudio-community/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q4_K_M.gguf",
             "int8": "lmstudio-community/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q8_0.gguf",
+        },
+        "ollama": {
+            "int4": "qwen3:0.6b",
         },
     },
 )
@@ -135,6 +150,9 @@ Qwen3_8B_it = ModelSpec(
             "int4": "lmstudio-community/Qwen3-8B-GGUF/Qwen3-8B-Q4_K_M.gguf",
             "int8": "lmstudio-community/Qwen3-8B-GGUF/Qwen3-8B-Q8_0.gguf",
         },
+        "ollama": {
+            "int4": "qwen3:8b",
+        },
     },
 )
 
@@ -151,6 +169,9 @@ Qwen3_14B_it = ModelSpec(
         "lmstudio": {
             "int4": "lmstudio-community/Qwen3-14B-GGUF/Qwen3-14B-Q4_K_M.gguf",
             "int8": "lmstudio-community/Qwen3-14B-GGUF/Qwen3-14B-Q8_0.gguf",
+        },
+        "ollama": {
+            "int4": "qwen3:14b",
         },
     },
 )

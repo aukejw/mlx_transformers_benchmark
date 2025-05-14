@@ -23,5 +23,8 @@ Deepseek_R1_Distill_Qwen_7B = ModelSpec(
         "lmstudio": {
             "int4": "lmstudio-community/DeepSeek-R1-Distill-Qwen-7B-GGUF",
         },
+        "ollama": {
+            "int4": "deepseek-r1:7b",
+        },
     },
 )
