@@ -1,32 +1,31 @@
 ## Targets for virtual environments
 
 # Sets up a virtual environment and activates it
-create-venv:
-	pyenv local 3.11.11
-	POETRY_VIRTUALENVS_IN_PROJECT=1 poetry env use $(shell pyenv which python3)
-	poetry lock
-	poetry install --with dev
+setup:
+	uv python install 3.11.11
+	uv sync --group=dev
 
 # Activate the virtual environment
 activate-venv:
 	@echo "Run to activate the virtual environment: "
-	@echo "source $(shell poetry env info --path)/bin/activate"
+	@echo "source .venv/bin/activate"
+	@echo "You can also use `uv run` to run scripts in the virtual environment without activating it."
 
 ## Targets for running benchmarks
 
 run-llm-benchmarks:
-	poetry run python scripts/run_llm_benchmarks.py --num_iterations 3
+	uv run python scripts/run_llm_benchmarks.py --num_iterations 3
 
 run-layer-benchmarks:
-	poetry run python scripts/run_layer_benchmarks.py --num_iterations 30
+	uv run python scripts/run_layer_benchmarks.py --num_iterations 30
 
 show-llm-benchmarks:
-	poetry run python scripts/visualize_llm_benchmarks.py --show_all_measurements
+	uv run python scripts/visualize_llm_benchmarks.py --show_all_measurements
 	open visualizations/index.html 
 
 show-layer-benchmarks:
-	poetry run python scripts/visualize_layer_benchmarks.py --show_all_measurements
+	uv run python scripts/visualize_layer_benchmarks.py --show_all_measurements
 	open visualizations/index.html 
 
 test:
-	poetry run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
+	uv run pytest --cov --cov-report=term-missing --cov-report=html --disable-warnings -v
