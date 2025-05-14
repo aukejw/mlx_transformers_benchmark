@@ -1,5 +1,4 @@
 import platform
-from unittest.mock import patch
 
 import pytest
 
@@ -13,46 +12,60 @@ from mtb.system.hardware_info import (
 )
 
 
-@patch("platform.system", return_value="Darwin")
-@patch(
-    "mtb.system.hardware_info.get_mac_hardware_info", return_value={"chip": "Apple M1"}
-)
-def test_get_hardware_info_mac(mock_platform, mock_get_mac_hardware_info):
+def test_get_hardware_info_mac(mocker):
+    mocker.patch(
+        "mtb.system.hardware_info.platform.system",
+        return_value="Darwin",
+    )
+    mocker.patch(
+        "mtb.system.hardware_info.get_mac_hardware_info",
+        return_value={"chip": "Apple M1"},
+    )
     info = get_hardware_info()
     assert info["chip"] == "Apple M1"
 
 
-@patch("platform.system", return_value="Linux")
-@patch("mtb.system.hardware_info.get_linux_hw_info", return_value={"chip": "Nvidia"})
-def test_get_hardware_info_linux(mock_platform, mock_get_linux_hw_info):
+def test_get_hardware_info_linux(mocker):
+    mocker.patch(
+        "mtb.system.hardware_info.platform.system",
+        return_value="Linux",
+    )
+    mocker.patch(
+        "mtb.system.hardware_info.get_linux_hardware_info",
+        return_value={"chip": "Nvidia GeForce RTX 3080"},
+    )
     info = get_hardware_info()
     assert info["chip"] == "Nvidia GeForce RTX 3080"
 
 
-@patch("platform.system", return_value="illegal_value")
-def test_get_hardware_info_linux(mock_platform):
+def test_get_hardware_info_unsupported(mocker):
+    mocker.patch(
+        "mtb.system.hardware_info.platform.system", return_value="illegal_value"
+    )
     with pytest.raises(NotImplementedError):
         get_hardware_info()
 
 
-def test_get_mac_hardware_info_success():
+def test_get_mac_hardware_info_success(mocker):
+    mock_check_output = mocker.patch("mtb.system.hardware_info.check_output")
     mock_output = """
     Model Name: MacBook Pro
     Chip: Apple M1
     Total Number of Cores: 8 (4 performance and 4 efficiency)
     Memory: 16 GB
     """
-    with patch("subprocess.check_output", return_value=mock_output.encode("utf-8")):
-        info = get_mac_hardware_info()
-        assert info["model_name"] == "MacBook Pro"
-        assert info["chip"] == "Apple M1"
-        assert info["total_cores"] == "8"
-        assert info["performance_cores"] == "4"
-        assert info["efficiency_cores"] == "4"
-        assert info["gpu_cores"] == "8"
-        assert info["memory"] == "16"
-        assert info["hardware_string"] == "Apple_M1_4P+4E+8GPU_16GB"
-        assert info["processor"] is not None
+    mock_check_output.return_value = mock_output.encode("utf-8")
+
+    info = get_mac_hardware_info()
+    assert info["model_name"] == "MacBook Pro"
+    assert info["chip"] == "Apple M1"
+    assert info["total_cores"] == "8"
+    assert info["performance_cores"] == "4"
+    assert info["efficiency_cores"] == "4"
+    assert info["gpu_cores"] == "8"
+    assert info["memory"] == "16"
+    assert info["hardware_string"] == "Apple_M1_4P+4E+8GPU_16GB"
+    assert info["processor"] is not None
 
 
 @pytest.mark.skipif(platform.system() != "Linux", reason="platform != Linux")
@@ -69,24 +82,22 @@ def test_get_linux_hardware_info():
         + (f"_{info['chip']}" if info["chip"] != "no_gpu" else "")
         + f"_{info['total_cores']}C_{info['memory']}GB"
     )
-
     assert info["hardware_string"] == expected_hardware_string
 
 
-@patch(
-    "mtb.system.hardware_info._get_linux_cpu_info",
-    return_value=dict(processor="aarch64"),
-)
-@patch(
-    "mtb.system.hardware_info._get_linux_memory_info", return_value=dict(memory="1.00")
-)
-@patch(
-    "mtb.system.hardware_info._get_nvidia_info",
-    return_value=dict(chip="Nvidia GeForce RTX 3080"),
-)
-def test_get_linux_hardware_info_mocked(
-    mock_cpu_info, mock_memory_info, mock_nvidia_info
-):
+def test_get_linux_hardware_info_mocked(mocker):
+    mocker.patch(
+        "mtb.system.hardware_info._get_linux_cpu_info",
+        return_value=dict(processor="aarch64"),
+    )
+    mocker.patch(
+        "mtb.system.hardware_info._get_linux_memory_info",
+        return_value=dict(memory="1.00"),
+    )
+    mocker.patch(
+        "mtb.system.hardware_info._get_nvidia_info",
+        return_value=dict(chip="Nvidia GeForce RTX 3080"),
+    )
     # bit of a useless test, but cannot run on mac otherwise
     info = get_linux_hardware_info()
     assert info["processor"] == "aarch64"
@@ -94,9 +105,15 @@ def test_get_linux_hardware_info_mocked(
     assert info["chip"] == "Nvidia GeForce RTX 3080"
 
 
-@patch("platform.processor", return_value="arm")
-@patch("subprocess.check_output", return_value=b"illegal_value")
-def test_get_mac_hardware_info_failure(mock_processor, mock_check_output):
+def test_get_mac_hardware_info_failure(mocker):
+    mocker.patch(
+        "mtb.system.hardware_info.platform.processor",
+        return_value="arm",
+    )
+    mocker.patch(
+        "mtb.system.hardware_info.check_output",
+        return_value=b"illegal_value",
+    )
     info = get_mac_hardware_info()
     assert info["processor"] == "arm"
     assert info["chip"] == "Unknown"
@@ -106,31 +123,34 @@ def test_get_mac_hardware_info_failure(mock_processor, mock_check_output):
     assert info["memory"] == "X"
 
 
-@patch("platform.processor", return_value="x86_64")
 @pytest.mark.parametrize("processor", ["x86_64", "aarch64"])
-def test_get_linux_cpu_info(mock_platform, processor):
+def test_get_linux_cpu_info(mocker, processor):
+    mocker.patch("mtb.system.hardware_info.platform.processor", return_value=processor)
+    mock_check_output = mocker.patch("mtb.system.hardware_info.check_output")
     mock_output = f"""
     Architecture: {processor}
     CPU(s): 8
     """
-    with patch("subprocess.check_output", return_value=mock_output.encode("utf-8")):
-        info = _get_linux_cpu_info()
-        assert info["processor"] == processor
-        assert info["total_cores"] == "8"
+    mock_check_output.return_value = mock_output.encode("utf-8")
+
+    info = _get_linux_cpu_info()
+    assert info["processor"] == processor
+    assert info["total_cores"] == "8"
 
 
-@patch("platform.processor", return_value="x86_64")
-def test_get_linux_cpu_info_noprocessor(mock_platform):
+def test_get_linux_cpu_info_noprocessor(mocker):
+    mocker.patch("mtb.system.hardware_info.platform.processor", return_value="x86_64")
+    mock_check_output = mocker.patch("mtb.system.hardware_info.check_output")
     mock_output = f"""
     CPU(s): 8
     """
-    with patch("subprocess.check_output", return_value=mock_output.encode("utf-8")):
-        with pytest.raises(ValueError):
-            _get_linux_cpu_info()
+    mock_check_output.return_value = mock_output.encode("utf-8")
+    with pytest.raises(ValueError):
+        _get_linux_cpu_info()
 
 
-@patch("builtins.open")
-def test_get_linux_memory_info_success(mock_open, tmp_path):
+def test_get_linux_memory_info_success(mocker, tmp_path):
+    mock_open = mocker.patch("builtins.open")
     mock_file_content = """
     MemTotal:       32723584 kB
     MemFree:        22498452 kB
@@ -143,8 +163,8 @@ def test_get_linux_memory_info_success(mock_open, tmp_path):
     assert info["memory"] == "32.72"
 
 
-@patch("builtins.open")
-def test_get_linux_memory_info_missing(mock_open, tmp_path):
+def test_get_linux_memory_info_missing(mocker, tmp_path):
+    mock_open = mocker.patch("builtins.open")
     mock_file_content = """
     MemFree:        22498452 kB
     """
@@ -157,15 +177,15 @@ def test_get_linux_memory_info_missing(mock_open, tmp_path):
     assert "memory" not in info
 
 
-@patch("builtins.open", side_effect=ValueError)
-def test_get_linux_memory_info_missing_data(mock_open, tmp_path):
+def test_get_linux_memory_info_missing_data(mocker):
+    mocker.patch("builtins.open", side_effect=ValueError)
     with pytest.warns():
         info = _get_linux_memory_info()
     assert "memory" not in info
 
 
-@patch("subprocess.check_output")
-def test_get_nvidia_info_success(mock_check_output):
+def test_get_nvidia_info_success(mocker):
+    mock_check_output = mocker.patch("mtb.system.hardware_info.check_output")
     mock_output = "Nvidia GeForce RTX 3080, 10240, 460.32.03"
     mock_check_output.return_value = mock_output.encode("utf-8")
 
@@ -175,7 +195,10 @@ def test_get_nvidia_info_success(mock_check_output):
     assert info["driver_version"] == "460.32.03"
 
 
-@patch("subprocess.check_output", side_effect=Exception("Command failed"))
-def test_get_nvidia_info_failure(mock_check_output):
+def test_get_nvidia_info_failure(mocker):
+    mocker.patch(
+        "mtb.system.hardware_info.check_output",
+        side_effect=Exception("Command failed"),
+    )
     info = _get_nvidia_info()
     assert info == dict(chip="no_gpu")

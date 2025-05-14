@@ -1,7 +1,7 @@
 import platform
 import re
-import subprocess
 import warnings
+from subprocess import check_output
 from typing import Dict
 
 __all__ = [
@@ -49,13 +49,18 @@ def get_mac_hardware_info() -> Dict:
     info = dict(
         processor=platform.processor(),
     )
-
-    sp_output = subprocess.check_output(
-        ["system_profiler", "SPHardwareDataType"]
+    sp_output = check_output(
+        [
+            "system_profiler",
+            "SPHardwareDataType",
+        ]
     ).decode("utf-8")
 
-    display_output = subprocess.check_output(
-        ["system_profiler", "SPDisplaysDataType"]
+    display_output = check_output(
+        [
+            "system_profiler",
+            "SPDisplaysDataType",
+        ]
     ).decode("utf-8")
 
     # Get chip, CPU info
@@ -139,7 +144,7 @@ def _get_linux_cpu_info() -> Dict:
 
     """
     info = dict()
-    lscpu_output = subprocess.check_output(["lscpu"]).decode("utf-8")
+    lscpu_output = check_output(["lscpu"]).decode("utf-8")
 
     for line in lscpu_output.splitlines():
         if "Architecture:" in line:
@@ -193,7 +198,7 @@ def _get_nvidia_info() -> Dict:
 
     try:
         nvidia_output = (
-            subprocess.check_output(
+            check_output(
                 [
                     "nvidia-smi",
                     "--query-gpu=name,memory.total,driver_version",
