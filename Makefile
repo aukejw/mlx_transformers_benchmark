@@ -1,18 +1,16 @@
 ## Targets for virtual environments
 
-# Sets up a virtual environment and activates it
+# Create a virtual environment using uv
 setup:
-	uv python install 3.11.11
 	uv sync --group=dev
 
 # Activate the virtual environment
 activate-venv:
-	@echo "Run to activate the virtual environment: "
+	@echo "We recommend using `uv run python <your-script>` to use the venv without activating it."
+	@echo "If you insist, to activate the virtual environment, run: "
 	@echo "source .venv/bin/activate"
-	@echo "You can also use `uv run` to run scripts in the virtual environment without activating it."
 
 ## Targets for running benchmarks
-
 run-llm-benchmarks:
 	uv run python scripts/run_llm_benchmarks.py --num_iterations 3
 
