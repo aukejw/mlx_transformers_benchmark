@@ -58,7 +58,7 @@ def benchmark_lms():
 
 bfloat16_response = (
     "Okay, here’s a story about Albert Einstein, aiming for a balance of his brilliance, "
-    "his struggles, and a touch of his quiet humanity."
+    "his struggles, and a touch of "
 )
 int4_response = (
     "Okay, here's a story about Albert Einstein, aiming for a "
