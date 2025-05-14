@@ -45,7 +45,7 @@ class TestQwenBenchmark:
         assert isinstance(benchmark_torch.model, Qwen2ForCausalLM)
         assert isinstance(benchmark_torch.tokenizer, Qwen2TokenizerFast)
 
-        prompt_tokens = benchmark_torch.format_prompt("OK")
+        prompt_tokens = benchmark_torch.format_and_tokenize_prompt("OK")
         assert isinstance(prompt_tokens, torch.Tensor)
 
         timing = benchmark_torch.run_once(prompt="Write a story about Einstein")
@@ -62,7 +62,7 @@ class TestQwenBenchmark:
         assert isinstance(benchmark_mlx.model, mlx.nn.Module)
         assert isinstance(benchmark_mlx.tokenizer, TokenizerWrapper)
 
-        prompt_tokens = benchmark_mlx.format_prompt("OK")
+        prompt_tokens = benchmark_mlx.format_and_tokenize_prompt("OK")
         assert isinstance(prompt_tokens, mx.array)
 
         timing = benchmark_mlx.run_once(prompt="Write a story about Einstein")

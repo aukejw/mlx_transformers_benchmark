@@ -67,7 +67,7 @@ def test_gemma_torch(benchmark_torch):
     assert isinstance(benchmark_torch.model, Gemma3PreTrainedModel)
     assert isinstance(benchmark_torch.tokenizer, GemmaTokenizerFast)
 
-    prompt_tokens = benchmark_torch.format_prompt("OK")
+    prompt_tokens = benchmark_torch.format_and_tokenize_prompt("OK")
     assert isinstance(prompt_tokens, torch.Tensor)
 
     timing = benchmark_torch.run_once(prompt="Write a story about Einstein")
@@ -85,7 +85,7 @@ def test_gemma_mlx(benchmark_mlx):
     assert isinstance(benchmark_mlx.model, mlx.nn.Module)
     assert isinstance(benchmark_mlx.tokenizer, TokenizerWrapper)
 
-    prompt_tokens = benchmark_mlx.format_prompt("OK")
+    prompt_tokens = benchmark_mlx.format_and_tokenize_prompt("OK")
     assert isinstance(prompt_tokens, mx.array)
 
     timing = benchmark_mlx.run_once(prompt="Write a story about Einstein")
@@ -102,7 +102,7 @@ def test_gemma_mlx(benchmark_mlx):
 def test_gemma_lmstudio(benchmark_lms):
     assert isinstance(benchmark_lms.model, LLM)
 
-    prompt_tokens = benchmark_lms.format_prompt("OK")
+    prompt_tokens = benchmark_lms.format_and_tokenize_prompt("OK")
     assert isinstance(prompt_tokens, np.ndarray)
 
     timing = benchmark_lms.run_once(prompt="Write a story about Einstein")
