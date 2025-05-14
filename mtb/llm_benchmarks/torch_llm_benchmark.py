@@ -7,7 +7,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement
-from mtb.memory import get_torch_memory_gib
+from mtb.system.memory import get_torch_memory_gib
 
 
 class TorchLlmBenchmark(BaseLLMBenchmark):

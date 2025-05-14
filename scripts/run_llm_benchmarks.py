@@ -23,7 +23,7 @@ from mtb.llm_benchmarks.models.qwen import (
     Qwen3_8B_it,
     Qwen3_14B_it,
 )
-from mtb.run_llm_benchmark import run_benchmark
+from mtb.llm_benchmarks.run_llm_benchmark import run_benchmark
 from mtb.select_benchmarks import filter_llm_benchmarks
 
 DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements" / "llm_benchmarks"

@@ -7,7 +7,7 @@ import numpy as np
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.lmstudio_utils import check_lms_server_running
 from mtb.measurement import LlmBenchmarkMeasurement
-from mtb.memory import get_lmstudio_memory
+from mtb.system.memory import get_lmstudio_memory
 
 
 class LMStudioLlmBenchmark(BaseLLMBenchmark):

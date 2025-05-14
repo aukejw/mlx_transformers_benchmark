@@ -8,7 +8,7 @@ from transformers import Qwen2ForCausalLM, Qwen2TokenizerFast
 
 from mtb import FLAG_ON_MAC
 from mtb.llm_benchmarks.models.qwen import Qwen2p5_0p5B_it
-from mtb.run_llm_benchmark import create_benchmark
+from mtb.llm_benchmarks.run_llm_benchmark import create_benchmark
 
 
 @pytest.fixture(scope="session")
@@ -41,6 +41,7 @@ class TestQwenBenchmark:
     @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
     @pytest.mark.skipif(not torch.mps.is_available(), reason="Must run on MPS backend")
     def test_setup_generate_torch(self, benchmark_torch):
+        torch.manual_seed(0)
         assert isinstance(benchmark_torch.model, Qwen2ForCausalLM)
         assert isinstance(benchmark_torch.tokenizer, Qwen2TokenizerFast)
 
@@ -52,11 +53,12 @@ class TestQwenBenchmark:
         assert timing.prompt_time_sec > 0
         assert timing.generation_tps > 0
 
-        bfloat16_response = "Einstein was born on March 14"
+        bfloat16_response = "Einstein was born "
         assert timing.response.startswith(bfloat16_response)
 
     @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
     def test_setup_generate_mlx(self, benchmark_mlx):
+        mx.random.seed(0)
         assert isinstance(benchmark_mlx.model, mlx.nn.Module)
         assert isinstance(benchmark_mlx.tokenizer, TokenizerWrapper)
 

@@ -3,7 +3,7 @@ from typing import Dict, List, Type, Union
 
 from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
 from mtb.llm_benchmarks.models.base import ModelSpec
-from mtb.memory import estimate_model_size, get_available_ram_gib
+from mtb.system.memory import estimate_model_size, get_available_ram_gib
 
 
 def benchmark_name_to_benchmark_class(

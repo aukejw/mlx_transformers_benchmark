@@ -6,8 +6,11 @@ import pytest
 
 from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.llm_benchmarks.models.base import ModelSpec
+from mtb.llm_benchmarks.run_llm_benchmark import (
+    run_benchmark,
+    run_benchmark_for_framework,
+)
 from mtb.measurement import LlmBenchmarkMeasurement
-from mtb.run_llm_benchmark import run_benchmark, run_benchmark_for_framework
 
 MockModelSpec = ModelSpec(
     name="mock_model",
@@ -89,7 +92,7 @@ def test_run_benchmark(monkeypatch, benchmark, tmp_path):
     # Mock create_benchmark to return the MockBenchmark instance
     mock_create_benchmark = Mock(return_value=benchmark)
     monkeypatch.setattr(
-        "mtb.run_llm_benchmark.create_benchmark",
+        "mtb.llm_benchmarks.run_llm_benchmark.create_benchmark",
         mock_create_benchmark,
     )
 

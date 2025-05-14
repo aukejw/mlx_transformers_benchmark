@@ -10,8 +10,8 @@ from transformers.models.gemma3.modeling_gemma3 import Gemma3PreTrainedModel
 
 from mtb import FLAG_ON_MAC
 from mtb.llm_benchmarks.models.gemma import Gemma3_1B_it
+from mtb.llm_benchmarks.run_llm_benchmark import create_benchmark
 from mtb.lmstudio_utils import check_lms_server_running
-from mtb.run_llm_benchmark import create_benchmark
 
 
 @pytest.fixture(scope="session")
@@ -69,6 +69,7 @@ int4_response = (
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
 @pytest.mark.skipif(not torch.mps.is_available(), reason="Must run on MPS backend")
 def test_gemma_torch(benchmark_torch):
+    torch.manual_seed(0)
     assert isinstance(benchmark_torch.model, Gemma3PreTrainedModel)
     assert isinstance(benchmark_torch.tokenizer, GemmaTokenizerFast)
 
@@ -84,6 +85,7 @@ def test_gemma_torch(benchmark_torch):
 
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
 def test_gemma_mlx(benchmark_mlx):
+    mx.random.seed(0)
     assert isinstance(benchmark_mlx.model, mlx.nn.Module)
     assert isinstance(benchmark_mlx.tokenizer, TokenizerWrapper)
 
@@ -99,7 +101,7 @@ def test_gemma_mlx(benchmark_mlx):
 
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
 @pytest.mark.skipif(not check_lms_server_running(), reason="Must run on LLM Studio")
-def test_lms_gemma(benchmark_lms):
+def test_gemma_lmstudio(benchmark_lms):
     assert isinstance(benchmark_lms.model, LLM)
 
     prompt_tokens = benchmark_lms.format_prompt("OK")

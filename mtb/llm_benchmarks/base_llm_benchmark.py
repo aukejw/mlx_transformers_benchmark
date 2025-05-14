@@ -1,7 +1,7 @@
 from typing import Any, Callable
 
 from mtb.measurement import LlmBenchmarkMeasurement
-from mtb.memory import get_process_memory_gib
+from mtb.system.memory import get_process_memory_gib
 
 
 class BaseLLMBenchmark:
