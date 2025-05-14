@@ -15,9 +15,12 @@ def _find_values_in_string(
     pattern: str,
     string: str,
     default_value: str,
-) -> Dict[str, str]:
-    """Find the first hit of interest in a string. Return the default value if not found."""
+) -> str:
+    """Find the first hit of interest in a string.
 
+    Return the default value if not found.
+
+    """
     match = re.search(pattern, string)
     if match:
         return match.group(1).strip()

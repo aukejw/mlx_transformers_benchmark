@@ -1,9 +1,21 @@
+import platform
 from typing import Dict
 
 import lmstudio
 import mlx.core as mx
 import mlx_lm
 import torch
+
+
+def get_software_info() -> Dict:
+    """Get an overview of SW info."""
+    software_info = dict(
+        platform=str(platform.platform()),
+        python_version=str(platform.python_version()),
+        **get_torch_version(),
+        **get_mlx_version(),
+    )
+    return software_info
 
 
 def get_torch_version() -> Dict:

@@ -1,6 +1,5 @@
 import datetime
 import json
-import platform
 import subprocess
 from functools import partial
 from pathlib import Path
@@ -10,7 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from mtb.system.hardware_info import get_hardware_info
-from mtb.system.software_info import get_mlx_version, get_torch_version
+from mtb.system.software_info import get_software_info
 
 __all__ = [
     "create_benchmark_output_dir",
@@ -58,20 +57,13 @@ def create_benchmark_config(
 
     datetime_string = datetime.datetime.now().strftime("%Y-%m-%d__%H:%M:%S")
 
-    software_info = dict(
-        platform=platform.platform(),
-        python_version=platform.python_version(),
-        **get_torch_version(),
-        **get_mlx_version(),
-    )
-
     configuration = dict(
         datetime=datetime_string,
         contributor="",
         git_commit=_get_commit(),
         benchmark_settings=benchmark_settings,
         hardware_info=get_hardware_info(),
-        software_info=software_info,
+        software_info=get_software_info(),
     )
 
     return configuration

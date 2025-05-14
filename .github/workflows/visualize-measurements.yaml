@@ -14,10 +14,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Setup Python, assuming uv is available
-      run: | 
-        uv python install 3.11.11
-
     - name: Install dependencies, assuming uv is available
       run: |
         uv sync --group=dev
