@@ -9,8 +9,8 @@ from typing import Dict, Union
 import pandas as pd
 from tqdm import tqdm
 
-from mtb.hardware_info import get_hardware_info
-from mtb.software_info import get_mlx_version, get_torch_version
+from mtb.system.hardware_info import get_hardware_info
+from mtb.system.software_info import get_mlx_version, get_torch_version
 
 __all__ = [
     "create_benchmark_output_dir",
