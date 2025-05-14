@@ -44,7 +44,7 @@ class MlxLlmBenchmark(BaseLLMBenchmark):
     def run_once(self, prompt: str) -> LlmBenchmarkMeasurement:
         """Run the mlx benchmark once. Return measurements."""
         mx.reset_peak_memory()
-        prompt_tokens = self.format_prompt(prompt)
+        prompt_tokens = self.format_and_tokenize_prompt(prompt)
 
         # mlx_lm only accepts a list of tokens (B=1) for inference
         prompt_tokens = prompt_tokens[0]

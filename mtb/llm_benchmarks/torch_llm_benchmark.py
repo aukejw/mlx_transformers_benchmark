@@ -53,7 +53,7 @@ class TorchLlmBenchmark(BaseLLMBenchmark):
         should be close enough for our purposes.
 
         """
-        prompt_tokens = self.format_and_tokenize(prompt)
+        prompt_tokens = self.format_and_tokenize_prompt(prompt)
         num_prompt_tokens = prompt_tokens.shape[0]
 
         # transformers expects a batch dimension
