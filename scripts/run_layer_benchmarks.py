@@ -9,7 +9,7 @@ from tqdm import tqdm
 import mtb as mtb
 import mtb.layer_benchmarks as mtb_bench
 from mtb.file_io import create_benchmark_output_dir
-from mtb.run_layer_benchmark import run_benchmark
+from mtb.layer_benchmarks.run_layer_benchmark import run_benchmark
 from mtb.select_benchmarks import filter_benchmarks
 
 DEFAULT_OUTPUT_ROOT = mtb.REPO_ROOT / "measurements" / "layer_benchmarks"

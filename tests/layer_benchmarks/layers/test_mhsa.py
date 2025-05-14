@@ -1,6 +1,6 @@
 import pytest
 
-from mtb.layer_benchmarks.mhsa import MhsaBenchmark
+from mtb.layer_benchmarks.layers.mhsa import MhsaBenchmark
 from tests.layer_benchmarks import LayerBenchmarkTest
 
 

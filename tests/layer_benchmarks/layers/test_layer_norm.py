@@ -1,6 +1,6 @@
 import pytest
 
-from mtb.layer_benchmarks.layer_norm import LayerNormBenchmark
+from mtb.layer_benchmarks.layers.layer_norm import LayerNormBenchmark
 from tests.layer_benchmarks import LayerBenchmarkTest
 
 

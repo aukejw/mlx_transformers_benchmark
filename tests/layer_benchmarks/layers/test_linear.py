@@ -1,6 +1,6 @@
 import pytest
 
-from mtb.layer_benchmarks.linear import LinearBenchmark
+from mtb.layer_benchmarks.layers.linear import LinearBenchmark
 from tests.layer_benchmarks import LayerBenchmarkTest
 
 

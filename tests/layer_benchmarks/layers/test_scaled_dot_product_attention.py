@@ -1,6 +1,6 @@
 import pytest
 
-from mtb.layer_benchmarks.scaled_dot_product_attention import (
+from mtb.layer_benchmarks.layers.scaled_dot_product_attention import (
     ScaledDotProductAttentionBenchmark,
 )
 from tests.layer_benchmarks import LayerBenchmarkTest

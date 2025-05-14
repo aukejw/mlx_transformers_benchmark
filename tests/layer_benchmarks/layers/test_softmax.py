@@ -1,6 +1,6 @@
 import pytest
 
-from mtb.layer_benchmarks.softmax import SoftmaxBenchmark
+from mtb.layer_benchmarks.layers.softmax import SoftmaxBenchmark
 from tests.layer_benchmarks import LayerBenchmarkTest
 
 
