@@ -21,6 +21,18 @@ def find_prompt_for_llm_benchmark(
         A prompt with the correct number of tokens for the tokenizer and message template.
 
     """
+    try:
+        prompt_tokens = benchmark.format_and_tokenize_prompt("")
+    except NotImplementedError:
+        # benchmark does not implement tokenizer: use a very long prompt,
+        # and rely on the context length parameter to limit the context.
+        prompt = get_random_prompt(text_length=5 * num_tokens)
+        # sadly, this involves re-initializing the model: context length is a load-time parameter
+        benchmark.max_context_length = num_tokens
+        benchmark.teardown()
+        benchmark.setup()
+        return prompt
+
     # initial guess: we need 1 character per token
     text_length = int(num_tokens)
     num_prompt_tokens = None
@@ -28,8 +40,8 @@ def find_prompt_for_llm_benchmark(
     # iteratively search for prompts until we hit one with length num_tokens
     while num_prompt_tokens != num_tokens:
         prompt = get_random_prompt(text_length=text_length)
-        prompt_tokens = benchmark.format_prompt(prompt)
-        num_prompt_tokens = len(prompt_tokens[0])
+        prompt_tokens = benchmark.format_and_tokenize_prompt(prompt)
+        num_prompt_tokens = len(prompt_tokens)
 
         if num_prompt_tokens < num_tokens:
             # prompt too short, increase length by at least 1 character
