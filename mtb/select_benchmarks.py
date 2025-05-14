@@ -93,6 +93,7 @@ def filter_llm_benchmarks(
     run_torch_cuda: bool = False,
     run_mlx_cpu: bool = False,
     run_lmstudio_metal: bool = False,
+    run_ollama_metal: bool = False,
     verbose: bool = True,
 ) -> List[Dict]:
     """Determine which LLM benchmarks to run based on boolean flags."""
@@ -116,6 +117,7 @@ def filter_llm_benchmarks(
         (run_torch_cpu, dict(framework="torch", backend="cpu")),
         (run_torch_cuda, dict(framework="torch", backend="cuda")),
         (run_lmstudio_metal, dict(framework="lmstudio", backend="metal+llama.cpp")),
+        (run_ollama_metal, dict(framework="ollama", backend="metal+llama.cpp")),
     ]
 
     available_memory = get_available_ram_gib()

@@ -157,6 +157,8 @@ def _convert_row_to_framework_backend(
         name += "_" + row["mlx_version"]
     elif row["framework"] == "lmstudio":
         pass
+    elif row["framework"] == "ollama":
+        pass
     else:
         raise NotImplementedError(f"Unsupported framework {row['framework']}")
 

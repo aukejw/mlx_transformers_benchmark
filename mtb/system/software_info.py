@@ -1,4 +1,5 @@
 import platform
+from subprocess import check_output
 from typing import Dict
 
 import lmstudio
@@ -14,6 +15,7 @@ def get_software_info() -> Dict:
         python_version=str(platform.python_version()),
         **get_torch_version(),
         **get_mlx_version(),
+        **get_ollama_version(),
     )
     return software_info
 
@@ -45,4 +47,21 @@ def get_lmstudio_version() -> Dict:
         lmstudio_version=lmstudio.__version__,
         # TODO can we determine the runtime version using lms?
         llama_cpp_runtime_version=None,
+    )
+
+
+def get_ollama_version() -> Dict:
+    """Get the current ollama version."""
+    output = check_output(["ollama", "--version"], text=True)
+
+    # output should be in the form "ollama version is X.Y.Z"
+    expected_prefix = "ollama version is "
+    if not output.startswith(expected_prefix):
+        raise ValueError(f"Unexpected output from 'ollama --version': {output}")
+
+    ollama_version = output.split(expected_prefix)[-1].strip()
+
+    return dict(
+        ollama_version=ollama_version,
+        # TODO can we determine anything about the llama.cpp engine?
     )
