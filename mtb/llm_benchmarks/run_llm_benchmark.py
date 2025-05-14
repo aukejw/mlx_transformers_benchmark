@@ -3,7 +3,6 @@ import time
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
-import mlx.core as mx
 import pandas as pd
 from tqdm import tqdm
 
@@ -11,6 +10,7 @@ from mtb.llm_benchmarks.base_llm_benchmark import BaseLLMBenchmark
 from mtb.llm_benchmarks.lmstudio_llm_benchmark import LMStudioLlmBenchmark
 from mtb.llm_benchmarks.mlx_llm_benchmark import MlxLlmBenchmark
 from mtb.llm_benchmarks.models.base import ModelSpec
+from mtb.llm_benchmarks.ollama_llm_benchmark import OllamaLlmBenchmark
 from mtb.llm_benchmarks.torch_llm_benchmark import TorchLlmBenchmark
 from mtb.measurement import LlmBenchmarkMeasurement, Measurements
 from mtb.prompts import find_prompt_for_llm_benchmark
@@ -111,6 +111,8 @@ def create_benchmark(
         benchmark_class = MlxLlmBenchmark
     elif framework == "lmstudio":
         benchmark_class = LMStudioLlmBenchmark
+    elif framework == "ollama":
+        benchmark_class = OllamaLlmBenchmark
     else:
         raise NotImplementedError(f"Framework not supported: {framework}. ")
 

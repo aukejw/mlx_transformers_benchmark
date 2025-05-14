@@ -32,7 +32,7 @@ class TorchLlmBenchmark(BaseLLMBenchmark):
             self.model_id,
         )
 
-    def format_prompt(self, prompt: str) -> torch.Tensor:
+    def format_and_tokenize_prompt(self, prompt: str) -> torch.Tensor:
         prompt = self.prompt_formatter(prompt)
 
         model_input = self.tokenizer.apply_chat_template(
@@ -42,7 +42,7 @@ class TorchLlmBenchmark(BaseLLMBenchmark):
             return_dict=True,
             return_tensors="pt",
         )
-        return model_input.input_ids
+        return model_input.input_ids[0]
 
     @torch.inference_mode()
     def run_once(self, prompt: Any) -> LlmBenchmarkMeasurement:
@@ -53,8 +53,11 @@ class TorchLlmBenchmark(BaseLLMBenchmark):
         should be close enough for our purposes.
 
         """
-        prompt_tokens = self.format_prompt(prompt)
-        num_prompt_tokens = prompt_tokens.shape[1]
+        prompt_tokens = self.format_and_tokenize(prompt)
+        num_prompt_tokens = prompt_tokens.shape[0]
+
+        # transformers expects a batch dimension
+        prompt_tokens = prompt_tokens.reshape(1, num_prompt_tokens)
 
         # Time processing of prompt, initializing kv cache via a forward hook
         # for the end of the first forward pass.

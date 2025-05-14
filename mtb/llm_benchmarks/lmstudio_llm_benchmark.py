@@ -1,5 +1,5 @@
 import gc
-from typing import Any, List
+from typing import Any
 
 import lmstudio as lms
 import numpy as np
@@ -26,11 +26,21 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
         if not check_lms_server_running():
             raise ValueError("LM Studio server is not running!")
 
+    def format_and_tokenize_prompt(self, prompt: str) -> np.ndarray:
+        """Format and tokenize the given prompt."""
+        prompt = self.prompt_formatter(prompt)
+        if isinstance(prompt, list):
+            prompt = {"messages": prompt}
+        prompt = self.model.apply_prompt_template(prompt)
+        prompt_tokens = self.model.tokenize(prompt)
+        return np.array(prompt_tokens)
+
     def setup(self):
         """Set up the benchmark. Load the model, tokenizer."""
         self.model = lms.llm(
             self.model_id,
             config=dict(
+                # set the context length through load parameters
                 contextLength=self.max_context_length,
                 # TODO eval_batch_size currently None, seems to default to 512 in LMStudio
                 eval_batch_size=None,
@@ -41,15 +51,6 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
             ),
         )
         return
-
-    def format_prompt(self, prompt: str) -> List[List[int]]:
-        """Format the given prompt."""
-        prompt = self.prompt_formatter(prompt)
-        if isinstance(prompt, list):
-            prompt = {"messages": prompt}
-        prompt = self.model.apply_prompt_template(prompt)
-        prompt_tokens = self.model.tokenize(prompt)
-        return np.array([prompt_tokens])
 
     def run_once(self, prompt: Any) -> LlmBenchmarkMeasurement:
         """Run the benchmark once. Return measurements."""
@@ -70,9 +71,9 @@ class LMStudioLlmBenchmark(BaseLLMBenchmark):
         )
         stats = response.stats
 
-        # get num prompt tokens by encoding the prompt string instead of using
+        # get num prompt tokens by encoding the full prompt string instead of using
         # stats.prompt_tokens_count, as the latter excludes the system prompt tokens!
-        num_prompt_tokens = len(self.format_prompt(prompt)[0])
+        num_prompt_tokens = len(self.format_and_tokenize_prompt(prompt))
 
         return LlmBenchmarkMeasurement(
             response=response.content,

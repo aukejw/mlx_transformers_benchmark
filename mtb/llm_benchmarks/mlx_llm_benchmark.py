@@ -29,7 +29,7 @@ class MlxLlmBenchmark(BaseLLMBenchmark):
         self.model: mlx.nn.Module = model
         self.tokenizer: mlx_lm.tokenizer_utils.TokenizerWrapper = tokenizer
 
-    def format_prompt(self, prompt: str) -> mx.array:
+    def format_and_tokenize_prompt(self, prompt: str) -> mx.array:
         prompt = self.prompt_formatter(prompt)
 
         model_input = self.tokenizer.apply_chat_template(
@@ -39,14 +39,14 @@ class MlxLlmBenchmark(BaseLLMBenchmark):
             return_dict=True,
             return_tensors="mlx",
         )
-        return model_input.input_ids
+        return model_input.input_ids[0]
 
     def run_once(self, prompt: str) -> LlmBenchmarkMeasurement:
         """Run the mlx benchmark once. Return measurements."""
         mx.reset_peak_memory()
         prompt_tokens = self.format_prompt(prompt)
 
-        # mlx only accepts B=1
+        # mlx_lm only accepts a list of tokens (B=1) for inference
         prompt_tokens = prompt_tokens[0]
 
         # use stream_generate instead of generate, its response is more useful

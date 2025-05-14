@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 from mtb.measurement import LlmBenchmarkMeasurement
 from mtb.system.memory import get_process_memory_gib
@@ -37,14 +37,14 @@ class BaseLLMBenchmark:
         # track memory allocated by the process after this benchmark
         self.initial_process_memory_gib = get_process_memory_gib()
 
-    def format_prompt(self, prompt: str) -> Any:
-        """Format the given prompt"""
+    def format_and_tokenize_prompt(self, prompt: str) -> Iterable:
+        """Format and tokenize the prompt. Return a list, array or tensor of tokens."""
         raise NotImplementedError
 
-    def get_num_prompt_tokens(self, prompt: str) -> int:
-        """Get the number of tokens in the prompt."""
-        tokens = self.format_prompt(prompt)
-        return len(tokens[0])
+    def get_num_prompt_tokens(self, user_prompt: str) -> int:
+        """Get the number of tokens for a given user prompt."""
+        tokens = self.tokenize(user_prompt)
+        return len(tokens)
 
     def setup(self):
         """Set up the benchmark. Load the model, tokenizer."""
