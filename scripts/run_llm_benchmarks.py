@@ -5,24 +5,9 @@ import fire
 from tqdm import tqdm
 
 import mtb as mtb
+import mtb.llm_benchmarks
 from mtb.file_io import create_benchmark_output_dir
-from mtb.llm_benchmarks.models.deepseek import Deepseek_R1_Distill_Qwen_7B
-from mtb.llm_benchmarks.models.gemma import (
-    Gemma3_1B_it,
-    Gemma3_1B_it_QAT,
-    Gemma3_4B_it,
-    Gemma3_4B_it_QAT,
-    Gemma3_12B_it_QAT,
-)
-from mtb.llm_benchmarks.models.qwen import (
-    Qwen2p5_0p5B_it,
-    Qwen2p5_3B_it,
-    Qwen2p5_Coder_0p5B_it,
-    Qwen2p5_Coder_3B_it,
-    Qwen3_0p6B_it,
-    Qwen3_8B_it,
-    Qwen3_14B_it,
-)
+from mtb.llm_benchmarks.models.base import ModelSpec
 from mtb.llm_benchmarks.run_llm_benchmark import run_benchmark
 from mtb.select_benchmarks import filter_llm_benchmarks
 
@@ -77,24 +62,7 @@ def main(
     )
 
     # Define the model specs to benchmark
-    model_specs = [
-        # deepseek
-        Deepseek_R1_Distill_Qwen_7B,
-        # gemma
-        Gemma3_1B_it,
-        Gemma3_4B_it,
-        Gemma3_1B_it_QAT,
-        Gemma3_4B_it_QAT,
-        Gemma3_12B_it_QAT,
-        # qwen
-        Qwen2p5_0p5B_it,
-        Qwen2p5_3B_it,
-        Qwen2p5_Coder_0p5B_it,
-        Qwen2p5_Coder_3B_it,
-        Qwen3_0p6B_it,
-        Qwen3_8B_it,
-        Qwen3_14B_it,
-    ]
+    model_specs: List[ModelSpec] = list(mtb.llm_benchmarks.MODEL_SPECS)
 
     # Filter benchmarks if specified
     benchmarks_to_run: List[Dict] = filter_llm_benchmarks(
