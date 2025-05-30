@@ -1,16 +1,14 @@
+from typing import Any
+
+from mtb.llm_benchmarks.models.base import ModelSpec
+
 __all__ = [
-    "format_gemma_prompt",
     "Gemma3_1B_it",
     "Gemma3_4B_it",
     "Gemma3_1B_it_QAT",
     "Gemma3_4B_it_QAT",
     "Gemma3_12B_it_QAT",
 ]
-
-
-from typing import Any
-
-from mtb.llm_benchmarks.models.base import ModelSpec
 
 
 def format_gemma_prompt(prompt: str) -> Any:

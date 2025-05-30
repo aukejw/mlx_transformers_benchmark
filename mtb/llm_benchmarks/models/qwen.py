@@ -3,11 +3,13 @@ from typing import Any
 from mtb.llm_benchmarks.models.base import ModelSpec
 
 __all__ = [
-    "format_qwen_prompt",
     "Qwen2p5_0p5B_it",
     "Qwen2p5_Coder_0p5B_it",
     "Qwen2p5_3B_it",
     "Qwen2p5_Coder_3B_it",
+    "Qwen3_0p6B_it",
+    "Qwen3_8B_it",
+    "Qwen3_14B_it",
 ]
 
 

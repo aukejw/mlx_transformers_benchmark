@@ -2,6 +2,11 @@ from typing import Any
 
 from mtb.llm_benchmarks.models.base import ModelSpec
 
+__all__ = [
+    "Deepseek_R1_Distill_Qwen_7B",
+    "Deepseek_R1_0528_Qwen3_8B",
+]
+
 
 def format_deepseek_prompt(prompt: str) -> Any:
     """Deepseek models expect a regular system prompt."""
@@ -25,6 +30,30 @@ Deepseek_R1_Distill_Qwen_7B = ModelSpec(
         },
         "ollama": {
             "int4": "deepseek-r1:7b",
+        },
+    },
+)
+
+
+Deepseek_R1_0528_Qwen3_8B = ModelSpec(
+    name="Deepseek-R1-0528_Qwen3-8B",
+    num_params=int(13e9),
+    prompt_formatter=format_deepseek_prompt,
+    model_ids={
+        "mlx": {
+            "int4": "mlx-community/DeepSeek-R1-0528-Qwen3-8B-4bit",
+            "int8": "mlx-community/DeepSeek-R1-0528-Qwen3-8B-8bit",
+            "bfloat16": "mlx-community/DeepSeek-R1-0528-Qwen3-8B-bf16",
+        },
+        "lmstudio": {
+            "int4": "lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-GGUF/DeepSeek-R1-0528-Qwen3-8B-Q4_K_M.gguf",
+            "int8": "lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-GGUF/DeepSeek-R1-0528-Qwen3-8B_0.gguf",
+        },
+        "ollama": {
+            "int4": "deepseek-r1:8b",
+        },
+        "torch": {
+            "bfloat16": "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
         },
     },
 )
