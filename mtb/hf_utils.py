@@ -5,11 +5,13 @@ from typing import Union
 from huggingface_hub import snapshot_download
 from transformers.utils.logging import disable_progress_bar, enable_progress_bar
 
-hf_home = os.environ.get("HF_HOME", "~/.cache/huggingface/hub")
+from mtb import DEFAULT_HF_HOME
+
+hf_home = os.environ.get("HF_HOME", DEFAULT_HF_HOME)
 
 
 def set_hf_home(
-    path: Union[str, Path] = "~/.cache/huggingface/hub",
+    path: Union[str, Path] = DEFAULT_HF_HOME,
     enable_hf_progressbar: bool = False,
 ):
     """Set the HF_HOME environment variable to a specific path.
