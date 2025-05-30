@@ -12,12 +12,12 @@ from mtb.layer_benchmarks.layers.transformer_encoder_layer import (
     TransformerEncoderLayerBenchmark,
 )
 
-__all__ = [
-    "LayerNormBenchmark",
-    "LinearBenchmark",
-    "MhsaBenchmark",
-    "ScaledDotProductAttentionBenchmark",
-    "SoftmaxBenchmark",
-    "TransformerEncoderLayerBenchmark",
-    "TransformerDecoderLayerBenchmark",
+LAYER_BENCHMARKS = [
+    LayerNormBenchmark,
+    LinearBenchmark,
+    MhsaBenchmark,
+    ScaledDotProductAttentionBenchmark,
+    SoftmaxBenchmark,
+    TransformerEncoderLayerBenchmark,
+    TransformerDecoderLayerBenchmark,
 ]

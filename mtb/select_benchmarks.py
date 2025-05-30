@@ -1,4 +1,3 @@
-import importlib
 from typing import Dict, List, Type, Union
 
 from mtb.layer_benchmarks.base_layer_benchmark import BaseLayerBenchmark
@@ -18,30 +17,26 @@ def benchmark_name_to_benchmark_class(
     original_benchmark_name = benchmark_name
     benchmark_name = benchmark_name.lower().replace("_", "")
 
-    from mtb.layer_benchmarks import __all__ as layer_benchmark_names
-    from mtb.llm_benchmarks import __all__ as llm_benchmark_names
+    from mtb.layer_benchmarks import LAYER_BENCHMARKS as layer_benchmarks
+    from mtb.llm_benchmarks import MODEL_SPECS as model_specs
 
     name_to_benchmark_class = dict()
-    for name in layer_benchmark_names:
-        name_to_benchmark_class[name.lower()] = f"mtb.layer_benchmarks.{name}"
-    for name in llm_benchmark_names:
-        name_to_benchmark_class[name.lower()] = f"mtb.llm_benchmarks.{name}"
-
-    if not benchmark_name.endswith("benchmark"):
-        benchmark_name += "benchmark"
+    for layer_benchmark in layer_benchmarks:
+        name = layer_benchmark.__name__.replace("Benchmark", "")
+        name_to_benchmark_class[name.lower()] = layer_benchmark
+    for model_spec in model_specs:
+        name = model_spec.name
+        name_to_benchmark_class[name.lower()] = model_spec
 
     try:
-        benchmark_class_name = name_to_benchmark_class[benchmark_name]
+        benchmark_class = name_to_benchmark_class[benchmark_name]
     except KeyError:
         raise ValueError(
-            f"Could not find benchmark class for name '{original_benchmark_name}'"
+            f"Could not find benchmark class for name '{original_benchmark_name}', "
+            f"must be one of {list(name_to_benchmark_class.keys())}."
         )
 
-    module_name, class_name = benchmark_class_name.rsplit(".", 1)
-    module = importlib.import_module(module_name)
-    class_type = getattr(module, class_name)
-
-    return class_type
+    return benchmark_class
 
 
 def filter_benchmarks(
