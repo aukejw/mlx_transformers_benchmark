@@ -5,13 +5,14 @@
 Let's say you're interested in performing LLM inference on Apple hardware. You care about speed, but don't know which model or framework to pick.
 
 Do you:
-- use [PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html)
-- use Apple's [MLX, built directly for Metal](https://github.com/ml-explore/mlx)?
-- use `LMStudio` with the `Metal+llama.cpp` backend, 
+- use [PyTorch with the Metal Performance Shaders backend](https://pytorch.org/docs/stable/notes/mps.html),
+- use Apple's [MLX, built directly for Metal](https://github.com/ml-explore/mlx),
+- use `LM Studio` and its `llama.cpp` engine for Metal, 
 - use `Ollama`,
-- or just use `llama.cpp` directly?
+- or use `llama.cpp` directly?
 
-We aim to help make this choice by benchmarking inference for a few common models and operators. Results can be found at 
+We aim to help you make this choice, by benchmarking inference for a few common models and operators. 
+Results can be found at 
 [https://aukejw.github.io/mlx_transformers_benchmark/](https://aukejw.github.io/mlx_transformers_benchmark/).
 
 
@@ -20,8 +21,9 @@ We aim to help make this choice by benchmarking inference for a few common model
 Before you start, you will need:
  - [`uv`](https://github.com/pyenv/pyenv) to manage dependencies, available as [homebrew](https://formulae.brew.sh/formula/uv)
 
- To (optionally) benchmark `Metal+llama.cpp` models in LM Studio, you will also need:
- - [`lmstudio`](https://lmstudio.ai/)
+ To (optionally) benchmark `Metal+llama.cpp` models in common interfaces, you may also need:
+ - [`LM Studio`](https://lmstudio.ai/)
+ - [`Ollama`](https://ollama.com/)
 
 To get started:
 
@@ -57,7 +59,7 @@ To get started:
    ```
    This will take a longer time however, so make sure you aren't busy!
 
-4. To create a HTML report of all measurements and open the index page:
+4. To create a HTML report of all available measurements and open the index page:
    ```
    make show-llm-benchmarks
    ```
@@ -67,14 +69,18 @@ To get started:
 
 ## Contributing
 
-If you have an Apple device, additional measurements are always welcome! The easiest way to contribute is to [fork the repo]( https://github.com/aukejw/mlx_transformers_benchmark/fork), and run benchmarks for common LLMs and/or operators. 
+If you have an Apple device, additional measurements are always welcome! 
+The easiest way to contribute is to 
+[fork the repo](https://github.com/aukejw/mlx_transformers_benchmark/fork), 
+and run benchmarks for common LLMs and/or operators. 
 
-See [CONTRIBUTING.md](https://github.com/aukejw/mlx_transformers_benchmark/blob/main/contributing.md) for the instructions.
+See [CONTRIBUTING.md](https://github.com/aukejw/mlx_transformers_benchmark/blob/main/contributing.md) for more info.
 
 
 ### On reproducibility
 
-As Apple machines share memory with other background processes, these benchmarks are not exact, certainly not for Macbooks. Still, the numbers should give a decent idea of the performance to expect. 
+As Apple machines share memory with other background processes, these benchmarks are not exact, certainly not for Macbooks. 
+Still, the numbers should give a decent idea of the performance to expect. 
 
 Although the default parameters do not result in thermal throttling for a Macbook M4 Pro, older
 machines may have trouble with the heavier models and operators. We do try to skip large models,
@@ -85,7 +91,8 @@ or outlier measurements, do take a closer look!
 > For a large number of iterations, the GPU will certainly heat up. If needed, you can 
 increase the cooldown period using the `cooldown_time_fraction` argument. Monitoring GPU 
 temperature programatically requires admin privileges, but you can use third-party apps like 
-[stats](https://github.com/exelban/stats), also available as [homebrew](https://formulae.brew.sh/cask/stats).
+[stats](https://github.com/exelban/stats), also available as 
+[homebrew](https://formulae.brew.sh/cask/stats).
 
 
 ### Notes
@@ -96,8 +103,7 @@ typically obtain
 [high tokens/sec in inference benchmarks](https://github.com/ggml-org/llama.cpp/discussions/4167).
 
 This benchmark focuses on the inference time of easy-to-run LLMs and unquantized transformer ops, primarily 
-useful when finetuning custom models for (or on!) Apple devices. While speed is one factor,
-do consider ecosystem and cross-platform support too - here, Nvidia+CUDA remain hard to beat!  
+useful when running inference locally, or when finetuning custom models for (or on!) Apple devices. 
 
 You may also be interested in:
 
