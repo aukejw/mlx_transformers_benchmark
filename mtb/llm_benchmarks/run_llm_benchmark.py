@@ -34,15 +34,18 @@ def run_benchmark(
     Each combination of batchsize, prompt results in one measurement.
 
     Args:
-        benchmark_config: Configuration for the benchmark, including model_id.
+        model_spec: Specification of the benchmark + model to run.
+        framework: String identifier for the framework (e.g. torch, mlx)
+        backend: String identifier for the backend (e.g. mps, metal, cuda).
+        dtype: String identifier for the dtype (e.g. bfloat16, int8, int4).
         output_path: Path to save benchmark results.
         batch_sizes: List of batch sizes to run.
         prompt_lengths: List of lengths of prompts to use.
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run generation for.
-        cooldown_time_fraction: Fraction of time to wait after each benchmark.
-            This is to avoid overheating the GPU.
         max_num_tokens: Maximum number of tokens to generate.
+        cooldown_time_fraction: Fraction of time to wait after each benchmark.
+            Defaults to 0.1, mainly to avoid overheating the GPU.
 
     Returns:
         pd.DataFrame: A dataframe containing benchmark results.
@@ -195,7 +198,7 @@ def run_benchmark_for_framework(
                     num_tokens=num_prompt_tokens,
                 )
                 measurement: LlmBenchmarkMeasurement = benchmark.run_once(prompt=prompt)
-                container.add(measurement.to_dict())
+                container.add(measurement.to_dict(include_reponse=False))
 
                 iterator.update(1)
                 iterator.set_description(

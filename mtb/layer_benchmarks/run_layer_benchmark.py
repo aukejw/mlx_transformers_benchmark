@@ -25,12 +25,16 @@ def run_benchmark_for_framework(
 
     Args:
         benchmark: The benchmark to run.
-        framework: The framework to run the benchmark on.
-        backend: The backend or compute to use.
-        dtype: Identifier for the data type.
+        framework: String identifier for the framework (e.g. torch, mlx).
+        backend: String identifier for the backend (e.g. mps, metal, cuda).
+        dtype: String identifier for the dtype (e.g. float16, int8, int4).
         num_warmup_iterations: Number of warmup iterations.
         num_iterations: Number of iterations to run inference for.
         min_runtime_ms: Minimum runtime in milliseconds for the benchmark.
+            For some operators, running 100 iterations is too fast, and we need
+            more datapoints to reduce variance.
+        cooldown_time_fraction: Fraction of time to wait after each benchmark.
+            This is mainly to avoid overheating the GPU.
         compile: If true, compile the function before benchmarking.
 
     Returns:
@@ -58,7 +62,7 @@ def run_benchmark_for_framework(
             )
 
             start_time = time.perf_counter()
-            for warmup_iteration in range(num_warmup_iterations):
+            for _ in range(num_warmup_iterations):
                 benchmark.run_once()
 
             iteration_time_ms = (
