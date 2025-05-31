@@ -46,8 +46,8 @@ Deepseek_R1_0528_Qwen3_8B = ModelSpec(
             "bfloat16": "mlx-community/DeepSeek-R1-0528-Qwen3-8B-bf16",
         },
         "lmstudio": {
-            "int4": "lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-GGUF/DeepSeek-R1-0528-Qwen3-8B-Q4_K_M.gguf",
-            "int8": "lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-GGUF/DeepSeek-R1-0528-Qwen3-8B_0.gguf",
+            "int4": "deepseek/deepseek-r1-0528-qwen3-8b:deepseek-r1-0528-qwen3-8b@q4_k_m",
+            "int8": "deepseek/deepseek-r1-0528-qwen3-8b:deepseek-r1-0528-qwen3-8b@q8_0",
         },
         "ollama": {
             "int4": "deepseek-r1:8b",
