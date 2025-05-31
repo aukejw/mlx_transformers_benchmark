@@ -21,6 +21,29 @@
             // Assign values to the variables in each iteration
             benchmarkType = "llm_benchmarks";
             chipName = "Apple_M4_Pro_10P+4E+20GPU_24GB";
+            benchmarkName = "deepseek-r1-0528_qwen3-8b";
+            filePath = "llm_benchmarks/Apple_M4_Pro_10P+4E+20GPU_24GB/deepseek-r1-0528_qwen3-8b.html";
+
+            if (!availableBenchmarkTypes.includes(benchmarkType)) {
+                availableBenchmarkTypes.push(benchmarkType);
+                availableChipsAndBenchmarks[benchmarkType] = {
+                    'chips': [],
+                    'benchmarks': [],
+                };
+            }
+
+            // add the chip and benchmark to the list of valid combinations
+            if (!availableChipsAndBenchmarks[benchmarkType]['chips'].includes(chipName)) {
+                availableChipsAndBenchmarks[benchmarkType]['chips'].push(chipName);
+            }
+            if (!availableChipsAndBenchmarks[benchmarkType]['benchmarks'].includes(benchmarkName)) {
+                availableChipsAndBenchmarks[benchmarkType]['benchmarks'].push(benchmarkName);
+            }
+            visualizationsToPage[`${benchmarkType}_${chipName}_${benchmarkName}`] = filePath;
+            
+            // Assign values to the variables in each iteration
+            benchmarkType = "llm_benchmarks";
+            chipName = "Apple_M4_Pro_10P+4E+20GPU_24GB";
             benchmarkName = "deepseek-r1-distill-7b";
             filePath = "llm_benchmarks/Apple_M4_Pro_10P+4E+20GPU_24GB/deepseek-r1-distill-7b.html";
 
