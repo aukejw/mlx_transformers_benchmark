@@ -28,6 +28,9 @@ Deepseek_R1_Distill_Qwen_7B = ModelSpec(
         "lmstudio": {
             "int4": "lmstudio-community/DeepSeek-R1-Distill-Qwen-7B-GGUF",
         },
+        "lmstudio_mlx": {
+            "int4": "deepseek-r1-distill-qwen-7b",
+        },
         "ollama": {
             "int4": "deepseek-r1:7b",
         },
@@ -48,6 +51,10 @@ Deepseek_R1_0528_Qwen3_8B = ModelSpec(
         "lmstudio": {
             "int4": "deepseek/deepseek-r1-0528-qwen3-8b:deepseek-r1-0528-qwen3-8b@q4_k_m",
             "int8": "deepseek/deepseek-r1-0528-qwen3-8b:deepseek-r1-0528-qwen3-8b@q8_0",
+        },
+        "lmstudio_mlx": {
+            "int4": "deepseek-r1-0528-qwen3-8b-mlx@4bit",
+            "int8": "deepseek-r1-0528-qwen3-8b-mlx@8bit",
         },
         "ollama": {
             "int4": "deepseek-r1:8b",
