@@ -33,6 +33,7 @@ def main(
     run_torch_cuda: bool = False,
     run_mlx_cpu: bool = False,
     run_lmstudio_metal: bool = False,
+    run_lmstudio_mlx: bool = False,
     run_ollama_metal: bool = False,
 ):
     """Run LLM benchmarks.
@@ -58,6 +59,7 @@ def main(
         run_torch_cuda=run_torch_cuda,
         run_mlx_cpu=run_mlx_cpu,
         run_lmstudio_metal=run_lmstudio_metal,
+        run_lmstudio_mlx=run_lmstudio_mlx,
         run_ollama_metal=run_ollama_metal,
     )
 

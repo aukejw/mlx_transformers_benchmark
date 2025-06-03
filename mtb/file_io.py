@@ -157,6 +157,8 @@ def _convert_row_to_framework_backend(
         name += "_" + row["mlx_version"]
     elif row["framework"] == "lmstudio":
         pass
+    elif row["framework"] == "lmstudio_mlx":
+        name = "lmstudio"
     elif row["framework"] == "ollama":
         pass
     else:

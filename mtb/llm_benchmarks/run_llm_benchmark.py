@@ -112,7 +112,7 @@ def create_benchmark(
         benchmark_class = TorchLlmBenchmark
     elif framework == "mlx":
         benchmark_class = MlxLlmBenchmark
-    elif framework == "lmstudio":
+    elif framework == "lmstudio" or framework == "lmstudio_mlx":
         benchmark_class = LMStudioLlmBenchmark
     elif framework == "ollama":
         benchmark_class = OllamaLlmBenchmark
