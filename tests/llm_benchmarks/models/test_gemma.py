@@ -3,6 +3,7 @@ import mlx.nn
 import numpy as np
 import pytest
 import torch
+from huggingface_hub.utils import GatedRepoError
 from lmstudio import LLM
 from mlx_lm.tokenizer_utils import TokenizerWrapper
 from transformers import GemmaTokenizerFast
@@ -23,7 +24,11 @@ def benchmark_torch():
         dtype="bfloat16",
         max_num_tokens=10,
     )
-    benchmark.setup()
+    try:
+        benchmark.setup()
+    except GatedRepoError as e:
+        pytest.skip(f"Skipping test due to gated model access: {e}")
+
     yield benchmark
     benchmark.teardown()
 
