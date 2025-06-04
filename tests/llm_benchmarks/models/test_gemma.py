@@ -26,8 +26,8 @@ def benchmark_torch():
     )
     try:
         benchmark.setup()
-    except GatedRepoError as e:
-        pytest.skip(f"Skipping test due to gated model access: {e}")
+    except (OSError, GatedRepoError) as e:
+        pytest.skip(f"Skipping test due to HF gated model access: {e}")
 
     yield benchmark
     benchmark.teardown()
@@ -103,7 +103,7 @@ def test_gemma_mlx(benchmark_mlx):
 
 
 @pytest.mark.skipif(not FLAG_ON_MAC, reason="Must run on Mac")
-@pytest.mark.skipif(not check_lms_server_running(), reason="Must run on LLM Studio")
+@pytest.mark.skipif(not check_lms_server_running(), reason="Must run on LM Studio")
 def test_gemma_lmstudio(benchmark_lms):
     assert isinstance(benchmark_lms.model, LLM)
 
